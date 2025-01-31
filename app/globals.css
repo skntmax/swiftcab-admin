@@ -459,3 +459,17 @@ form .btn input[type="submit"]{
   pointer-events: none;
 }
 
+
+.lottie-animation {
+  position: absolute;
+  top: 20%; /* Adjust position */
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 400px;  /* Set a proper size */
+  height: 400px;
+  max-width: 100%; /* Prevents distortion */
+  max-height: 100%;
+  object-fit: contain; /* Maintains resolution */
+  z-index: 999;
+  pointer-events: none;
+}

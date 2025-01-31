@@ -1,5 +1,5 @@
 {
-  "name": "carhub",
+  "name": "swiftcab",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
+    "@lottiefiles/dotlottie-react": "^0.12.3",
     "@reduxjs/toolkit": "^2.5.1",
     "@types/axios": "^0.14.0",
     "@types/node": "20.2.1",

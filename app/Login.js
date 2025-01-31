@@ -5,12 +5,21 @@ import { useGetUserQuery, useLoginUserMutation, useSignupUserMutation } from './
 import Loader from './../components/loader/loader'
 import { generateUsername } from '@utils';
 import ApiLoader from './../components/ApiLoader'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { useRouter } from '@node_modules/next/navigation';
+
 const App = () => {
 
   const [isLogin, setIsLogin] = useState(true);
   const [isSignup, setSignup] = useState(false)
   const [isLoggedin, setIsLoggedin] = useState(false)
+  const [userLoggedIn , setUserLoggedIn] = useState((false))
+  const [apiRes, setApiRes] = useState({
+       loginRes:"" ,
+       signUpRes:""
+  })
 
+  let router =  useRouter()
   
   const [ signupFd , setSignupFd ] = useState({
                 email:{ name:"email" , value:"" , error: false , message:"email is required" },
@@ -35,6 +44,12 @@ const App = () => {
   };
 
 
+
+
+  const handleApiRes = (name , value )=>{
+    setApiRes(p=>({...p , [name]: value }))
+  }
+  
   const loginOnchangeHandler =(e)=>{
     const { name , value} = e.target
     setLoginFd(p=>({...p  , [name]:{...p[name] , value:value  }     }))
@@ -158,10 +173,49 @@ useEffect(()=>{
 }, [loginFd.email.value , loginFd.password.value ,loginFd.userType.value ])
 
 
+
+// on login ser 
+useEffect(()=>{
+
+  
+  handleApiRes('loginRes',loginNewUserData?.data )
+    setTimeout(()=>{
+     handleApiRes('loginRes',"" )
+       
+    }, 3000 )
+
+
+   if(loginNewUserData?.data?.token) {
+      // success
+      setUserLoggedIn(true)
+       setTimeout(()=>{
+        setUserLoggedIn(false)
+        router.push('/temp')
+       }, 3000 )
+     
+      
+    }
+
+  
+}, [loginNewUserData?.data])
+
+
+console.log("re.>>", apiRes.loginRes)
 return (
      <>
-     
-    <div className="wrapper">
+
+    
+    
+     {userLoggedIn &&  <DotLottieReact
+      src="https://lottie.host/f4331998-dfdc-4aed-a07a-876ff81d8744/HhAFaPYpDF.lottie"
+      loop
+      autoplay
+      className="lottie-animation"
+     />
+    }
+    
+    
+    <div className="wrapper" style={{opacity: (newUserDataLoader || loginNewUserLoading || userLoggedIn) ?0.2:1}} >
       <div className="title-text">
         <div className={`title login ${isLogin ? '' : 'slide'}`}>{isLogin?
         
@@ -171,7 +225,12 @@ return (
         }</div>
         {/* <div className={`title signup ${isLogin ? 'slide' : ''}`}>Signup Form</div> */}
       </div>
+
+      
+      { apiRes.loginRes &&  (!apiRes.loginRes?.token) &&  <span style={{color:"red", textAlign:"center"}} > {apiRes.loginRes } </span> } 
+            
       <div className="form-container">
+        
         <div className="slide-controls">
           <input
             type="radio"

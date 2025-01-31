@@ -78,3 +78,14 @@ export const generateCarImageUrl = (car: CarProps, angle?: string) => {
 
   return `${url}`;
 } 
+
+
+export const generateUsername = (name:string) => {
+  if (!name) return "User" + Math.floor(1000 + Math.random() * 9000);
+
+  const randomWords = ["_xpert", "_pro", "_master", "_legend", "_hero", "_ace", "_nlite", "_nova"];
+  const randomSuffix = Math.floor(1000 + Math.random() * 9000); // Random 4-digit number
+  const randomWord = randomWords[Math.floor(Math.random() * randomWords.length)];
+
+  return `${name}${randomWord}${randomSuffix}`;
+};

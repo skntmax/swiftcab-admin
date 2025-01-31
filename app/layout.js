@@ -7,12 +7,14 @@ export const metadata = {
   description: "Discover world's best car showcase application",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang='en'>
+      
       <body className='relative'>
     
         {children}
+       
        
       </body>
     </html>

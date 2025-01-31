@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // Define the base API
 const userSlice = createApi({
   reducerPath: 'userApi',
-  tagTypes: ['user-types'],
+  tagTypes: ['user-types' ,'register-user'],
   baseQuery: fetchBaseQuery({ baseUrl: 'http://swiftcab-api.365itsolution.com/' }),
   endpoints: (builder) => ({ 
      getUser: builder.query({
@@ -19,6 +19,27 @@ const userSlice = createApi({
           },  
       )            
      ,
+
+     signupUser: builder.mutation({
+        query: (body) => (  {
+           url: 'v1/auth/signup',
+           method: 'post',
+            body:body
+        }),
+        providesTags:['register-user']
+      },  
+    )    ,
+
+    loginUser: builder.mutation({
+        query: (body) => (  {
+           url: 'v1/auth/login',
+           method: 'post',
+            body:body
+        }),
+        providesTags:['login-user']
+      },  
+    )   
+
   }),
 
      
@@ -30,7 +51,7 @@ const userSlice = createApi({
 
 // Export hooks for usage in functional components
 export const {
-  useGetUserQuery,
+  useGetUserQuery, useSignupUserMutation , useLoginUserMutation
 } = userSlice;
 
 

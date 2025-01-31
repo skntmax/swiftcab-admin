@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const userSlice = createApi({
   reducerPath: 'userApi',
   tagTypes: ['user-types' ,'register-user'],
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://swiftcab-api.365itsolution.com/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://swiftcab-api.365itsolution.com/' }),
   endpoints: (builder) => ({ 
      getUser: builder.query({
             query: (body) => (  {

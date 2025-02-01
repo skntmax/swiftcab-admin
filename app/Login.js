@@ -197,7 +197,10 @@ useEffect(()=>{
             router.push(`/${selectedUserType}/${username}`)
           }, 3000 )
        }else{
-          errorMessage(loginNewUserData?.data || newUserData?.data )
+            if(isLogin)
+              errorMessage(loginNewUserData?.data)
+            if(!isLogin)
+              errorMessage(newUserData?.data)
        
         }
 }, [loginNewUserData?.data , newUserData?.data ])

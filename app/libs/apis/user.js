@@ -3,7 +3,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 
-console.log("env>>",process.env.NEXT_PUBLIC_API_URL)
 // Define the base API
 const userSlice = createApi({
   reducerPath: 'userApi',

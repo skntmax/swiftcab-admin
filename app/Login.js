@@ -184,7 +184,9 @@ useEffect(()=>{
         setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token )  
         setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj)  
         
-        const  { username } = loginNewUserData?.data?.usersObj
+         
+         const  { username } = loginNewUserData?.data?.usersObj || newUserData.data?.usersObj
+
          let selectedUserType = userTypes?.data.find(item=> item.id==loginFd.userType.value)?.user_type || 
                                     userTypes?.data.find(item=> item.id==signupFd.userType.value)?.user_type
         

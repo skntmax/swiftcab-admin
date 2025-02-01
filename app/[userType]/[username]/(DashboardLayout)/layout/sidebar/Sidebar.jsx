@@ -7,18 +7,18 @@ import dynamic from "@node_modules/next/dynamic";
 const Sidebar = dynamic(() => import('react-mui-sidebar').then(mod => mod.Sidebar), { ssr: false });
 const Logo = dynamic(() => import('react-mui-sidebar').then(mod => mod.Logo), { ssr: false });
 
-interface ItemType {
-  isMobileSidebarOpen: boolean;
-  onSidebarClose: (event: React.MouseEvent<HTMLElement>) => void;
-  isSidebarOpen: boolean;
-}
+// interface ItemType {
+//   isMobileSidebarOpen: boolean;
+//   onSidebarClose: (event: React.MouseEvent<HTMLElement>) => void;
+//   isSidebarOpen: boolean;
+// }
 
 const MSidebar = ({
   isMobileSidebarOpen,
   onSidebarClose,
   isSidebarOpen,
-}: ItemType) => {
-  const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
+}) => {
+  const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
 
   const sidebarWidth = "270px";
 

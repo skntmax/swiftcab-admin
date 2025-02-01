@@ -3,9 +3,10 @@ import { Typography, Grid, CardContent } from '@mui/material';
 import PageContainer from './../../components/container/PageContainer';
 import DashboardCard from './../../components/shared/DashboardCard';
 import BlankCard from './../../components/shared/BlankCard';
+import { ReactElement } from '@node_modules/@types/react';
 
 
-const TypographyPage = () => {
+const TypographyPage = ():ReactElement<any, any> => {
   return (
     <PageContainer title="Typography" description="this is Typography">
 

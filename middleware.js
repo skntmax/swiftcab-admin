@@ -5,10 +5,18 @@ import {SWC_KEYS} from './constants/index'
 import { useAxios } from './utils/axios';
 export async function middleware(request) {
     console.log("Middleware triggered!");
-    
-    const cookieStore = cookies();
+
+    const cookieStore = cookies();    
+    const { pathname, searchParams } = request.nextUrl;
+
+      // Extract dynamic route parameters (e.g., /user/123)
+    const segments = pathname.split('/').filter(Boolean); // Removes empty strings
+    const userType = segments[0] || null; // Example: /user/[userType]
+    const userName = segments[1] || null; // Example: /user/[userType]/[userName]
+
+
     const details = cookieStore.get(SWC_KEYS.SWC_TOKEN);
-    let  validUser =  await useAxios.post('/v1/auth/check-valid-user', {username:'dd'} ) .then(data => data ) .catch(error => console.error(error));
+    let  validUser =  await useAxios.post('/v1/auth/check-valid-user', {username:userName} ) .then(data => data ) .catch(error => console.error(error));
   
     if(!validUser?.data) 
       return NextResponse.redirect(new URL('/', request.url))

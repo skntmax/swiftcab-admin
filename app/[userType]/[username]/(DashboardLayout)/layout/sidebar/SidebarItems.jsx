@@ -7,14 +7,14 @@ import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { useAppSelector } from "@app/libs/store";
 
-const SidebarItems = ({ toggleMobileSidebar }: any) => {
+const SidebarItems = ({ toggleMobileSidebar }) => {
   const pathname = usePathname()
   let params = useSearchParams()
   let tabs = params.get('tabs')
 
-  
+
   const pathDirect = `${ pathname}/?tabs=${tabs}`;
-  const userInfo =useAppSelector((ele:any)=> ele.usersInfo)
+  const userInfo =useAppSelector((ele)=> ele.usersInfo)
 
   
   let modifiedMenuItems =Menuitems.map(ele=>({

@@ -195,7 +195,7 @@ useEffect(()=>{
           setTimeout(()=>{
             setUserLoggedIn(false)
             router.push(`/${selectedUserType}/${username}`)
-          }, 3000 )
+          }, 4000 )
        }else{
             if(isLogin)
               errorMessage(loginNewUserData?.data)

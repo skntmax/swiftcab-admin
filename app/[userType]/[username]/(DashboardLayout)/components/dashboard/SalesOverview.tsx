@@ -24,7 +24,7 @@ const SalesOverview = () => {
     const optionscolumnchart: any = {
         chart: {
             type: 'bar',
-            fontFamily: "'Plus Jakarta Sans', sans-serif;",
+            fontFamily: "sans-serif",
             foreColor: '#adb0bb',
             toolbar: {
                 show: true,

@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-
-    env: {
-        customKey: 'my-value',
+    webpack: (config) => {
+        config.resolve.fallback = { fs: false, path: false };
+        return config;
       },
-      
     images: {
         domains: ["cdn.imagin.studio"]
     }

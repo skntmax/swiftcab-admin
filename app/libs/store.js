@@ -2,14 +2,17 @@
 'use client'
 import { configureStore } from '@reduxjs/toolkit'
 import todosSlice from './slice/counterslice'
-import userSlice from './apis/user'
+import userApi from './apis/user'
+import usersSlice from './slice/usersSlice'
 import { useDispatch, useSelector } from '@node_modules/react-redux/dist/react-redux'
+
 export const reduxStore = configureStore({
   reducer: {
+     [usersSlice.reducerPath]:usersSlice.reducer,
     todos: todosSlice.reducer,
-    [userSlice.reducerPath]: userSlice.reducer
+    [userApi.reducerPath]: userApi.reducer
   },
-  middleware: (getDefaultMiddleware) =>getDefaultMiddleware().concat(userSlice.middleware),
+  middleware: (getDefaultMiddleware) =>getDefaultMiddleware().concat(userApi.middleware),
 })
 
 

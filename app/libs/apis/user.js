@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 
 // Define the base API
-const userSlice = createApi({
+const usersApi = createApi({
   reducerPath: 'userApi',
   tagTypes: ['user-types' ,'register-user'],
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
@@ -23,7 +23,7 @@ const userSlice = createApi({
       )            
      ,
 
-     signupUser: builder.mutation({
+     signupUser: builder.mutation({ 
         query: (body) => (  {
            url: 'v1/auth/signup',
            method: 'post',
@@ -55,7 +55,7 @@ const userSlice = createApi({
 // Export hooks for usage in functional components
 export const {
   useGetUserQuery, useSignupUserMutation , useLoginUserMutation
-} = userSlice;
+} = usersApi;
 
 
-export default userSlice
+export default usersApi

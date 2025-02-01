@@ -8,8 +8,6 @@ import { useGetCookies, useSetCookie, useHasCookie, useDeleteCookie, useGetCooki
 export let contextProvider = createContext(null)
 
 function AppProvider({children}) {
-
-
     const setCookie = useSetCookie();
   const hasCookie = useHasCookie();
   const deleteCookie = useDeleteCookie();
@@ -19,7 +17,6 @@ function AppProvider({children}) {
    const  successMessage =(msg)=>{
                 toast.success(msg)
    }
-    
     
    const  errorMessage =(msg)=>{
     toast.error(msg)

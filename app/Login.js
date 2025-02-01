@@ -1,12 +1,14 @@
 "use client"; // Mark this component as a Client Component
-
-import React, { useEffect, useState } from 'react';
+import './assets/css/login.css'
+import React, { useContext, useEffect, useState } from 'react';
 import { useGetUserQuery, useLoginUserMutation, useSignupUserMutation } from './libs/apis/user';
 import Loader from './../components/loader/loader'
 import { generateUsername } from '@utils';
 import ApiLoader from './../components/ApiLoader'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useRouter } from '@node_modules/next/navigation';
+import { contextProvider } from '@components/AppProvider';
+import { SWC_KEYS } from '@constants';
 
 const App = () => {
 
@@ -19,20 +21,21 @@ const App = () => {
        signUpRes:""
   })
 
+  const { successMessage , errorMessage ,setCookie  } = useContext(contextProvider)
   let router =  useRouter()
   
   const [ signupFd , setSignupFd ] = useState({
-                email:{ name:"email" , value:"" , error: false , message:"email is required" },
-                username:{ name:"username" , value:"" , error: false , message:"username is required" },
-                password:{ name:"password" , value:"" , error: false , message:"password is required" },
-                userType:{ name:"userType" , value:"" , error: false , message:"user type is required " },
+                email:{ name:"email" , value:"" , error: false , message:"Email is required" },
+                username:{ name:"username" , value:"" , error: false , message:"Username is required" },
+                password:{ name:"password" , value:"" , error: false , message:"Password is required" },
+                userType:{ name:"userType" , value:"" , error: false , message:"User type is required " },
    })
 
 
    const [ loginFd , setLoginFd ] = useState({
-    email:{ name:"email" , value:"" , error: false , message:"email is required" },
-    password:{ name:"password" , value:"" , error: false , message:"password is required" },
-    userType:{ name:"userType" , value:"" , error: false , message:"user type is required " },
+    email:{ name:"email" , value:"" , error: false , message:"Email is required" },
+    password:{ name:"password" , value:"" , error: false , message:"Password is required" },
+    userType:{ name:"userType" , value:"" , error: false , message:"User type is required " },
 })
 
   // custom hooks
@@ -135,8 +138,6 @@ const loginUser = (e)=>{
 
 }
 
-
-
 // for signup 
 useEffect(()=>{
 
@@ -177,35 +178,29 @@ useEffect(()=>{
 // on login ser 
 useEffect(()=>{
 
-  
-  handleApiRes('loginRes',loginNewUserData?.data )
-    setTimeout(()=>{
-     handleApiRes('loginRes',"" )
+      if(loginNewUserData?.data?.token || newUserData?.data?.token) {
+        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token)  
+        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj)  
+        
+        const  { username } = loginNewUserData?.data?.usersObj
+         let selectedUserType = userTypes?.data.find(item=> item.id==loginFd.userType.value)?.user_type || 
+                                    userTypes?.data.find(item=> item.id==signupFd.userType.value)?.user_type
+        
+                                     // success  
+          setUserLoggedIn(true)
+          setTimeout(()=>{
+            setUserLoggedIn(false)
+            router.push(`/${selectedUserType}/${username}`)
+          }, 3000 )
+       }else{
+          errorMessage(loginNewUserData?.data || newUserData?.data )
        
-    }, 3000 )
+        }
+}, [loginNewUserData?.data , newUserData?.data ])
 
-
-   if(loginNewUserData?.data?.token) {
-      // success
-      setUserLoggedIn(true)
-       setTimeout(()=>{
-        setUserLoggedIn(false)
-        router.push('/temp')
-       }, 3000 )
-     
-      
-    }
-
-  
-}, [loginNewUserData?.data])
-
-
-console.log("re.>>", apiRes.loginRes)
 return (
      <>
 
-    
-    
      {userLoggedIn &&  <DotLottieReact
       src="https://lottie.host/f4331998-dfdc-4aed-a07a-876ff81d8744/HhAFaPYpDF.lottie"
       loop
@@ -213,24 +208,21 @@ return (
       className="lottie-animation"
      />
     }
-    
+
     
     <div className="wrapper" style={{opacity: (newUserDataLoader || loginNewUserLoading || userLoggedIn) ?0.2:1}} >
       <div className="title-text">
         <div className={`title login ${isLogin ? '' : 'slide'}`}>{isLogin?
         
-        `Login as [${!isLoading  &&  userTypes?.data.find(item=> item.id==loginFd.userType.value)?.user_type || "" }] `:
-        
-        `Signup as [${!isLoading  &&  userTypes?.data.find(item=> item.id==signupFd.userType.value)?.user_type || "" }] `
-        }</div>
+         <span> Login as  { !isLoading  &&  <span className='line-1 anim-typewriter'> {userTypes?.data.find(item=> item.id==loginFd.userType.value)?.user_type || ""}</span>   }   </span> :
+      
+         <span> Signup as  { !isLoading  &&  <span className='line-1 anim-typewriter'> {userTypes?.data.find(item=> item.id==signupFd.userType.value)?.user_type || ""}</span>   }   </span>
+      
+      }</div>
         {/* <div className={`title signup ${isLogin ? 'slide' : ''}`}>Signup Form</div> */}
       </div>
 
-      
-      { apiRes.loginRes &&  (!apiRes.loginRes?.token) &&  <span style={{color:"red", textAlign:"center"}} > {apiRes.loginRes } </span> } 
-            
       <div className="form-container">
-        
         <div className="slide-controls">
           <input
             type="radio"
@@ -275,7 +267,7 @@ return (
             </div>
 
 
-            <div className="field fields">
+            {isLoading ?  <ApiLoader height={"20px"} width={"20px"} />  :  <div className="field ">
               <select onBlur={loginOnBlur} onChange={loginOnchangeHandler}   name={loginFd.userType.name} value={loginFd.userType.value}  className='input' required>
                 <option value="" disabled selected>
                   Select User Type
@@ -284,8 +276,7 @@ return (
                     <option value={ele.id}>{ele.user_type}</option>
                 ))}
               </select>
-            </div>
-
+            </div>}
 
            {
             loginNewUserLoading? <ApiLoader height={"20px"} width={"20px"} /> :
@@ -320,22 +311,21 @@ return (
             { !password.value && password.required &&  <span style={{color:"red"}} > {password.message} </span> } 
 
 
-            <div className="field fields">
-         
-              <select onChange={onChangeHandler} onBlur={onBlur}  name={userType.name} value={userType.value}  className='input' required>
-                <option value="" disabled selected>
-                  Select User Type
-                </option>
-                  {!isLoading  && userTypes?.data?.map(ele=>(
-                    <option value={ele.id}>{ele.user_type}</option>
-                ))}
-              </select>
-            </div>
-
+            { isLoading ?  <ApiLoader height={"20px"} width={"20px"} /> : 
+             <div className="field fields">
+             <select onChange={onChangeHandler} onBlur={onBlur}  name={userType.name} value={userType.value}  className='input' required>
+               <option value="" disabled selected>
+                 Select User Type
+               </option>
+                 {!isLoading  && userTypes?.data?.map(ele=>(
+                   <option value={ele.id}>{ele.user_type}</option>
+               ))}
+             </select>
+           </div>
+            } 
+             
             { !userType.value && userType.required &&  <span style={{color:"red"}} > {userType.message} </span> } 
                           
-              
-
            {newUserDataLoader?  <ApiLoader height={"20px"} width={"20px"} />:
             <div className="field btn" style={{opacity : isSignup?1:"0.4"}} > 
               <div className="btn-layer"></div>

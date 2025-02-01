@@ -2,6 +2,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import todosSlice from './slice/counterslice'
 import userSlice from './apis/user'
+import { useDispatch, useSelector } from '@node_modules/react-redux/dist/react-redux'
 export const reduxStore = configureStore({
   reducer: {
     todos: todosSlice.reducer,
@@ -11,3 +12,8 @@ export const reduxStore = configureStore({
 })
 
 
+// ✅ Correct way to create a custom useSelector hook
+export const useAppSelector = (selector) => useSelector(selector);
+
+// ✅ Correct way to create a custom useDispatch hook
+export const useAppDispatch = () => useDispatch()

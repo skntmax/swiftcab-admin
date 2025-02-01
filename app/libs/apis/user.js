@@ -1,10 +1,14 @@
-    import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+'use client'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+
+console.log("env>>",process.env.NEXT_PUBLIC_API_URL)
 // Define the base API
 const userSlice = createApi({
   reducerPath: 'userApi',
   tagTypes: ['user-types' ,'register-user'],
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://swiftcab-api.365itsolution.com/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      getUser: builder.query({
             query: (body) => (  {

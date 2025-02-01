@@ -1,4 +1,5 @@
 
+'use client'
 import { configureStore } from '@reduxjs/toolkit'
 import todosSlice from './slice/counterslice'
 import userSlice from './apis/user'

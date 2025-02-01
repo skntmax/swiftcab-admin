@@ -1,0 +1,11 @@
+version: '3'
+services:
+    ooredoo-website-frontend-qa:
+        container_name: ooredoo-website-frontend-qa
+        build:
+            context: ooredoo-website-frontend-qa
+            dockerfile: Dockerfile
+        image: 172.16.97.40:5000/${IMAGE_NAME_COMPOSE}
+        restart: always
+        ports:
+            - "8837:3000"

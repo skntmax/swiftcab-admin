@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "ooredoo-website-frontend"
+        CONFIG_FOLDER = "environments/development"
+        DOCKER_FILENAME = "Dockerfile"
+        DOCKER_COMPOSE_FILENAME = "docker-compose.yml"
+        IMAGE_NAME_COMPOSE = "${env.IMAGE_NAME}:${env.BUILD_ID}"
+    }
+
+    tools {
+        jdk 'java'
+        maven 'mvn'
+    }
+
+    stages {
+        stage('build tools version ') { // for display purposes.
+            steps {
+                dir(WORKSPACE) {
+                    sh 'mvn --version'
+                    sh 'java -version'
+                    sh 'docker --version'
+                }
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                script {
+                    sh "docker build -t ${IMAGE_NAME}:${BUILD_ID} -f ${CONFIG_FOLDER}/${DOCKER_FILENAME} ."
+                    sh "docker tag ${IMAGE_NAME}:${BUILD_ID} 172.16.97.40:5000/${IMAGE_NAME}:${BUILD_ID}"
+                    sh "docker push 172.16.97.40:5000/${IMAGE_NAME}:${BUILD_ID}"
+                }
+            }
+        }
+
+        stage('Deploy using Docker Compose on 172.16.97.40') {
+            steps {
+            	sh "echo 'Start deployment on 172.16.97.40 for ${IMAGE_NAME}'"
+            	sh "docker rm -f ${IMAGE_NAME} || true"
+                sh "docker compose -f ${CONFIG_FOLDER}/${DOCKER_COMPOSE_FILENAME} up -d"
+            }
+        }
+        
+        stage('Deploy using Docker Compose on 172.16.97.46') {
+            steps {
+            	sh "ssh -q root@172.16.97.46 rm -rf /tmp/${DOCKER_COMPOSE_FILENAME} || true"
+            	sh "scp ./${CONFIG_FOLDER}/${DOCKER_COMPOSE_FILENAME} root@172.16.97.46:/tmp/"
+            	sh "ssh -q root@172.16.97.46 docker rm -f ${IMAGE_NAME} || true"
+            	sh "ssh -q root@172.16.97.46 IMAGE_NAME_COMPOSE=${IMAGE_NAME_COMPOSE} docker compose -f /tmp/${DOCKER_COMPOSE_FILENAME} up -d"
+            }
+        }
+    }
+
+    post {
+        success {
+            sh "echo 'success'"
+        }
+    }
+}

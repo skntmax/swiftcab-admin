@@ -10,6 +10,7 @@ import { useRouter } from '@node_modules/next/navigation';
 import { contextProvider } from '@components/AppProvider';
 import { SWC_KEYS } from '@constants';
 
+
 const App = () => {
 
   const [isLogin, setIsLogin] = useState(true);
@@ -345,5 +346,8 @@ return (
 
   );
 };
+
+
+
 
 export default App;

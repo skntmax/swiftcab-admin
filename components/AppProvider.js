@@ -2,12 +2,19 @@
 import React, { createContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next';
+import { useGetCookies, useSetCookie, useHasCookie, useDeleteCookie, useGetCookie } from 'cookies-next';
 
   
 export let contextProvider = createContext(null)
 
 function AppProvider({children}) {
+
+
+    const setCookie = useSetCookie();
+  const hasCookie = useHasCookie();
+  const deleteCookie = useDeleteCookie();
+  const getCookies = useGetCookies();
+  const getCookie = useGetCookie();
 
    const  successMessage =(msg)=>{
                 toast.success(msg)

@@ -179,8 +179,10 @@ useEffect(()=>{
 useEffect(()=>{
 
       if(loginNewUserData?.data?.token || newUserData?.data?.token) {
-        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token)  
-        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj)  
+
+        console.log(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token)
+        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token )  
+        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj)  
         
         const  { username } = loginNewUserData?.data?.usersObj
          let selectedUserType = userTypes?.data.find(item=> item.id==loginFd.userType.value)?.user_type || 
@@ -190,7 +192,7 @@ useEffect(()=>{
           setUserLoggedIn(true)
           setTimeout(()=>{
             setUserLoggedIn(false)
-            router.push(`/${selectedUserType}/${username}`)
+            // router.push(`/${selectedUserType}/${username}`)
           }, 3000 )
        }else{
           errorMessage(loginNewUserData?.data || newUserData?.data )

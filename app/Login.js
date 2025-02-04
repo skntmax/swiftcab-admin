@@ -280,7 +280,7 @@ return (
                   Select User Type
                 </option>
                   {!isLoading  && userTypes?.data?.map(ele=>(
-                    <option value={ele.id}>{ele.user_type}</option>
+                    <option value={ele.id}>{ele.name}</option>
                 ))}
               </select>
             </div>}
@@ -325,7 +325,7 @@ return (
                  Select User Type
                </option>
                  {!isLoading  && userTypes?.data?.map(ele=>(
-                   <option value={ele.id}>{ele.user_type}</option>
+                   <option value={ele.id}>{ele.name}</option>
                ))}
              </select>
            </div>

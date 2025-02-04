@@ -46,8 +46,6 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         >
           <IconMenu width="20" height="20" />
         </IconButton>
-
-
         <IconButton
           size="large"
           aria-label="show 11 new notifications"

@@ -1,7 +1,7 @@
 
 'use client'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
+import  urls from './../../../constants/urls'
 
 // Define the base API
 const usersApi = createApi({
@@ -11,7 +11,7 @@ const usersApi = createApi({
   endpoints: (builder) => ({ 
      getUser: builder.query({
             query: (body) => (  {
-               url: 'v1/owner/get-user-types',
+               url: urls.get_role,
                method: 'GET',
             //    headers:{
             //     "authorization": `Bearer ${getCookie(constants.btcode_live_cd_key)}`,

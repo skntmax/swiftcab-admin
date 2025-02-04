@@ -187,14 +187,14 @@ useEffect(()=>{
          
          const  { username } = loginNewUserData?.data?.usersObj || newUserData.data?.usersObj
 
-         let selectedUserType = userTypes?.data.find(item=> item.id==loginFd.userType.value)?.user_type || 
-                                    userTypes?.data.find(item=> item.id==signupFd.userType.value)?.user_type
+         let selectedUserType = userTypes?.data.find(item=> item.id==loginFd.userType.value)?.name || 
+                                    userTypes?.data.find(item=> item.id==signupFd.userType.value)?.name
         
                                      // success  
           setUserLoggedIn(true)
           setTimeout(()=>{
             setUserLoggedIn(false)
-            router.push(`/${selectedUserType}/${username}`)
+            router.push(`/${selectedUserType.toLowerCase()}/${username.toLowerCase()}`)
           }, 4000 )
        }else{
             if(isLogin)

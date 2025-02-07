@@ -63,23 +63,6 @@ const MSidebar = ({
           >
             
             <SidebarItems />
-            <Upgrade />
-          
-                {/* <Sidebar
-              width={'270px'}
-              collapsewidth="80px"
-              open={isSidebarOpen}
-              themeColor="#5d87ff"
-              themeSecondaryColor="#49beff"
-              showProfile={false}
-            >
-               
-              <Logo img="/images/logos/dark-logo.svg" />
-              <Box>
-                <SidebarItems />
-                <Upgrade />
-              </Box>
-            </Sidebar > */}
           
           </Box>
 

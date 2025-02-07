@@ -105,3 +105,31 @@ export const SWC_KEYS = {
   SWC_TOKEN:"SWC_TOKEN",
   SWC_USER:"SWC_USER"
 }
+
+
+
+
+export const USER_ROLES = {
+  superAdmin: "Super Admin",
+  admin: "Admin",
+  salesManager: "Sales Manager",
+  salesExecutive: "Sales Executive",
+  salesRepresentative: "Sales Representative",
+  accountManager: "Account Manager",
+  marketingManager: "Marketing Manager",
+  marketingExecutive: "Marketing Executive",
+  marketingSpecialist: "Marketing Specialist",
+  customerSupportManager: "Customer Support Manager",
+  supportAgent: "Support Agent",
+  helpdeskAgent: "Helpdesk Agent",
+  technicalSupportEngineer: "Technical Support Engineer",
+  operationsManager: "Operations Manager",
+  financeManager: "Finance Manager",
+  crmDeveloper: "CRM Developer",
+  crmAnalyst: "CRM Analyst",
+  partnerManager: "Partner Manager",
+  vendorCoordinator: "Vendor Coordinator",
+  customer: "Customer",
+  owner: "Owner"
+
+}

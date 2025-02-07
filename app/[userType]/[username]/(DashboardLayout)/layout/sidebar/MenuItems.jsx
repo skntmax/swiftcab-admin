@@ -6,69 +6,112 @@ import {
   IconMoodHappy,
   IconTypography,
   IconUserPlus,
+  IconCar,
+  IconReservedLine,
+  IconDeviceImacSearch,
+  IconDevicesHeart,
+  IconCaravan,
+  IconRoad,
+  IconBrandStrava,
+  IconHelmet
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
 
 const Menuitems = [
-  {
+
+   {
     navlabel: true,
-    subheader: "Home",
+    subheader: "Vhicles",
   },
 
   {
     id: uniqueId(),
-    title: "Dashboard",
-    icon: IconLayoutDashboard,
-    href: "/",
+    title: "Add Vhicles",
+    icon: IconCar,
+    href: "/add-vhicles",
   },
+
+  {
+    id: uniqueId(),
+    title: "Registered Vhicles",
+    icon: IconReservedLine,
+    href: "/registered-vhicles",
+  },
+
+  {
+    id: uniqueId(),
+    title: "Add vhicle services",
+    icon: IconDeviceImacSearch,
+    href: "/add-vhicles-services",
+  },
+
+  {
+    id: uniqueId(),
+    title: "Vhicles occupied services",
+    icon: IconDevicesHeart,
+    href: "/vhicles-services",
+  },
+
+  {
+    id: uniqueId(),
+    title: "Active vhicles",
+    icon: IconCaravan,
+    href: "/active-vhicles",
+  },
+
   {
     navlabel: true,
-    subheader: "Utilities",
+    subheader: "Rides",
   },
+  
   {
     id: uniqueId(),
-    title: "Typography",
-    icon: IconTypography,
-    href: "/typography",
+    title: "Today rides",
+    icon: IconRoad,
+    href: "/today-rides",
   },
+  
   {
     id: uniqueId(),
-    title: "Shadow",
-    icon: IconCopy,
-    href: "/shadow",
+    title: "All Rides",
+    icon: IconBrandStrava,
+    href: "/all-rides",
   },
+
   {
     navlabel: true,
-    subheader: "Auth",
+    subheader: "Master",
   },
   {
     id: uniqueId(),
-    title: "Login",
-    icon: IconLogin,
-    href: "/login",
+    title: "All Vhicles",
+    icon: IconHelmet,
+    href: "/all-vhicles",
   },
+
   {
     id: uniqueId(),
-    title: "Register",
+    title: "Roles",
     icon: IconUserPlus,
-    href: "/register",
+    href: "/roles",
   },
+
   {
     navlabel: true,
-    subheader: "Extra",
+    subheader: "Settlements",
   },
   {
     id: uniqueId(), 
-    title: "Icons",
+    title: "Active Month",
     icon: IconMoodHappy,
-    href: "/icons",
+    href: "/active-month-settlement",
   },
   {
     id: uniqueId(),
-    title: "Sample Page",
+    title: "Any Month",
     icon: IconAperture,
-    href: "/sample-page",
+    href: "/any-month-settlement",
   },
 ];
 

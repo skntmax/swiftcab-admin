@@ -60,7 +60,6 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
     },
   }));
 
-  console.log("href>>", pathDirect, item.href)
 
   return (
     <List component="div" disablePadding key={item.id}>
@@ -69,7 +68,7 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
           component={Link}
           href={item.href}
           disabled={item.disabled}
-          selected={pathDirect === item.href}
+          selected={pathDirect?.trim()?.toLocaleLowerCase() === item.href?.trim()?.toLocaleLowerCase()}
           target={item.external ? "_blank" : ""}
           onClick={onClick}
         >

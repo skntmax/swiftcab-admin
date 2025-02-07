@@ -17,9 +17,10 @@ import TypographyPage from './utilities/typography/page';
 import Shadow from './utilities/shadow/page';
 import Icons from './icons/page';
 import SamplePage from './sample-page/page';
-
-
-
+import AddVhicle from './utilities/owner-cmp/AddVhicle'
+import RegisteredVhicles from './utilities/owner-cmp/RegisteredVhicles'
+import VhicleServices from './utilities/owner-cmp/VhicleServices'
+import VhicleOccupiedServies from './utilities/owner-cmp/VhicleOccupiedServies'
 function UsersDashboard({ userType, userName })  {
   let params = useSearchParams();
   let tabs = params.get('tabs');
@@ -60,10 +61,18 @@ function UsersDashboard({ userType, userName })  {
         </Box>
       ) : null}
 
-      {tabs === 'typography' && <TypographyPage />}
-      {tabs === 'shadow' && <Shadow />}
-      {tabs === 'icons' && <Icons />}
-      {tabs === 'sample-page' && <SamplePage />}
+      {tabs === 'add-vhicles' && <AddVhicle />}
+      {tabs === 'registered-vhicles' && <RegisteredVhicles />}
+      {tabs === 'add-vhicles-services' && <VhicleServices />}
+      {tabs === 'vhicles-services' && <VhicleOccupiedServies />}
+      {tabs === 'active-vhicles' && <SamplePage />}
+      {tabs === 'today-rides' && <SamplePage />}
+      {tabs === 'all-rides' && <SamplePage />}
+      {tabs === 'all-vhicles' && <SamplePage />}
+      {tabs === 'roles' && <SamplePage />}
+      {tabs === 'active-month-settlement' && <SamplePage />}
+      {tabs === 'any-month-settlement' && <SamplePage />}
+      
     </PageContainer>
     </>
 

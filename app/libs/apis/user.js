@@ -20,8 +20,7 @@ const usersApi = createApi({
             }),
             providesTags:['user-types']
           },  
-      )            
-     ,
+      ),
 
      signupUser: builder.mutation({ 
         query: (body) => (  {
@@ -31,7 +30,7 @@ const usersApi = createApi({
         }),
         providesTags:['register-user']
       },  
-    )    ,
+     ),
 
     loginUser: builder.mutation({
         query: (body) => (  {

@@ -33,8 +33,6 @@ function AddVhicle() {
         Submit
       </Button>
     </Box>
-
-
     </>
   )
 }

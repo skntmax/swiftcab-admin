@@ -6,11 +6,9 @@ function page(props:any) {
   const { params:{ userType  , username }} = props
   return (
      <>
-
       
        {userType===USER_ROLES.owner?.toLocaleLowerCase() && <UsersDashboard userType={userType} userName={username} />  } 
-
-
+   
      </>
   )
 }

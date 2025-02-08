@@ -120,8 +120,6 @@ const App = () => {
 
 const { email , password ,userType , username} = signupFd
 
-
-
 const signupUser= (e)=>{
   e.preventDefault()
   console.log("signup user")

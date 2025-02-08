@@ -13,10 +13,10 @@ const usersApi = createApi({
             query: (body) => (  {
                url: urls.get_role,
                method: 'GET',
-            //    headers:{
-            //     "authorization": `Bearer ${getCookie(constants.btcode_live_cd_key)}`,
-            //     "Content-Type": "appliation/json"   
-            //      }
+                //    headers:{
+                //     "authorization": `Bearer ${getCookie(constants.btcode_live_cd_key)}`,
+                //     "Content-Type": "appliation/json"   
+                //      }
             }),
             providesTags:['user-types']
           },  

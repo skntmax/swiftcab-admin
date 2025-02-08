@@ -1,6 +1,9 @@
 "use client";
+import { SWC_KEYS } from "@constants";
 import urls from "../../../constants/urls";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getCookie } from "@node_modules/cookies-next/lib/client";
+
 
 const ownerApi = createApi({
 
@@ -21,12 +24,17 @@ const ownerApi = createApi({
     insertOwnerVhicles: builder.mutation({
       query: (body) => ({
         url: urls.insert_owner_vhicles,
-        method: "post",
+        method: "POST",
+           headers:{
+              "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+             },
         body: body,
       }),
       providesTags: ["insert-owner-vhicles"],
     }),
 
+
+    
     transformResponse: (response) => response.data, 
     transformErrorResponse: (response) => response.data, 
   

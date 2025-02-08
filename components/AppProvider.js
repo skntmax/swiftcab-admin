@@ -27,7 +27,6 @@ return (
                 <contextProvider.Provider value={{successMessage ,  errorMessage , getCookie, getCookies, setCookie, deleteCookie, hasCookie }}>
                     {children}
                 </contextProvider.Provider>
-
                 <ToastContainer
                 position="top-right"
                 autoClose={5000}

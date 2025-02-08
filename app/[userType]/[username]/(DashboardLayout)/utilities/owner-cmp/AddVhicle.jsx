@@ -17,7 +17,7 @@ function AddVhicle() {
   const [insertOwnerVehicles, { isLoading: isSubmitting }] =
     useInsertOwnerVhiclesMutation();
   const { data, error, isLoading } = useGetVehiclesListQuery();
-  const { successMessage, errorMessage } = useContext(contextProvider);
+  const { successMessage, errorMessage ,  } = useContext(contextProvider);
   const [selectedVehicles, setSelectedVehicles] = useState(null);
 
   const vehicleOptions = Array.isArray(data?.data)
@@ -34,11 +34,8 @@ function AddVhicle() {
     }
 
     try {
-      const response = await insertOwnerVehicles({
-        data: {
-          vhicleId: selectedVehicles.id,
-        },
-      }).unwrap();
+      
+      const response = await insertOwnerVehicles({vhicleId: selectedVehicles.id}).unwrap();
 
       if (response.error) {
         errorMessage(response.data);

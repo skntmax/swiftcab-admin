@@ -54,6 +54,8 @@ class ApiClient {
 
   // Handle Errors
   handleError(error) {
+
+    
     if (error.response) {
       console.error(`API Error: ${error.response.status} - ${error.response.data}`);
     } else if (error.request) {

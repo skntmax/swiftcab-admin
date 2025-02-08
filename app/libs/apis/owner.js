@@ -27,7 +27,7 @@ const ownerApi = createApi({
         method: "POST",
            headers:{
                 "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
-             },
+             },  
         body: body,
       }),
       providesTags: ["insert-owner-vhicles"],

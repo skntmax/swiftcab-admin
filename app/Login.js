@@ -176,7 +176,6 @@ useEffect(()=>{
 
 // on login ser 
 useEffect(()=>{
-
       if(loginNewUserData?.data?.token || newUserData?.data?.token) {
         
         setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token )  

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import { Autocomplete, TextField, Box, Button, CircularProgress, Alert } from "@mui/material";
 import { useGetVehiclesTypeListQuery, useGetVehiclesServiceListQuery, useAddVehicleServiceMutation } from "@app/libs/apis/owner";
 import { contextProvider } from "@components/AppProvider";
+import VhicleOccupiedServies from "./VhicleOccupiedServies";
 
 function VhicleServices() {
   const { data: vehicleData, isLoading: vehicleLoading, error: vehicleError } = useGetVehiclesTypeListQuery(); 
   const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useGetVehiclesServiceListQuery();
-  const [addVehicleService, { isLoading: isSubmitting }] = useAddVehicleServiceMutation(); // Mutation hook
+  const [addVehicleService, { data:addVehicleServiceData,  isLoading: isSubmitting }] = useAddVehicleServiceMutation(); // Mutation hook
 
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -36,6 +37,9 @@ function VhicleServices() {
     }
   }, [serviceData]);
 
+
+   
+
   const handleSubmit = async () => {
     if (!selectedVehicles?.value || !selectedServices?.value) {
       errorMessage("Please select both vehicle and service.");
@@ -62,6 +66,8 @@ function VhicleServices() {
   
 
   return (
+    <>
+
     <Box
       sx={{
         display: "flex",
@@ -69,7 +75,7 @@ function VhicleServices() {
         alignItems: "flex-start",
         justifyContent: "flex-start",
         width: "100%",
-        minHeight: "100vh",
+        // minHeight: "100vh",
         padding: 2,
         overflow: "auto"
       }}
@@ -106,7 +112,7 @@ function VhicleServices() {
             <Box sx={{ height: 16 }} />
 
             <Button 
-              variant="contained" 
+              variant="outlined" 
               color="primary" 
               fullWidth 
               onClick={handleSubmit} 
@@ -119,6 +125,11 @@ function VhicleServices() {
         )}
       </Box>
     </Box>
+     
+     <VhicleOccupiedServies />
+     
+     </>
+
   );
 }
 

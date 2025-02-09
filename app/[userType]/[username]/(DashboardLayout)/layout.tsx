@@ -7,7 +7,8 @@ const Sidebar   = dynamic(()=> import("./layout/sidebar/Sidebar") , {ssr:false})
 import { baselightTheme } from '@utils/theme/DefaultColors'
 import CssBaseline from "@mui/material/CssBaseline";
 import dynamic from "@node_modules/next/dynamic";
-
+import { usePathname } from "@node_modules/next/navigation";
+import { USER_ROLES } from "@constants";
 const MainWrapper = styled("div")(() => ({
   display: "flex",
   minHeight: "100vh",
@@ -36,13 +37,23 @@ export default function RootLayout({
 }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  return (
-  
+  const pathname = usePathname(); // Get current route
+
+  console.log("pathname>>",pathname)
+
+  const [ userType ,  username] = pathname.split('/').filter(Boolean) 
+
+return (
+
+   
     <MainWrapper className="mainwrapper" style={{background:"white"}}>
       {/* ------------------------------------------- */}
       {/* Sidebar */}
       {/* ------------------------------------------- */}
-      <Sidebar
+      
+       {userType==USER_ROLES.owner?.toLowerCase() && <>
+       
+        <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}
         onSidebarClose={() => setMobileSidebarOpen(false)}
@@ -73,6 +84,10 @@ export default function RootLayout({
           {/* ------------------------------------------- */}
         </Container>
       </PageWrapper>
+      
+       </> }
+
+    
     </MainWrapper>
    
 

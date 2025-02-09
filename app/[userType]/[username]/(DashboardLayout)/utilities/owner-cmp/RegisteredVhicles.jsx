@@ -3,39 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/system';
 import { useGetOwnerVhiclesListMutation } from "@app/libs/apis/owner";
+import VhicleOccupiedServies from "./VhicleOccupiedServies";
 
-const vehicles = [
-  {
-    vhicle: "Electric Scooter",
-    disc: "Small two-wheeled electric-powered vehicle"
-  },
-  {
-    vhicle: "Car",
-    disc: "Four-wheeled motor vehicle used for passenger transport"
-  },
-  {
-    vhicle: "Motorcycle",
-    disc: "Two-wheeled motor vehicle for individual or two-passenger travel"
-  },
-  {
-    vhicle: "Truck",
-    disc: "Heavy motor vehicle used for transporting goods"
-  },
-  {
-    vhicle: "Bus",
-    disc: "Large motor vehicle designed to carry many passengers"
-  }
-];
-
-
-// Styled component for the dotted line
-const DottedLine = styled('div')({
-    position: 'absolute',
-    height: '2px',
-    background: 'repeating-linear-gradient(to right, #000, #000 4px, transparent 4px, transparent 8px)',
-    transformOrigin: 'left center',
-  });
-  
   const UserProfile = () => {
     
     return (
@@ -95,6 +64,7 @@ function RegisteredVhicles() {
 
   useEffect(() => {
     getVehicles(); 
+
   }, []);
 
   const vehicles = data?.data || [];
@@ -115,7 +85,7 @@ function RegisteredVhicles() {
         overflow: 'hidden',
       }}
       >
-      <UserProfile />
+      {vehicles && vehicles.length>0 &&<UserProfile /> } 
       {vehicles.map((vehicle, index) => (
         <VehicleCard
           key={index}
@@ -125,6 +95,8 @@ function RegisteredVhicles() {
         />
       ))}
     </Box>
+
+        
 
     </>
   )

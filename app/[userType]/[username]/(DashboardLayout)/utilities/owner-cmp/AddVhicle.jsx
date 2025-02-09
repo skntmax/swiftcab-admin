@@ -106,7 +106,7 @@ function AddVhicle() {
         </Box>
       ) : (
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           sx={{ mt: 2, width: "100%" }}
           onClick={handleSubmit}
@@ -116,6 +116,7 @@ function AddVhicle() {
       )}
 
       <RegisteredVhicles key={refresh}/>
+
     </Box>
   );
 }

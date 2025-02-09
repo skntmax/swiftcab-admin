@@ -4,8 +4,11 @@ import { Card, CardContent, Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/system';
 import { useGetOwnerVhiclesListMutation } from "@app/libs/apis/owner";
 import VhicleOccupiedServies from "./VhicleOccupiedServies";
+import { getUserInfo } from "@utils";
 
   const UserProfile = () => {
+
+     const { firstName , lastName , username}  =getUserInfo()
     
     return (
       <Box
@@ -19,7 +22,7 @@ import VhicleOccupiedServies from "./VhicleOccupiedServies";
       >
         <Avatar alt="User Profile" src="/path/to/user/profile/image.jpg" sx={{ width: 80, height: 80 }} />
         <Typography variant="h5" ml={2}>
-          John Doe
+          {username}
         </Typography>
       </Box>
     );

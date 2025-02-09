@@ -1,3 +1,5 @@
+import { SWC_KEYS } from "@constants";
+import { getCookie } from "@node_modules/cookies-next/lib";
 import { CarProps, FilterProps } from "@types";
 
 export const calculateCarRent = (city_mpg: number, year: number) => {
@@ -89,3 +91,16 @@ export const generateUsername = (name:string) => {
 
   return `${name}${randomWord}${randomSuffix}`;
 };
+
+
+
+
+export const getUserInfo = () => {
+  
+  let user:any  = getCookie(SWC_KEYS.SWC_USER)
+  if(!user) return {}
+
+  return JSON.parse(decodeURIComponent(user)) 
+};
+
+

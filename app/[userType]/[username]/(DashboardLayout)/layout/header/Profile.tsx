@@ -11,11 +11,16 @@ import {
   ListItemText,
 } from "@mui/material";
 
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 import { SWC_KEYS } from "@constants";
 import { deleteCookie } from "@node_modules/cookies-next/lib";
 
-const Profile = () => {
+type userProfile ={ 
+   username:string
+}
+const Profile = ({username}:userProfile) => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
@@ -44,14 +49,14 @@ const Profile = () => {
         }}
         onClick={handleClick2}
       >
-        <Avatar
-          src="/images/profile/user-1.jpg"
-          alt="image"
+         {username}
+         <AccountCircleIcon
           sx={{
             width: 35,
             height: 35,
           }}
-        />
+         />
+
       </IconButton>
       {/* ------------------------------------------- */}
       {/* Message Dropdown */}

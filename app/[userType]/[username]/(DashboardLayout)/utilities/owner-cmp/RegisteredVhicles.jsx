@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Card, CardContent, Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/system';
+import { useGetOwnerVhiclesListMutation } from "@app/libs/apis/owner";
 
 const vehicles = [
   {
@@ -36,6 +37,7 @@ const DottedLine = styled('div')({
   });
   
   const UserProfile = () => {
+    
     return (
       <Box
         display="flex"
@@ -89,11 +91,19 @@ const DottedLine = styled('div')({
   };
 function RegisteredVhicles() {
   
-    const radius = 300; // Distance from the user profile to each vehicle card
-    const angleIncrement = 360 / vehicles.length; // Equal angle between each vehicle
-  
-    return (
+  const [getVehicles, { data, isLoading, error }] = useGetOwnerVhiclesListMutation(); 
 
+  useEffect(() => {
+    getVehicles(); 
+  }, []);
+
+  const vehicles = data?.data || [];
+  
+  const radius = 300;
+  const angleIncrement = 360 / vehicles.length; 
+  
+  return (
+    
     <>
   <Box
       sx={{
@@ -104,7 +114,7 @@ function RegisteredVhicles() {
         justifyContent: 'center',
         overflow: 'hidden',
       }}
-    >
+      >
       <UserProfile />
       {vehicles.map((vehicle, index) => (
         <VehicleCard

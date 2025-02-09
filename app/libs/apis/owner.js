@@ -8,7 +8,8 @@ import { getCookie } from "@node_modules/cookies-next/lib/client";
 const ownerApi = createApi({
 
   reducerPath: "ownerApi",
-  tagTypes: ["vehicles", "insert-owner-vhicles"], 
+        providesTags: ["admin_service_list"], 
+        tagTypes: ["vehicles", "insert-owner-vhicles", "owner-ownes-vhicle", "owner_active_vhicle_list","create_vhicle_provide_services"< "vhicle_services_list" ], 
   
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({
@@ -34,13 +35,69 @@ const ownerApi = createApi({
     }),
 
 
-    
+    getVehiclesTypeList: builder.query({
+        query: () => ({
+          url: urls.owner_service_list,
+          method: "GET",
+          headers:{
+            "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+         },  
+        }),
+        providesTags: ["owner_active_vhicle_list"], 
+      }),
+
+      getVehiclesServiceList: builder.query({
+        query: () => ({
+          url: 'v1/admin/service-list',
+          method: "GET",
+          headers:{
+            "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+         },  
+        }),
+        providesTags: ["admin_service_list"], 
+      }),
+
+      getVehiclesServiceListRender: builder.query({
+        query: () => ({
+          url: 'v1/owner/get-vhicle-services-list',
+          method: "GET",
+          headers:{
+            "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+         },  
+        }),
+        providesTags: ["vhicle_services_list"], 
+      }),
+
+      addVehicleService: builder.mutation({
+        query: (body) => ({
+          url: 'v1/owner/create-vhicle-provide-services',
+          method: "POST",
+          headers:{
+            "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+         },
+         body: body,
+        }),
+        providesTags: ["create_vhicle_provide_services"], 
+      }),
+
+    getOwnerVhiclesList: builder.mutation({
+        query: (body) => ({
+          url: urls.owner_ownes_vhicle,
+          method: "GET",
+             headers:{
+                  "authorization": `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+               },  
+          body: body,
+        }),
+        providesTags: ["owner-ownes-vhicle"],
+      }),
+
     transformResponse: (response) => response.data, 
     transformErrorResponse: (response) => response.data, 
   
 }),
 });
 
-export const { useGetVehiclesListQuery, useInsertOwnerVhiclesMutation } = ownerApi;
+export const { useGetVehiclesListQuery, useInsertOwnerVhiclesMutation ,  useGetOwnerVhiclesListMutation, useGetVehiclesTypeListQuery, useGetVehiclesServiceListQuery, useAddVehicleServiceMutation, useGetVehiclesServiceListRenderQuery } = ownerApi;
 
 export default ownerApi;

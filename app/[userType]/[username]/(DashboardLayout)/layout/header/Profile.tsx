@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { SWC_KEYS } from "@constants";
+import { deleteCookie } from "@node_modules/cookies-next/lib";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -20,6 +22,11 @@ const Profile = () => {
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
+  };
+
+  const handleLogout = () => {
+    deleteCookie(SWC_KEYS.SWC_USER);
+    deleteCookie(SWC_KEYS.SWC_TOKEN);
   };
 
   return (
@@ -88,6 +95,7 @@ const Profile = () => {
             color="primary"
             component={Link}
             fullWidth
+            onClick={handleLogout}
           >
             Logout
           </Button>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, Chip, Paper } from "@mui/material";
+import { useGetVehiclesServiceListRenderQuery } from "@app/libs/apis/owner";
 
 const data = [
   { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Tourist plan" },
@@ -23,6 +24,8 @@ const groupedData = data.reduce((acc, item) => {
 
 
 function VhicleOccupiedServies() {
+  const { data, error, isLoading } = useGetVehiclesServiceListRenderQuery();
+
   return (
    <>
     <Box sx={{ p: 3, width: "100%" }}>

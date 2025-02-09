@@ -1,22 +1,68 @@
-import React, { useState } from "react";
-import { Autocomplete, TextField, Box, Button } from "@mui/material";
-
-const vehicleOptions = ["Car", "Bike", "Truck", "Bus", "Van"];
-const serviceOptions = ["Repair", "Maintenance", "Cleaning", "Towing", "Inspection"];
-
+import React, { useState, useEffect, useContext } from "react";
+import { Autocomplete, TextField, Box, Button, CircularProgress, Alert } from "@mui/material";
+import { useGetVehiclesTypeListQuery, useGetVehiclesServiceListQuery, useAddVehicleServiceMutation } from "@app/libs/apis/owner";
+import { contextProvider } from "@components/AppProvider";
 
 function VhicleServices() {
-    const [selectedVehicles, setSelectedVehicles] = useState([]);
-    const [selectedServices, setSelectedServices] = useState([]);
-  
-    const handleSubmit = () => {
-      console.log("Selected Vehicles:", selectedVehicles);
-      console.log("Selected Services:", selectedServices);
-    };
+  const { data: vehicleData, isLoading: vehicleLoading, error: vehicleError } = useGetVehiclesTypeListQuery(); 
+  const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useGetVehiclesServiceListQuery();
+  const [addVehicleService, { isLoading: isSubmitting }] = useAddVehicleServiceMutation(); // Mutation hook
 
-    return (
-    <>
-        <Box
+  const [selectedVehicles, setSelectedVehicles] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [vehicleOptions, setVehicleOptions] = useState([]);
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const { successMessage, errorMessage ,  } = useContext(contextProvider);
+
+  // Populate vehicle options
+  useEffect(() => {
+    if (vehicleData?.data) {
+      const formattedVehicles = vehicleData.data.map((item) => ({
+        label: item.name, // Display vehicle name
+        value: item.id,   // Unique ID
+      }));
+      setVehicleOptions(formattedVehicles);
+    }
+  }, [vehicleData]);
+
+  // Populate service options
+  useEffect(() => {
+    if (serviceData?.data) {
+      const formattedServices = serviceData.data.map((item) => ({
+        label: item.service_name, // Display service name
+        value: item.id,           // Unique ID
+      }));
+      setServiceOptions(formattedServices);
+    }
+  }, [serviceData]);
+
+  const handleSubmit = async () => {
+    if (!selectedVehicles?.value || !selectedServices?.value) {
+      errorMessage("Please select both vehicle and service.");
+      return;
+    }
+    
+    const payload = {
+      vhicleId: selectedVehicles.value, // Get vehicle ID
+      serviceId: selectedServices.value, // Get service ID
+    };
+  
+    try {
+      const response = await addVehicleService(payload).unwrap();
+      if(!response.error){
+        successMessage(response.message);
+      }else{
+        errorMessage(response.data);
+      }
+      console.log("Success:", response);
+    } catch (error) {
+      errorMessage(error.message);
+    }
+  };
+  
+
+  return (
+    <Box
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -29,30 +75,51 @@ function VhicleServices() {
       }}
     >
       <Box sx={{ width: "100%" }}>
-        <Autocomplete
-          multiple
-          options={vehicleOptions}
-          onChange={(event, value) => setSelectedVehicles(value)}
-          renderInput={(params) => <TextField {...params} label="Type of Vehicles" variant="outlined" />}
-          fullWidth
-        />
-        <Box sx={{ height: 16 }} />
-        <Autocomplete
-          multiple
-          options={serviceOptions}
-          onChange={(event, value) => setSelectedServices(value)}
-          renderInput={(params) => <TextField {...params} label="Service" variant="outlined" />}
-          fullWidth
-        />
-        <Box sx={{ height: 16 }} />
-        <Button variant="contained" color="primary" fullWidth onClick={handleSubmit} sx={{ mt: 2 }}>
-          Submit
-        </Button>
+        {vehicleLoading || serviceLoading ? <CircularProgress /> : null}
+        {vehicleError && <Alert severity="error">Failed to fetch vehicle data.</Alert>}
+        {serviceError && <Alert severity="error">Failed to fetch service data.</Alert>}
+
+        {!vehicleLoading && !serviceLoading && (
+          <>
+            {/* Vehicle Selection */}
+            <Autocomplete
+              multiple={false}
+              options={vehicleOptions}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              onChange={(event, value) => setSelectedVehicles(value)}
+              renderInput={(params) => <TextField {...params} label="Type of Vehicles" variant="outlined" />}
+              fullWidth
+            />
+            <Box sx={{ height: 16 }} />
+
+            {/* Service Selection */}
+            <Autocomplete
+              multiple={false}
+              options={serviceOptions}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              onChange={(event, value) => setSelectedServices(value)}
+              renderInput={(params) => <TextField {...params} label="Service" variant="outlined" />}
+              fullWidth
+            />
+            <Box sx={{ height: 16 }} />
+
+            <Button 
+              variant="contained" 
+              color="primary" 
+              fullWidth 
+              onClick={handleSubmit} 
+              disabled={isSubmitting}
+              sx={{ mt: 2 }}
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </>
+        )}
       </Box>
     </Box>
-
-    </>
-  )
+  );
 }
 
-export default VhicleServices
+export default VhicleServices;

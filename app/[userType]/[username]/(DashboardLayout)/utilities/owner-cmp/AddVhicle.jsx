@@ -12,13 +12,15 @@ import {
   useInsertOwnerVhiclesMutation,
 } from "../../../../../libs/apis/owner";
 import { contextProvider } from "@components/AppProvider";
+import RegisteredVhicles from "./RegisteredVhicles";
 
 function AddVhicle() {
   const [insertOwnerVehicles, { isLoading: isSubmitting }] =
     useInsertOwnerVhiclesMutation();
   const { data, error, isLoading } = useGetVehiclesListQuery();
-  const { successMessage, errorMessage ,  } = useContext(contextProvider);
+  const { successMessage, errorMessage } = useContext(contextProvider);
   const [selectedVehicles, setSelectedVehicles] = useState(null);
+  const [refresh, setRefresh] = useState(false); 
 
   const vehicleOptions = Array.isArray(data?.data)
     ? data.data.map((item) => ({
@@ -34,13 +36,15 @@ function AddVhicle() {
     }
 
     try {
-      
-      const response = await insertOwnerVehicles({vhicleId: selectedVehicles.id}).unwrap();
+      const response = await insertOwnerVehicles({
+        vhicleId: selectedVehicles.id,
+      }).unwrap();
 
       if (response.error) {
         errorMessage(response.data);
       } else {
         successMessage("Vehicle added successfully!");
+        setRefresh((prev) => !prev);
       }
     } catch (err) {
       errorMessage(err.message);
@@ -95,7 +99,7 @@ function AddVhicle() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            paddingTop:"10px",
+            paddingTop: "10px",
           }}
         >
           <CircularProgress />
@@ -110,6 +114,8 @@ function AddVhicle() {
           Submit
         </Button>
       )}
+
+      <RegisteredVhicles key={refresh}/>
     </Box>
   );
 }

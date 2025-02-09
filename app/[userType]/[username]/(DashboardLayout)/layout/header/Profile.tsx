@@ -37,7 +37,7 @@ const Profile = ({username}:userProfile) => {
   return (
     <Box>
       <IconButton
-        size="large"
+        size="medium"
         aria-label="show 11 new notifications"
         color="inherit"
         aria-controls="msgs-menu"
@@ -49,7 +49,7 @@ const Profile = ({username}:userProfile) => {
         }}
         onClick={handleClick2}
       >
-         {username}
+         {username?.toUpperCase()}
          <AccountCircleIcon
           sx={{
             width: 35,

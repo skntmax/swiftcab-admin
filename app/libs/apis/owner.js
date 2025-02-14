@@ -12,7 +12,9 @@ const ownerApi = createApi({
     "insert-owner-vhicles",
     "owner-ownes-vhicle",
     "owner_active_vhicle_list",
-    "create_vhicle_provide_services" , "vhicle_services_list", "owner-vhicle-active-services"
+    "create_vhicle_provide_services" , 
+    "vhicle_services_list", 
+    "owner-vhicle-active-services"
   ],
 
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
@@ -80,6 +82,7 @@ const ownerApi = createApi({
         body: body,
       }),
       providesTags: ["create_vhicle_provide_services"],
+      invalidatesTags: ['owner-vhicle-active-services']
     }),
 
     getOwnerVhiclesList: builder.mutation({
@@ -94,7 +97,7 @@ const ownerApi = createApi({
       providesTags: ["owner-ownes-vhicle"],
     }),
 
-    ownerVhicleServiceList: builder.mutation({
+    ownerVhicleServiceList: builder.query({
       query: (body) => ({
         url: urls.owner_active_vhicle_service_list,
         method: "GET",
@@ -119,7 +122,7 @@ export const {
   useGetVehiclesServiceListQuery,
   useAddVehicleServiceMutation,
   useGetVehiclesServiceListRenderQuery,
-  useOwnerVhicleServiceListMutation
+  useOwnerVhicleServiceListQuery
 } = ownerApi;
 
 export default ownerApi;

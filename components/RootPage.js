@@ -13,7 +13,6 @@ import { baselightTheme } from '@utils/theme/DefaultColors'
 function RootPage({ children }) {
   return (
     <>
- 
       <ThemeProvider theme={baselightTheme}>
       <CssBaseline />
         <Provider store={reduxStore}>

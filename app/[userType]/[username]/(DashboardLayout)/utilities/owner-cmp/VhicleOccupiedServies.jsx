@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { Box, Typography, Grid, Chip, Paper } from "@mui/material";
-import { useOwnerVhicleServiceListMutation } from "@app/libs/apis/owner";
+import {  useOwnerVhicleServiceListQuery } from "@app/libs/apis/owner";
 
 const data = [
   { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Tourist plan" },
@@ -26,14 +26,10 @@ const groupedData = data.reduce((acc, item) => {
 
 
 function VhicleOccupiedServies() {
-  // const { data, error, isLoading } = useGetVehiclesServiceListRenderQuery();
+ 
+  const {data:getVhicleServieListData , isLoading: getVhicleServieListLoading }  = useOwnerVhicleServiceListQuery()
 
-  const [ getVhicleServieList , {data:getVhicleServieListData , isLoading: getVhicleServieListLoading }]  = useOwnerVhicleServiceListMutation()
-
-  useEffect(()=>{
-    getVhicleServieList() 
-  }, [])
-
+ 
  
   return (  
    <>
@@ -42,7 +38,6 @@ function VhicleOccupiedServies() {
         Vehicle Services
       </Typography>
       <Grid container spacing={3}>
-       
         {getVhicleServieListData && Array.isArray(getVhicleServieListData?.data) && getVhicleServieListData.data.length>0 &&
         
           Object.entries(getVhicleServieListData?.data.reduce((acc, ele )=>{

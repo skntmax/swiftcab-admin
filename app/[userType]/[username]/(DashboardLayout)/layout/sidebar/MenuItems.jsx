@@ -55,9 +55,9 @@ const Menuitems = [
 
   {
     id: uniqueId(),
-    title: "Active vhicles",
+    title: "KYC update",
     icon: IconCaravan,
-    href: "/active-vhicles",
+    href: "/kyc-update",
   },
 
   {

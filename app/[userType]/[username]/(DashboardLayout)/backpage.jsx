@@ -21,6 +21,7 @@ import AddVhicle from './utilities/owner-cmp/AddVhicle'
 import RegisteredVhicles from './utilities/owner-cmp/RegisteredVhicles'
 import VhicleServices from './utilities/owner-cmp/VhicleServices'
 import VhicleOccupiedServies from './utilities/owner-cmp/VhicleOccupiedServies'
+import VarifyKyc from './utilities/owner-cmp/VarifyKyc'
 function UsersDashboard({ userType, userName })  {
   let params = useSearchParams();
   let tabs = params.get('tabs');
@@ -66,7 +67,7 @@ function UsersDashboard({ userType, userName })  {
       {tabs === 'registered-vhicles' && <RegisteredVhicles />}
       {tabs === 'add-vhicles-services' && <VhicleServices />}
       {tabs === 'vhicles-services' && <VhicleOccupiedServies />}
-      {tabs === 'active-vhicles' && <SamplePage />}
+      {tabs === 'kyc-update' && <VarifyKyc />}
       {tabs === 'today-rides' && <SamplePage />}
       {tabs === 'all-rides' && <SamplePage />}
       {tabs === 'all-vhicles' && <SamplePage />}

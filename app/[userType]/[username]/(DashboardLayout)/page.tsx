@@ -7,7 +7,9 @@ function page(props:any) {
   return (
      <>
       
-       {userType===USER_ROLES.owner?.toLocaleLowerCase() && <UsersDashboard userType={userType} userName={username} />  } 
+      {userType===USER_ROLES.owner?.toLocaleLowerCase() && <UsersDashboard userType={userType} userName={username} />  } 
+      
+      {userType===USER_ROLES.admin?.toLocaleLowerCase() && <UsersDashboard userType={userType} userName={username} />  } 
    
      </>
   )

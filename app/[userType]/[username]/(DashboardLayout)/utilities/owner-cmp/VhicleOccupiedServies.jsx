@@ -3,7 +3,9 @@
 import React, { useEffect } from "react";
 import { Box, Typography, Grid, Chip, Paper } from "@mui/material";
 import {  useOwnerVhicleServiceListQuery } from "@app/libs/apis/owner";
-
+import Alert from '@mui/material/Alert';
+import CheckIcon from '@mui/icons-material/Check';
+import InfoIcon from '@mui/icons-material/Info';
 const data = [
   { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Tourist plan" },
   { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Full Day Book" },
@@ -37,6 +39,8 @@ function VhicleOccupiedServies() {
       <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
         Vehicle Services
       </Typography>
+       
+         {getVhicleServieListData?.data && getVhicleServieListData?.data.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No any service provided by Any vhicle   </Alert> }
       <Grid container spacing={3}>
         {getVhicleServieListData && Array.isArray(getVhicleServieListData?.data) && getVhicleServieListData.data.length>0 &&
         

@@ -4,6 +4,8 @@ import { Card, CardContent, Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/system';
 import { useGetOwnerVhiclesListMutation } from "@app/libs/apis/owner";
 import VhicleOccupiedServies from "./VhicleOccupiedServies";
+import InfoIcon from '@mui/icons-material/Info';
+import Alert from '@mui/material/Alert';
 import { getUserInfo } from "@utils";
 
   const UserProfile = () => {
@@ -78,6 +80,9 @@ function RegisteredVhicles() {
   return (
     
     <>
+
+{vehicles?.data && vehicles?.data?.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No Registered Vhicle found</Alert> }
+
   <Box
       sx={{
         position: 'relative',

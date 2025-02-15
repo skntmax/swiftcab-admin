@@ -76,12 +76,15 @@ function RegisteredVhicles() {
   
   const radius = 300;
   const angleIncrement = 360 / vehicles.length; 
+ 
+  
   
   return (
     
     <>
 
-{vehicles?.data && vehicles?.data?.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No Registered Vhicle found</Alert> }
+
+{vehicles && vehicles?.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No Registered Vhicle found</Alert> }
 
   <Box
       sx={{

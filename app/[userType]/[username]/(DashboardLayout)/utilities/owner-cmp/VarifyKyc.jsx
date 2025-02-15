@@ -27,8 +27,6 @@ function VarifyKyc() {
 
   return (
    <>
-
-
    
        {!getVehiclesLoader && Array.isArray(vehicles?.data) &&  vehicles?.data?.length==0 &&   <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No any vhicle found </Alert> }
         { getVehiclesLoader && <ContentLoader /> }
@@ -50,7 +48,6 @@ function VarifyKyc() {
     }
 
 
-      
       { vehicles?.data && Array.isArray(vehicles?.data) &&  vehicles?.data?.length>0 && vehicles?.data?.map((vehicle, index) => (
         <Accordion>
         <AccordionSummary
@@ -62,12 +59,12 @@ function VarifyKyc() {
           <Typography component="span">  
           <Chip label={`${vehicle.vhicle} - vehicle No.(${vehicle.username})  `} />
           Kyc Status: <span style={{ textAlign: "center", fontWeight: "bold", color: vehicle.is_kyc?"green":"red" , mb: 2 }} >  {vehicle.is_kyc?"Completed":"Pending"} </span>
-           </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <KycForm fd={vehicle} formIndex = {index} />
-        </AccordionDetails>
-      </Accordion>
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <KycForm fd={vehicle} formIndex = {index} />
+          </AccordionDetails>
+        </Accordion>
       ))  }
 
 

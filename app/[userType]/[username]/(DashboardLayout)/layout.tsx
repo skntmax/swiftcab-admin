@@ -39,7 +39,6 @@ export default function RootLayout({
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const pathname = usePathname(); // Get current route
 
-  console.log("pathname>>",pathname)
 
   const [ userType ,  username] = pathname.split('/').filter(Boolean) 
 
@@ -47,45 +46,55 @@ return (
 
    
     <MainWrapper className="mainwrapper" style={{background:"white"}}>
-      {/* ------------------------------------------- */}
-      {/* Sidebar */}
-      {/* ------------------------------------------- */}
       
-       {userType==USER_ROLES.owner?.toLowerCase() && <>
-       
+
+       {/* for owner role  */}
+       { userType==USER_ROLES.owner?.toLowerCase() && <>
         <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}
         onSidebarClose={() => setMobileSidebarOpen(false)}
       />
-      {/* ------------------------------------------- */}
-      {/* Main Wrapper */}
-      {/* ------------------------------------------- */}
+  
       <PageWrapper className="page-wrapper">
-        {/* ------------------------------------------- */}
-        {/* Header */}
-        {/* ------------------------------------------- */}
         <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
-        {/* ------------------------------------------- */}
-        {/* PageContent */}
-        {/* ------------------------------------------- */}
         <Container
           sx={{
             paddingTop: "20px",
             maxWidth: "1200px",
           }}
         >
-          {/* ------------------------------------------- */}
-          {/* Page Route */}
-          {/* ------------------------------------------- */}
           <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
-          {/* ------------------------------------------- */}
-          {/* End Page */}
-          {/* ------------------------------------------- */}
         </Container>
       </PageWrapper>
       
        </> }
+
+
+        {/* for owner role  */}
+        { userType==USER_ROLES.customer?.toLowerCase() && <>
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          isMobileSidebarOpen={isMobileSidebarOpen}
+          onSidebarClose={() => setMobileSidebarOpen(false)}
+        />
+
+      <PageWrapper className="page-wrapper">
+        <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
+        <Container
+          sx={{
+            paddingTop: "20px",
+            maxWidth: "1200px",
+          }}
+        >
+          <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
+        </Container>
+      </PageWrapper>
+      
+       </> }
+
+
+
 
     
     </MainWrapper>

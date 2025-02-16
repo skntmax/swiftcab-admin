@@ -14,6 +14,7 @@ import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
 import InfoIcon from '@mui/icons-material/Info';
 import ContentLoader from  './../../../../../../components/loader/ContentLoader'
+import { KYC_STATUS } from '@constants';
 
 function VarifyKyc() {
 
@@ -21,9 +22,7 @@ function VarifyKyc() {
  
    React.useEffect(() => {
      getVehicles(); 
- 
    }, []);
-
 
   return (
    <>
@@ -55,19 +54,32 @@ function VarifyKyc() {
           aria-controls="panel2-content"
           id="panel2-header"
         >
-          
+        
+         
           <Typography component="span">  
           <Chip label={`${vehicle.vhicle} - vehicle No.(${vehicle.username})  `} />
-          Kyc Status: <span style={{ textAlign: "center", fontWeight: "bold", color: vehicle.is_kyc?"green":"red" , mb: 2 }} >  {vehicle.is_kyc?"Completed":"Pending"} </span>
+          Kyc Status: <span style={{ textAlign: "center", fontWeight: "bold",
+           
+           color: 
+           vehicle.kyc_varification==KYC_STATUS.VERIFIED?"green" :
+           vehicle.kyc_varification==KYC_STATUS.PENDING?"red" :
+           vehicle.kyc_varification==KYC_STATUS.INITIATED?"yellow":""
+           
+           ,mb: 2
+          }} >
+          
+          {vehicle?.kyc_varification} </span>
+            
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <KycForm fd={vehicle} formIndex = {index} />
+            <KycForm fd={vehicle} formIndex = {index} onRaiseKyc ={(fd)=> {
+              console.log(fd) 
+              getVehicles()
+            }} />
           </AccordionDetails>
         </Accordion>
       ))  }
-
-
    </>
   )
 }

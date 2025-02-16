@@ -16,10 +16,12 @@ export async function middleware(request) {
 
 
     const details = cookieStore.get(SWC_KEYS.SWC_TOKEN);
-    let  validUser =  await useAxios.post('/v1/auth/check-valid-user', {username:userName} ) .then(data => data ) .catch(error => console.error(error));
+    let  validUser =  await useAxios.post('/v1/auth/is-owner', {username:userName} ) .then(data => data ) .catch(error => console.error(error));
   
-    if(!validUser?.data) 
-      return NextResponse.redirect(new URL('/', request.url))
+
+
+    // if(!validUser?.data) 
+    //   return NextResponse.redirect(new URL('/', request.url))
     
     
      if(!details)  {

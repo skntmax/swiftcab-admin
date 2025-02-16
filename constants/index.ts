@@ -106,7 +106,12 @@ export const SWC_KEYS = {
   SWC_USER:"SWC_USER"
 }
 
-
+export const  KYC_STATUS= {
+  INITIATED:"INITIATED",
+  PENDING:'PENDING',
+  VERIFIED:"VERIFIED",
+  COMPLETED:"COMPLETED"
+}
 
 
 export const USER_ROLES = {

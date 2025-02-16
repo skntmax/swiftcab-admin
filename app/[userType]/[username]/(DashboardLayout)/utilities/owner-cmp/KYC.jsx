@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Select, MenuItem, Button, FormControl, InputLabel, Box, Grid ,Typography } from "@mui/material";
 
-function KYC({fd ,formIndex }) {
+function KYC({fd ,formIndex ,onRaiseKyc }) {
 
   const [formData, setFormData] = useState({
     vin: { name:"vin" , value:fd.username , error: false , message:"Email is required" },
@@ -75,6 +75,7 @@ function KYC({fd ,formIndex }) {
         </Grid>
         <Grid item xs={12}>
           <Button 
+            onClick={()=> onRaiseKyc(formData)}
            disabled={kyc_status.value?true:false}
           fullWidth type="submit" variant="outlined" color="primary">Submit</Button>
         </Grid>

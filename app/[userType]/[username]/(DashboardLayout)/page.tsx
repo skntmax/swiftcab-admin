@@ -11,10 +11,14 @@ function page(props:any) {
   return (
      <>
       
+       {/* OWNER */}
       {userType===USER_ROLES.owner?.toLocaleLowerCase() && <UsersDashboard userType={userType} userName={username} />  } 
       
+       {/* ADMIN */}
       {userType===USER_ROLES.admin?.toLocaleLowerCase() && <AdminBackPage userType={userType} userName={username} />  } 
-      
+
+
+      {/* CUSTOMER */}
       {userType===USER_ROLES.customer?.toLocaleLowerCase() && <CustomerBackPage userType={userType} userName={username} />  } 
    
      </>

@@ -40,7 +40,7 @@ export default function RootLayout({children}) {
   const [ userType ,  username] = pathname.split('/').filter(Boolean) 
 
   useEffect(()=>{
-    if(!navbar?.navbar)
+    if(navbar?.navbar.length==0)
        dispatch(fetGlobalNavbar({userType:userType.toLowerCase()}))
   },[])
 

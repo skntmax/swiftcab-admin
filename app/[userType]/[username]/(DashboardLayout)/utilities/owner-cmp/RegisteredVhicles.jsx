@@ -76,7 +76,7 @@ function RegisteredVhicles() {
   
   const radius = 300;
   const angleIncrement = 360 / vehicles.length; 
- 
+
   
   
   return (
@@ -94,7 +94,7 @@ function RegisteredVhicles() {
       }}
       >
       {vehicles && vehicles.length>0 &&<UserProfile /> } 
-      {vehicles.map((vehicle, index) => (
+      { vehicles && Array.isArray(vehicles) && vehicles.length>0 &&   vehicles.map((vehicle, index) => (
         <VehicleCard
           key={index}
           vehicle={vehicle}

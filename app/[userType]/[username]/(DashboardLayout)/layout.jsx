@@ -46,10 +46,7 @@ export default function RootLayout({children}) {
 
 return (
 
-    <MainWrapper className="mainwrapper" style={{background:"white"}}>
-
-       {/* for owner role  */}
-       { userType==USER_ROLES.owner?.toLowerCase() && <>
+    <MainWrapper className="mainwrapper" style={{background:"white"}}>     
         <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}
@@ -68,34 +65,7 @@ return (
         </Container>
       </PageWrapper>
       
-       </> }
-
-
-        {/* for customer role  */}
-        { userType==USER_ROLES.customer?.toLowerCase() && <>
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          isMobileSidebarOpen={isMobileSidebarOpen}
-          onSidebarClose={() => setMobileSidebarOpen(false)}
-        />
-
-      <PageWrapper className="page-wrapper">
-        <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
-        <Container
-          sx={{
-            paddingTop: "20px",
-            maxWidth: "1200px",
-          }}
-        >
-          <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
-        </Container>
-      </PageWrapper>
-      
-       </> }
-
-
-
-
+   
     
     </MainWrapper>
    

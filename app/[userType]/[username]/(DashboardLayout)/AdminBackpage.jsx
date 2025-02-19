@@ -13,28 +13,22 @@ import MonthlyEarnings from './components/dashboard/MonthlyEarnings';
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
 import { useSearchParams } from 'next/navigation';
-import TypographyPage from './utilities/typography/page';
-import Shadow from './utilities/shadow/page';
-import Icons from './icons/page';
-import SamplePage from './sample-page/page';
-import AddVhicle from './utilities/owner-cmp/AddVhicle'
-import RegisteredVhicles from './utilities/owner-cmp/RegisteredVhicles'
-import VhicleServices from './utilities/owner-cmp/VhicleServices'
-import VhicleOccupiedServies from './utilities/owner-cmp/VhicleOccupiedServies'
-import VarifyKyc from './utilities/owner-cmp/VarifyKyc'
-function UsersDashboard({ userType, userName })  {
-  let params = useSearchParams();
-  let tabs = params.get('tabs');
 
-  let dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(setUserInfo({ userName: userName, userType: userType }));
-  }, [userType, userName, dispatch]);
 
-  return (
-     <>
-    <PageContainer title="Dashboard" description="this is Dashboard">
-       
+function AdminBackpage({ userType, userName }) {
+    let params = useSearchParams();
+    let tabs = params.get('tabs');
+  
+    let dispatch = useAppDispatch();
+    useEffect(() => {
+      dispatch(setUserInfo({ userName: userName, userType: userType }));
+    }, [userType, userName, dispatch]);
+
+    return (
+    <>
+
+<PageContainer title="Dashboard" description="this is Dashboard">
+      
       {tabs === null ? (<Box>
           <Grid container spacing={3}>
             <Grid item xs={12} lg={8}>
@@ -63,22 +57,13 @@ function UsersDashboard({ userType, userName })  {
         </Box>
       ) : null}
 
-      {tabs === 'add-vhicles' && <AddVhicle />}
-      {tabs === 'registered-vhicles' && <RegisteredVhicles />}
-      {tabs === 'add-vhicles-services' && <VhicleServices />}
-      {tabs === 'vhicles-services' && <VhicleOccupiedServies />}
-      {tabs === 'kyc-update' && <VarifyKyc />}
-      {tabs === 'today-rides' && <SamplePage />}
-      {tabs === 'all-rides' && <SamplePage />}
-      {tabs === 'all-vhicles' && <SamplePage />}
-      {tabs === 'roles' && <SamplePage />}
-      {tabs === 'active-month-settlement' && <SamplePage />}
-      {tabs === 'any-month-settlement' && <SamplePage />}
+      
       
     </PageContainer>
-    </>
 
-  );
+
+    </>
+  )
 }
 
-export default UsersDashboard;
+export default AdminBackpage

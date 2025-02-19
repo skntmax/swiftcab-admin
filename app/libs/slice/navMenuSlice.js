@@ -20,7 +20,7 @@ export const fetGlobalNavbar = createAsyncThunk(
 const navbarSlice = createSlice({
   name: 'navbar-menu',
   initialState: {
-    navbar: null,
+    navbar: [],
     loader:false, 
     status: 'idle',
     error: null,

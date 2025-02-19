@@ -103,4 +103,8 @@ export const getUserInfo = () => {
   return JSON.parse(decodeURIComponent(user)) 
 };
 
+export function capitalizeFirstLetter(string:string) {
+  return string.replace(/^./, string[0].toUpperCase())
+} 
+
 

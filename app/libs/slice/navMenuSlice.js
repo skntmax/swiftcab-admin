@@ -1,12 +1,13 @@
 import { SWC_KEYS } from '@constants';
 import { getCookie } from '@node_modules/cookies-next/lib';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { capitalizeFirstLetter } from '@utils';
 import axios from 'axios';
 
 export const fetGlobalNavbar = createAsyncThunk(
   'navMenu',
   async ({userType}, thunkAPI) => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/${userType}/get-nav`, {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/master/get-navbar/${capitalizeFirstLetter(userType)}`, {
       headers: {
         authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
       },

@@ -43,13 +43,13 @@ const App = () => {
         userType:{ name:"userType" , value:"" , error: false , message:"User type is required " },
        }) 
 
-  // custom hooks
-  const {data:userTypes , isLoading} = useGetUserQuery()
-  const [registerUser ,{data:newUserData , isLoading:newUserDataLoader}] = useSignupUserMutation()
-  const [loginNewUser , { data:loginNewUserData , isLoading:loginNewUserLoading}] = useLoginUserMutation()
-  const handleSignupClick = () => {
-    setIsLogin(false);
-  };
+    // custom hooks
+    const {data:userTypes , isLoading} = useGetUserQuery()
+    const [registerUser ,{data:newUserData , isLoading:newUserDataLoader}] = useSignupUserMutation()
+    const [loginNewUser , { data:loginNewUserData , isLoading:loginNewUserLoading}] = useLoginUserMutation()
+    const handleSignupClick = () => {
+      setIsLogin(false);
+    };
 
 
 
@@ -86,11 +86,8 @@ const App = () => {
             return 
           }
          }
-      
-         
+
       }
-
-
        setSignupFd(p=>({...p  , [name]:{...p[name] , value:value  }     }))
     }
 
@@ -172,8 +169,6 @@ useEffect(()=>{
    
 }, [loginFd.email.value , loginFd.password.value ,loginFd.userType.value ])
 
-
-
 // on login ser 
 useEffect(()=>{
       if(loginNewUserData?.data?.token || newUserData?.data?.token) {
@@ -189,9 +184,9 @@ useEffect(()=>{
         
                                      // success  
           setUserLoggedIn(true)
-          dispatch(fetGlobalNavbar({userType:selectedUserType.toLowerCase()})) // getting navbar 
           setTimeout(()=>{
             setUserLoggedIn(false)
+            dispatch(fetGlobalNavbar({userType:selectedUserType.toLowerCase()})) // getting navbar 
             router.push(`/${selectedUserType.toLowerCase()}/${username.toLowerCase()}`)
           }, 2000 )
        }else{

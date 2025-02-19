@@ -46,7 +46,6 @@ export default function RootLayout({children}) {
 
 return (
 
-   
     <MainWrapper className="mainwrapper" style={{background:"white"}}>
 
        {/* for owner role  */}

@@ -80,13 +80,10 @@ function RegisteredVhicles() {
   
   
   return (
-    
-    <>
-
-
-{vehicles && vehicles?.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No Registered Vhicle found</Alert> }
-
-  <Box
+    <>    
+    {vehicles && vehicles?.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No Registered Vhicle found</Alert> }
+  
+   <Box
       sx={{
         position: 'relative',
         height: '100vh',
@@ -106,9 +103,6 @@ function RegisteredVhicles() {
         />
       ))}
     </Box>
-
-        
-
     </>
   )
 }

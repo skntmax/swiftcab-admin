@@ -81,6 +81,7 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
           >
             {itemIcon}
           </ListItemIcon>
+            
           <ListItemText>
             <>{item.title}</>
           </ListItemText>

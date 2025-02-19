@@ -11,6 +11,8 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
   const pathname = usePathname()
   let params = useSearchParams()
   let tabs = params.get('tabs')
+    const navbar =  useAppSelector((ele)=> ele['navbar-menu'])
+  
 
 
   const pathDirect = `${ pathname}/?tabs=${tabs}`;
@@ -22,7 +24,7 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
   }))
 
 
-console.log("modifiedMenuItems",modifiedMenuItems)
+console.log("modifiedMenuItems",navbar?.navbar)
   
   return (
     <Box sx={{ px: 3 }}>

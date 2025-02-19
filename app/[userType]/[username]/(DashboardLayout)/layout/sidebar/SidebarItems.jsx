@@ -22,6 +22,8 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
   }))
 
 
+console.log("modifiedMenuItems",modifiedMenuItems)
+  
   return (
     <Box sx={{ px: 3 }}>
       <List sx={{ pt: 0 }} className="sidebarNav" component="div">

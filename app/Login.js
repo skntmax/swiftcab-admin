@@ -9,6 +9,8 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useRouter } from '@node_modules/next/navigation';
 import { contextProvider } from '@components/AppProvider';
 import { SWC_KEYS } from '@constants';
+import { fetGlobalNavbar } from './libs/slice/navMenuSlice';
+import { useAppDispatch } from './libs/store';
 
 
 const App = () => {
@@ -17,6 +19,8 @@ const App = () => {
   const [isSignup, setSignup] = useState(false)
   const [isLoggedin, setIsLoggedin] = useState(false)
   const [userLoggedIn , setUserLoggedIn] = useState((false))
+  let dispatch = useAppDispatch()
+  
   const [apiRes, setApiRes] = useState({
        loginRes:"" ,
        signUpRes:""
@@ -33,11 +37,11 @@ const App = () => {
    })
 
 
-   const [ loginFd , setLoginFd ] = useState({
-    email:{ name:"email" , value:"" , error: false , message:"Email is required" },
-    password:{ name:"password" , value:"" , error: false , message:"Password is required" },
-    userType:{ name:"userType" , value:"" , error: false , message:"User type is required " },
-})
+      const [ loginFd , setLoginFd ] = useState({
+        email:{ name:"email" , value:"" , error: false , message:"Email is required" },
+        password:{ name:"password" , value:"" , error: false , message:"Password is required" },
+        userType:{ name:"userType" , value:"" , error: false , message:"User type is required " },
+       }) 
 
   // custom hooks
   const {data:userTypes , isLoading} = useGetUserQuery()
@@ -155,10 +159,6 @@ useEffect(()=>{
 
 
 
-
-
-
-
 // for login 
 useEffect(()=>{
 
@@ -180,7 +180,7 @@ useEffect(()=>{
         
         setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token )  
         setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj)  
-        
+
          
          const  { username } = loginNewUserData?.data?.usersObj || newUserData.data?.usersObj
 
@@ -189,10 +189,11 @@ useEffect(()=>{
         
                                      // success  
           setUserLoggedIn(true)
+          dispatch(fetGlobalNavbar({userType:selectedUserType.toLowerCase()})) // getting navbar 
           setTimeout(()=>{
             setUserLoggedIn(false)
             router.push(`/${selectedUserType.toLowerCase()}/${username.toLowerCase()}`)
-          }, 4000 )
+          }, 2000 )
        }else{
             if(isLogin)
               errorMessage(loginNewUserData?.data)

@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import {SWC_KEYS} from './constants/index'
 import { useAxios } from './utils/axios';
+import { getCookie } from 'cookies-next';
 export async function middleware(request) {
     console.log("Middleware triggered!");
 
@@ -16,21 +17,25 @@ export async function middleware(request) {
 
 
     const details = cookieStore.get(SWC_KEYS.SWC_TOKEN);
-    let  validUser =  await useAxios.post('/v1/auth/is-owner', {username:userName} ) .then(data => data ) .catch(error => console.error(error));
+
+    
+    if(!details)  {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+    console.log("details",details)
+    let  validUser =  await useAxios.post('/v1/auth/is-valid-user-with-role', { username:userName , userType} ,  {
+      headers: {
+        authorization: `Bearer ${details.value}`,
+      },
+
+    }  ) .then(data => data ) .catch(error => console.error(error));
   
 
-
-    // if(!validUser?.data) 
-    //   return NextResponse.redirect(new URL('/', request.url))
+    if(!validUser?.data || validUser?.error) 
+      return NextResponse.redirect(new URL('/', request.url))
     
-    
-     if(!details)  {
-       return NextResponse.redirect(new URL('/', request.url))
-     }
 
-     return NextResponse.next();
-
-  
+     return NextResponse.next();  
   }
 
   // See "Matching Paths" below to learn more

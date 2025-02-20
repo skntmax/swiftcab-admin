@@ -22,7 +22,7 @@ export async function middleware(request) {
     if(!details)  {
       return NextResponse.redirect(new URL('/', request.url))
     }
-    console.log("details",details)
+    
     let  validUser =  await useAxios.post('/v1/auth/is-valid-user-with-role', { username:userName , userType} ,  {
       headers: {
         authorization: `Bearer ${details.value}`,

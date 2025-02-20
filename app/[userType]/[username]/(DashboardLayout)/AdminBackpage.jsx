@@ -13,8 +13,9 @@ import MonthlyEarnings from './components/dashboard/MonthlyEarnings';
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
 import { useSearchParams } from 'next/navigation';
-
-
+import UserMgmt from './utilities/admin-cmp/UserMgmt'
+import RoleMgmt from './utilities/admin-cmp/RoleMgmt'
+import PermissionMgmt from './utilities/admin-cmp/PermissionMgmt'
 function AdminBackpage({ userType, userName }) {
     let params = useSearchParams();
     let tabs = params.get('tabs');
@@ -56,6 +57,11 @@ function AdminBackpage({ userType, userName }) {
           </Grid>
         </Box>
       ) : null}
+
+
+      {tabs === 'user-management'   && <UserMgmt />}
+      {tabs === 'role-management'   && <RoleMgmt />}
+      {tabs === 'permission-management'   && <PermissionMgmt />}
 
       
       

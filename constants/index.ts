@@ -113,28 +113,26 @@ export const  KYC_STATUS= {
   COMPLETED:"COMPLETED"
 }
 
-
 export const USER_ROLES = {
-  superAdmin: "Super Admin",
-  admin: "Admin",
-  salesManager: "Sales Manager",
-  salesExecutive: "Sales Executive",
-  salesRepresentative: "Sales Representative",
-  accountManager: "Account Manager",
-  marketingManager: "Marketing Manager",
-  marketingExecutive: "Marketing Executive",
-  marketingSpecialist: "Marketing Specialist",
-  customerSupportManager: "Customer Support Manager",
-  supportAgent: "Support Agent",
-  helpdeskAgent: "Helpdesk Agent",
-  technicalSupportEngineer: "Technical Support Engineer",
-  operationsManager: "Operations Manager",
-  financeManager: "Finance Manager",
-  crmDeveloper: "CRM Developer",
-  crmAnalyst: "CRM Analyst",
-  partnerManager: "Partner Manager",
-  vendorCoordinator: "Vendor Coordinator",
-  customer: "Customer",
-  owner: "Owner"
-
-}
+  superAdmin: "super-admin",
+  admin: "admin",
+  salesManager: "sales-manager",
+  salesExecutive: "sales-executive",
+  salesRepresentative: "sales-representative",
+  accountManager: "account-manager",
+  marketingManager: "marketing-manager",
+  marketingExecutive: "marketing-executive",
+  marketingSpecialist: "marketing-specialist",
+  customerSupportManager: "customer support-manager",
+  supportAgent: "support-agent",
+  helpdeskAgent: "helpdesk-agent",
+  technicalSupportEngineer: "technical support-engineer",
+  operationsManager: "operations-manager",
+  financeManager: "finance-manager",
+  crmDeveloper: "crm-developer",
+  crmAnalyst: "crm-analyst",
+  partnerManager: "partner-manager",
+  vendorCoordinator: "vendor-coordinator",
+  customer: "customer",
+  owner: "owner"
+};

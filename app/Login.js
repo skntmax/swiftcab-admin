@@ -186,8 +186,8 @@ useEffect(()=>{
           setUserLoggedIn(true)
           setTimeout(()=>{
             setUserLoggedIn(false)
-            dispatch(fetGlobalNavbar({userType:selectedUserType.toLowerCase()})) // getting navbar 
-            router.push(`/${selectedUserType.toLowerCase()}/${username.toLowerCase()}`)
+            dispatch(fetGlobalNavbar({userType:selectedUserType})) // getting navbar 
+            router.push(`/${selectedUserType}/${username.toLowerCase()}`)
           }, 2000 )
        }else{
             if(isLogin)

@@ -7,7 +7,7 @@ import axios from 'axios';
 export const fetGlobalNavbar = createAsyncThunk(
   'navMenu',
   async ({userType}, thunkAPI) => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/master/get-navbar/${capitalizeFirstLetter(userType)}`, {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/master/get-navbar/${userType}`, {
       headers: {
         authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
       },

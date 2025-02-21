@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Chip,
@@ -15,73 +16,94 @@ import {
   Typography,
 } from "@mui/material";
 import { Edit, Block, Delete } from "@mui/icons-material";
+import { useGetAllUsersMutation } from "@app/libs/apis/admin";
+import { useAppSelector } from "@app/libs/store";
 
-const userData =[
-  {
-      "id": 5,
-      "username": "ug56",
-      "email": "ug56@gm.com",
-      "role_id": 2,
-      "role": "admin"
-  },
-  {
-      "id": 6,
-      "username": "admin22_nova2566",
-      "email": "admin@admin.com",
-      "role_id": 2,
-      "role": "admin"
-  },
-  {
-      "id": 7,
-      "username": "sunnyy22_nlite7819",
-      "email": "sunnyy22@gm.com",
-      "role_id": 3,
-      "role": "sales-manager"
-  },
-  {
-      "id": 7,
-      "username": "sunnyy22_nlite7819",
-      "email": "sunnyy22@gm.com",
-      "role_id": 2,
-      "role": "admin"
-  },
-  {
-      "id": 8,
-      "username": "rohan89834",
-      "email": "rohan898@gm.com",
-      "role_id": 2,
-      "role": "admin"
-  },
-  {
-      "id": 9,
-      "username": "sunny34984",
-      "email": "sunny34984@gm.com",
-      "role_id": 3,
-      "role": "sales-manager"
-  }
-];
-
-const roles = [...new Set(userData.map((user) => user.role))];
 
 const UserManagement = () => {
-  const [selectedRoles, setSelectedRoles] = useState(["owner", "admin"]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+   
+  const userRoles =  useAppSelector((ele)=> ele['userRoles'])
+  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [meta , setMeta] = useState({
+    "page":1,
+    "rowPerPage":10,
+     rowsPerPageOption:[5, 10, 15],
+     total:0
+   })
+    
 
-  const filteredData =
-    selectedRoles.length > 0
-      ? userData.filter((user) => selectedRoles.includes(user.role))
-      : userData;
+  const [ getUser , { data:getUserData , isLoading:getUserDataLoading }   ] = useGetAllUsersMutation()
+
+  
+  const setRowPerPage = ele=>setMeta(p=>({...p , rowPerPage:ele  }) )
+  const setPageNo = (ele=1)=>setMeta(p=>({...p , page:ele  }) )
+  const setTotal = (ele)=>setMeta(p=>({...p , total:ele  }) )
+
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    
+    let currentPage =meta.page-1
+    
+    if(newPage==0)
+      return setPageNo(1)
+    
+    if (newPage > currentPage) {
+        setPageNo(newPage+1)
+      console.log("Next button clicked");
+    } else {
+      setPageNo(currentPage)
+      console.log("Previous button clicked");
+    }
+
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setRowPerPage(parseInt(event.target.value, 10))
+    setPageNo()
   };
 
+
+
+
+  useEffect(()=>{
+  
+    if(userRoles?.list.length>0) // setting default 2 roles  roles 
+        setSelectedRoles(userRoles?.list?.slice(0,2).map(_=> _.name))
+
+    if(userRoles?.list.length>0) {
+      getUser({
+        "roles":userRoles?.list?.slice(0,2).map(_=> _.id),
+        "page":meta.page,
+        "limit":meta.rowPerPage
+      })
+    }
+
+  },[userRoles?.list])
+
+
+
+
+  useEffect(()=>{    
+    getUser({
+      "roles":userRoles?.list?.map(_=>  selectedRoles.some(ele=> ele==_.name) && _.id  ).filter(Boolean) ,
+      "page":meta.page,
+      "limit":meta.rowPerPage
+    })
+
+  },[selectedRoles.length , meta.page , meta.rowPerPage])
+
+
+
+  useEffect(()=>{
+     
+     if(getUserData?.data?.metadata) {
+      const { total}  =getUserData?.data?.metadata
+      setTotal(total)
+
+     }
+  },[getUserData?.data])
+
+  
   return (
     <div style={{ padding: 20 }}>
       {/* Title */}
@@ -93,9 +115,11 @@ const UserManagement = () => {
       </Typography>
       
       {/* Typeahead Search */}
+     {
+      userRoles?.list &&  userRoles?.list.length>0 && 
       <Autocomplete
         multiple
-        options={roles}
+        options={userRoles?.list.map(ele=>ele.name)}
         getOptionLabel={(option) => option}
         value={selectedRoles}
         onChange={(event, newValue) => setSelectedRoles(newValue)}
@@ -109,6 +133,8 @@ const UserManagement = () => {
         )}
         style={{ marginBottom: 20 }}
       />
+     }
+     
 
       {/* User Table */}
       <TableContainer component={Paper}>
@@ -123,9 +149,9 @@ const UserManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredData
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((user) => (
+
+            {getUserData?.data && Array.isArray(getUserData?.data?.users) && getUserData?.data?.users.length>0 && 
+              getUserData?.data?.users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -154,11 +180,11 @@ const UserManagement = () => {
 
       {/* Pagination */}
       <TablePagination
-        rowsPerPageOptions={[5, 10, 15]}
+        rowsPerPageOptions={meta.rowsPerPageOption}
         component="div"
-        count={filteredData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
+        count={meta.total}
+        rowsPerPage={meta.rowPerPage}
+        page={meta.page-1}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />

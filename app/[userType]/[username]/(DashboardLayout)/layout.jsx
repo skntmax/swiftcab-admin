@@ -12,6 +12,7 @@ import { USER_ROLES } from "@constants";
 import { useDispatch } from "@node_modules/react-redux/dist/react-redux";
 import { fetGlobalNavbar } from "@app/libs/slice/navMenuSlice";
 import { useAppSelector } from "@app/libs/store";
+import { fetchUserRoles } from "@app/libs/slice/userRolesSlice";
 const MainWrapper = styled("div")(() => ({
   display: "flex",
   minHeight: "100vh",
@@ -36,13 +37,20 @@ export default function RootLayout({children}) {
   const dispatch = useDispatch()
 
   const navbar =  useAppSelector((ele)=> ele['navbar-menu'])
+  const userRoles =  useAppSelector((ele)=> ele['userRoles'])
 
   const [ userType ,  username] = pathname.split('/').filter(Boolean) 
 
+
   useEffect(()=>{
+ 
     if(navbar?.navbar.length==0)
        dispatch(fetGlobalNavbar({userType:userType.toLowerCase()}))
-  },[])
+
+   if(userRoles?.list?.length==0)
+        dispatch(fetchUserRoles())
+
+   },[])
 
 return (
 

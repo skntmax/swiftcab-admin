@@ -12,9 +12,10 @@ const ownerApi = createApi({
     "insert-owner-vhicles",
     "owner-ownes-vhicle",
     "owner_active_vhicle_list",
-    "create_vhicle_provide_services" , 
-    "vhicle_services_list", 
-    "owner-vhicle-active-services"
+    "create_vhicle_provide_services",
+    "vhicle_services_list",
+    "owner-vhicle-active-services",
+    "owner-kyc-request",
   ],
 
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
@@ -108,6 +109,18 @@ const ownerApi = createApi({
       providesTags: ["owner-vhicle-active-services"],
     }),
 
+    ownerKycRequest: builder.mutation({
+      query: (body) => ({
+        url: urls.owner_kyc_request,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+        body: body,
+      }),
+      providesTags: ["owner-kyc-request"],
+    }),
+
 
     transformResponse: (response) => response.data,
     transformErrorResponse: (response) => response.data,
@@ -122,7 +135,8 @@ export const {
   useGetVehiclesServiceListQuery,
   useAddVehicleServiceMutation,
   useGetVehiclesServiceListRenderQuery,
-  useOwnerVhicleServiceListQuery
+  useOwnerVhicleServiceListQuery,
+  useOwnerKycRequestMutation
 } = ownerApi;
 
 export default ownerApi;

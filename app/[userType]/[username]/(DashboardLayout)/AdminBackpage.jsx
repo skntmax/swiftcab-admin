@@ -16,6 +16,7 @@ import { useSearchParams } from 'next/navigation';
 import UserMgmt from './utilities/admin-cmp/UserMgmt'
 import RoleMgmt from './utilities/admin-cmp/RoleMgmt'
 import PermissionMgmt from './utilities/admin-cmp/PermissionMgmt'
+import  KycRequestApproval from './utilities/admin-cmp/KYCRequestApproval'
 function AdminBackpage({ userType, userName }) {
     let params = useSearchParams();
     let tabs = params.get('tabs');
@@ -62,8 +63,8 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'user-management'   && <UserMgmt />}
       {tabs === 'role-management'   && <RoleMgmt />}
       {tabs === 'permission-management'   && <PermissionMgmt />}
+      {tabs === 'kyc-request-approval'   && <KycRequestApproval />}
 
-      
       
     </PageContainer>
 

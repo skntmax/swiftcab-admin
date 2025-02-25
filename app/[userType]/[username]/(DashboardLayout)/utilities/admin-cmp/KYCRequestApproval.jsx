@@ -17,13 +17,15 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import { Edit, Block, Delete } from "@mui/icons-material";
-import { useGetAllUsersMutation } from "@app/libs/apis/admin";
+import { Edit, Block, Delete, ExpandMore } from "@mui/icons-material";
+import { useGetAllUsersMutation, useGetVhicleDetailsMutation } from "@app/libs/apis/admin";
 import { useAppSelector } from "@app/libs/store";
-
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 
 const KycRequest = () => {
-   
+  const [expandedRow, setExpandedRow] = useState(null);
   const [usernameOrEmail , setusernameOrEmail] =  useState()
   const userRoles =  useAppSelector((ele)=> ele['userRoles'])
   const [selectedRoles, setSelectedRoles] = useState([]);
@@ -33,45 +35,21 @@ const KycRequest = () => {
      rowsPerPageOption:[21],
      total:0
    })
-    
-
+  
   const [ getUser , { data:getUserData , isLoading:getUserDataLoading }   ] = useGetAllUsersMutation()
 
-  const setRowPerPage = ele=>setMeta(p=>({...p , rowPerPage:ele  }) )
-  const setPageNo = (ele=1)=>setMeta(p=>({...p , page:ele  }) )
-  const setTotal = (ele)=>setMeta(p=>({...p , total:ele  }) )
+  const [getVhicleDetails , {data:getVhicleDetailsData  , isLoading:getVhicleDetailsLoader }] = useGetVhicleDetailsMutation()
 
+  const handleExpandClick = (userId) => {
+    setExpandedRow(expandedRow === userId ? null : userId);
 
-  const handleChangePage = (event, newPage) => {
-    
-    let currentPage =meta.page-1
-
-    if(newPage==0)
-      return setPageNo(1)
-    
-    if (newPage > currentPage) {
-        setPageNo(newPage+1)
-      console.log("Next button clicked");
-    } else {
-      setPageNo(currentPage)
-      console.log("Previous button clicked");
-    }
+    getVhicleDetails({vhicleId:10 ,ownerId:17})
 
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowPerPage(parseInt(event.target.value, 10))
-    setPageNo()
-  };
-
-
-
- // on intial load 
   useEffect(()=>{
-  
     if(userRoles?.list.length>0) // default owner role 
         setSelectedRoles(userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.name))
-
     if(userRoles?.list.length>0) {
       getUser({
         "roles":userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.id),
@@ -80,14 +58,9 @@ const KycRequest = () => {
          searchByManual:true
       })
     }
-
   },[userRoles?.list])
 
-
-
- // on search by usernameOrEmail 
   useEffect(()=>{    
-
     if(usernameOrEmail) {
       getUser(
          { 
@@ -98,47 +71,31 @@ const KycRequest = () => {
       )
       return 
     }
-
-
     getUser({
       "roles":userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.id),
       "page":meta.page,
       "limit":meta.rowPerPage,
        searchByManual:true
     })
-
-
   },[usernameOrEmail , meta.page , meta.rowPerPage])
 
-
-
-
-  // on getting data by api 
   useEffect(()=>{
      if(getUserData?.data?.metadata) {
       const { total}  =getUserData?.data?.metadata
-      setTotal(total)
+      setMeta(prev => ({ ...prev, total }));
      }
   },[getUserData?.data])
-
   
   return (
-
-    <>
-
-
     <div style={{ padding: 20 }}>
-      {/* Title */}
       <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
-        User Management
+        KYC Approvals
       </Typography>
       <Typography variant="subtitle1" style={{ marginBottom: 20, color: "#555" }}>
-        Search and manage user roles efficiently.
+        Search and manage KYC approvals efficiently.
       </Typography>
       
-      {/* Typeahead Search */}
-     {
-      userRoles?.list &&  userRoles?.list.length>0 && 
+      {userRoles?.list && userRoles?.list.length>0 && 
       <Autocomplete
         disabled
         multiple
@@ -155,28 +112,19 @@ const KycRequest = () => {
           <TextField {...params} label="Filter by Role" variant="outlined" fullWidth />
         )}
         style={{ marginBottom: 20 }}
-      />
-     }
-
-
-     <TextField
-          sx={{marginBottom:"10px"}}
-          fullWidth
-          id="standard-password-input"
-          label="Search By Username or Email"
-          type="Text"
-          variant="standard"
-          onChange={(e)=> setusernameOrEmail(e.target.value) }
-        />
+      />}
      
-
-      {/* User Table */}
-
-
-      {getUserDataLoading && <Box style={{display:"flex", justifyContent:'center'  , height:"80vh", alignItems:"center"}}>
+      <TextField
+        sx={{marginBottom:"10px"}}
+        fullWidth
+        label="Search By Username or Email"
+        variant="standard"
+        onChange={(e)=> setusernameOrEmail(e.target.value) }
+      />
+     
+      {getUserDataLoading && <Box style={{display:"flex", justifyContent:'center', height:"80vh", alignItems:"center"}}>
           <CircularProgress style={{width:"20px", height:"20px"}} />
-        </Box>
-        }
+      </Box>}
 
       {!getUserDataLoading && <TableContainer component={Paper}>
         <Table>
@@ -186,44 +134,55 @@ const KycRequest = () => {
               <TableCell><b>Email</b></TableCell>
               <TableCell><b>Role ID</b></TableCell>
               <TableCell><b>Role</b></TableCell>
-              <TableCell><b>Ownes Vhicles</b></TableCell>
+              <TableCell><b>Owns Vehicles</b></TableCell>
+              <TableCell><b>View Details</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-
-            {getUserData?.data && Array.isArray(getUserData?.data?.users) && getUserData?.data?.users.length>0 && 
-              getUserData?.data?.users.map((user) => (
+            {getUserData?.data?.users?.map((user) => (
+              <>
                 <TableRow key={user.id}>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role_id}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user?.vhicles?.length || 0}</TableCell>
                   <TableCell>
-                    <Typography variant="body2" style={{ fontWeight: "bold", color: user.role === "owner" ? "#d32f2f" : "#1976d2" }}>
-                      {user.role}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                      {user?.vhicles?.length || 0}
+                    <IconButton onClick={() => handleExpandClick(user.id , ) }>
+                      <ExpandMore />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
-              ))}
+                {expandedRow === user.id && (
+                  <TableRow>
+                    <TableCell colSpan={6}>
+                      <Accordion expanded>
+                        <AccordionSummary>
+                          <Typography>Additional Details</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          More information about {user.username}...
+                        </AccordionDetails>
+                      </Accordion>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>}
 
-      {/* Pagination */}
       <TablePagination
         rowsPerPageOptions={meta.rowsPerPageOption}
         component="div"
         count={meta.total}
         rowsPerPage={meta.rowPerPage}
         page={meta.page-1}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        onPageChange={(event, newPage) => setMeta(p => ({ ...p, page: newPage + 1 }))}
+        onRowsPerPageChange={(event) => setMeta(p => ({ ...p, rowPerPage: parseInt(event.target.value, 10), page: 1 }))}
       />
     </div>
-
-    </>
   );
 };
 

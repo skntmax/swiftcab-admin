@@ -27,9 +27,9 @@ const adminApi = createApi({
 
       getVhicleDetails: builder.mutation({
         query: (body) => (  {
-           url:`${urls.get_vhicle_details}?vhicleId=${body.vhicleId}&ownerId=${body.ownerId}` ,
-           method: 'GET',
-          
+           url:urls.get_vhicle_details ,
+           method: 'POST',
+           body:body,
            headers: {
             authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
           },

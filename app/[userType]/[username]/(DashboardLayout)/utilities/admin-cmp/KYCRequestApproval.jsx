@@ -23,7 +23,7 @@ import { useAppSelector } from "@app/libs/store";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-
+import KycFormStatus from "../admin-cmp/KycFormStatus";
 const KycRequest = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const [usernameOrEmail , setusernameOrEmail] =  useState()
@@ -40,10 +40,13 @@ const KycRequest = () => {
 
   const [getVhicleDetails , {data:getVhicleDetailsData  , isLoading:getVhicleDetailsLoader }] = useGetVhicleDetailsMutation()
 
-  const handleExpandClick = (userId) => {
+  const handleExpandClick = (userId  , vhicleIds) => {
     setExpandedRow(expandedRow === userId ? null : userId);
 
-    getVhicleDetails({vhicleId:10 ,ownerId:17})
+    if(!vhicleIds || !Array.isArray(vhicleIds) || vhicleIds.length==0  )
+       return 
+
+    getVhicleDetails({vhicleIds:vhicleIds ,ownerId:userId})
 
   };
 
@@ -86,6 +89,8 @@ const KycRequest = () => {
      }
   },[getUserData?.data])
   
+
+  console.log("getVhicleDetailsData?.data>>", getVhicleDetailsData?.data)
   return (
     <div style={{ padding: 20 }}>
       <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
@@ -139,7 +144,7 @@ const KycRequest = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {getUserData?.data?.users?.map((user) => (
+            {getUserData?.data?.users?.map((user,index) => (
               <>
                 <TableRow key={user.id}>
                   <TableCell>{user.username}</TableCell>
@@ -148,12 +153,16 @@ const KycRequest = () => {
                   <TableCell>{user.role}</TableCell>
                   <TableCell>{user?.vhicles?.length || 0}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleExpandClick(user.id , ) }>
+                    <IconButton onClick={() => handleExpandClick(user.id , user?.vhicles.map(_=> _.vhicle_id) ) }>
                       <ExpandMore />
                     </IconButton>
                   </TableCell>
                 </TableRow>
-                {expandedRow === user.id && (
+                
+
+                {getVhicleDetailsLoader &&   expandedRow === user.id && <Box style={{display:"flex", justifyContent:'center'}}> <CircularProgress style={{width:"20px", height:"20px"}} /> </Box> }
+               
+                {!getVhicleDetailsLoader &&  expandedRow === user.id && (
                   <TableRow>
                     <TableCell colSpan={6}>
                       <Accordion expanded>
@@ -161,12 +170,23 @@ const KycRequest = () => {
                           <Typography>Additional Details</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                          More information about {user.username}...
+
+                       {  getVhicleDetailsData?.data && 
+                        <KycFormStatus 
+                        fd={getVhicleDetailsData?.data || []} 
+                        formIndex={index} 
+                        //  onRaiseKyc={handleKycSubmission}
+                         />
+                       }
+                       
+
                         </AccordionDetails>
                       </Accordion>
                     </TableCell>
                   </TableRow>
                 )}
+
+
               </>
             ))}
           </TableBody>

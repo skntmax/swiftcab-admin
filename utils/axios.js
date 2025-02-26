@@ -21,7 +21,7 @@ class ApiClient {
   // POST Request
   async post(endpoint, data = {}, headers = {}) {
     try {
-        console.log("endpoint",endpoint , data , headers)
+        // console.log("endpoint",endpoint , data , headers)
       const response = await this.client.post(endpoint, data,  headers );
       return response.data;
     } catch (error) {

@@ -11,6 +11,7 @@ export default {
 
     //  admin api 
 
-    'get_active_users': "v1/admin/get-active-users"
+    'get_active_users': "v1/admin/get-active-users",
+    'get_vhicle_details': "v1/admin/get-vhicle-details",
 }
 

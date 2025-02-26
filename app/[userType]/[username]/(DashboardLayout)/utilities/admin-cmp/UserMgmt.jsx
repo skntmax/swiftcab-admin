@@ -14,6 +14,8 @@ import {
   IconButton,
   TablePagination,
   Typography,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import { Edit, Block, Delete } from "@mui/icons-material";
 import { useGetAllUsersMutation } from "@app/libs/apis/admin";
@@ -43,7 +45,7 @@ const UserManagement = () => {
   const handleChangePage = (event, newPage) => {
     
     let currentPage =meta.page-1
-    
+
     if(newPage==0)
       return setPageNo(1)
     
@@ -105,6 +107,11 @@ const UserManagement = () => {
 
   
   return (
+
+    <>
+
+     
+    
     <div style={{ padding: 20 }}>
       {/* Title */}
       <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
@@ -137,7 +144,17 @@ const UserManagement = () => {
      
 
       {/* User Table */}
-      <TableContainer component={Paper}>
+
+
+    
+       
+
+      {getUserDataLoading && <Box style={{display:"flex", justifyContent:'center'  , height:"80vh", alignItems:"center"}}>
+          <CircularProgress style={{width:"20px", height:"20px"}} />
+        </Box>
+        }
+
+      {!getUserDataLoading && <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow style={{ backgroundColor: "#f5f5f5" }}>
@@ -176,7 +193,7 @@ const UserManagement = () => {
               ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer>}
 
       {/* Pagination */}
       <TablePagination
@@ -189,6 +206,8 @@ const UserManagement = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </div>
+
+    </>
   );
 };
 

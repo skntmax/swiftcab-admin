@@ -35,24 +35,10 @@ function VarifyKyc() {
   return (
     <>
 
-      {!getVehiclesLoader && Array.isArray(vehicles?.data) && vehicles?.data?.length == 0 && <Alert icon={<InfoIcon fontSize="inherit" />} severity="error"> No any vhicle found </Alert>}
-      {getVehiclesLoader && <ContentLoader />}
-
-      {
-        getVehiclesLoader && <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingTop: "10px",
-            width: "10px",
-            height: "10px"
-          }}
-        >
-          <CircularProgress />
-        </Box>
-
-      }
+        {getVehiclesLoader && <Box style={{display:"flex", justifyContent:'center'  , height:"80vh", alignItems:"center"}}>
+                  <CircularProgress style={{width:"20px", height:"20px"}} />
+                </Box>
+          }
 
 
       {vehicles?.data && Array.isArray(vehicles?.data) && vehicles?.data?.length > 0 && vehicles?.data?.map((vehicle, index) => (

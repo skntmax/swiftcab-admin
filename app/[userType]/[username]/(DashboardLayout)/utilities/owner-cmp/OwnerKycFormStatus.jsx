@@ -126,17 +126,6 @@ function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange ,kyc
                     }}
                   >
 
-                 
-                {kycStatus==KYC_STATUS.COMPLETED || kycStatus==KYC_STATUS.VERIFIED  && 
-                    <DotLottieReact
-                    style={{width:"10%"}}
-                    src="https://lottie.host/f1e18a8c-882e-4923-8135-990a69c64b08/1nAYkHPyNR.lottie"
-                    loop
-                    autoplay
-                    />
-                    }
-                    
-
             {Array.isArray(formData) && formData.length>0 &&  formData.map((item,index)=>(
                  <>
 

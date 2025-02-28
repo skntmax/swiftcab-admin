@@ -107,8 +107,6 @@ function KYC({ fd, formIndex, onRaiseKyc }) {
       }
     });
 
-
-    
     try {
       const response = await ownerKycRequest(formDataPayload)
       console.log("KYC Request Successful:", response);

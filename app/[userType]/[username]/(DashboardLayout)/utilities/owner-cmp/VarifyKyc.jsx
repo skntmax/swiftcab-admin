@@ -16,6 +16,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import InfoIcon from '@mui/icons-material/Info';
 import ContentLoader from './../../../../../../components/loader/ContentLoader'
 import { KYC_STATUS } from '@constants';
+import OwnerKycFormStatus from './OwnerKycFormStatus';
 
 function VarifyKyc() {
 
@@ -49,17 +50,14 @@ function VarifyKyc() {
             id="panel2-header"
           >
 
-
             <Typography component="span">
               <Chip label={`${vehicle.vhicle} - vehicle No.(${vehicle.username})  `} />
               Kyc Status: <span style={{
                 textAlign: "center", fontWeight: "bold",
-
                 color:
                   vehicle.kyc_varification == KYC_STATUS.VERIFIED ? "green" :
-                    vehicle.kyc_varification == KYC_STATUS.PENDING ? "red" :
-                      vehicle.kyc_varification == KYC_STATUS.INITIATED ? "purple" : ""
-
+                  vehicle.kyc_varification == KYC_STATUS.PENDING ? "red" :
+                  vehicle.kyc_varification == KYC_STATUS.INITIATED ? "purple" : ""
                 , mb: 2
               }} >
 
@@ -68,7 +66,10 @@ function VarifyKyc() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <KycForm fd={vehicle} formIndex={index} onRaiseKyc={handleKycSubmission} />
+
+            {vehicle.kyc_varification==KYC_STATUS.PENDING &&  <KycForm fd={vehicle} formIndex={index} onRaiseKyc={handleKycSubmission} /> } 
+            {vehicle.kyc_varification==KYC_STATUS.INITIATED &&  <OwnerKycFormStatus  fd={[vehicle] || []}  formIndex={index}    /> } 
+
           </AccordionDetails>
         </Accordion>
       ))}

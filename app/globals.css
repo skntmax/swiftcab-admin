@@ -240,6 +240,9 @@ html,body{
   height: 100%;
   width: 100%;
   place-items: center;
+  /* background-image: url('./assets/images/b3.webp'); */
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   background: -webkit-linear-gradient(left, #003366,#004080,#0059b3
 , #0073e6);
 }

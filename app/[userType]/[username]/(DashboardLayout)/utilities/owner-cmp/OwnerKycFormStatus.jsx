@@ -22,7 +22,7 @@ const colors = {
   rc_doc: "text.primary",
 };
 
-function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
+function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
 
   const [ownerKycRequest, { isLoading, data, error }] = useOwnerKycRequestMutation();
 
@@ -185,32 +185,6 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                         </Link>
                       </Grid>
 
-                      {/* Status Dropdown */}
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel>Status</InputLabel>
-                          <Select value={status} onChange={handleStatusChange}>
-                            {statusOptions.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-
-                
-                          <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{ mt: 3, mb: 2 }}
-                            className="text-gray-500 hover:text-white"
-                          >
-                            Update 
-                          </Button>
-                            
-                      </Grid>
                     </Grid>
                   </Box>
             ))}
@@ -219,7 +193,7 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
   );
 }
 
-export default KycFormStatus;
+export default OwnerKycFormStatus;
 
 
 

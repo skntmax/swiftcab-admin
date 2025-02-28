@@ -24,6 +24,9 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import KycFormStatus from "../admin-cmp/KycFormStatus";
+
+import Alert from '@mui/material/Alert';
+
 const KycRequest = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const [usernameOrEmail , setusernameOrEmail] =  useState()
@@ -171,22 +174,22 @@ const KycRequest = () => {
                         </AccordionSummary>
                         <AccordionDetails>
 
-                       {  getVhicleDetailsData?.data && 
+                       {  (getVhicleDetailsData?.data  && getVhicleDetailsData?.data?.length>0) ?  
                         <KycFormStatus 
                         fd={getVhicleDetailsData?.data || []} 
                         formIndex={index} 
                         //  onRaiseKyc={handleKycSubmission}
-                         />
+                         /> :
+                          <Alert variant="outlined" severity="error">
+                            Owner havn't raised for any Vhicle KYC yet 
+                          </Alert>
                        }
-                       
 
                         </AccordionDetails>
                       </Accordion>
                     </TableCell>
                   </TableRow>
                 )}
-
-
               </>
             ))}
           </TableBody>

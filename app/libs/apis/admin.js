@@ -8,7 +8,7 @@ import { SWC_KEYS } from '@constants';
 // Define the base API
 const adminApi = createApi({
   reducerPath: 'adminApi',
-  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail'],
+  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details'],
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      getAllUsers: builder.mutation({
@@ -38,6 +38,20 @@ const adminApi = createApi({
         },  
     ),
 
+    updateKycStatus: builder.mutation({
+      query: (body) => (  {
+         url:urls.update_kyc_status ,
+         method: 'POST',
+         body:body,
+         headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+        }),
+        providesTags:['update-kyc-details']
+      },  
+      ),
+
+
 
 
 
@@ -53,7 +67,7 @@ const adminApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
- useGetAllUsersMutation , useGetVhicleDetailsMutation
+ useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation
 } = adminApi;
 
 

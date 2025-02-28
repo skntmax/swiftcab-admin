@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import { TextField, Select, MenuItem, Button, FormControl, InputLabel, Box, Grid, Typography,Link } from "@mui/material";
 import { useOwnerKycRequestMutation } from "@app/libs/apis/owner";
+import { DotLottieReact } from "@node_modules/@lottiefiles/dotlottie-react/dist";
+import { KYC_STATUS } from "@constants";
 
-
-const statusOptions = ["INITIATED", "PENDING", "VERIFIED", "COMPLETED"];
 
 const colors = {
   vin: "primary.main",
@@ -22,7 +22,7 @@ const colors = {
   rc_doc: "text.primary",
 };
 
-function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
+function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange ,kycStatus }) {
 
   const [ownerKycRequest, { isLoading, data, error }] = useOwnerKycRequestMutation();
 
@@ -113,7 +113,8 @@ function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
 
     <>
 
- {Array.isArray(formData) && formData.length>0 &&  formData.map((item,index)=>(
+
+
                 <Box
                     sx={{
                       maxWidth: "100%",
@@ -124,6 +125,22 @@ function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                       boxShadow: 2,
                     }}
                   >
+
+                 
+                {kycStatus==KYC_STATUS.COMPLETED || kycStatus==KYC_STATUS.VERIFIED  && 
+                    <DotLottieReact
+                    style={{width:"10%"}}
+                    src="https://lottie.host/f1e18a8c-882e-4923-8135-990a69c64b08/1nAYkHPyNR.lottie"
+                    loop
+                    autoplay
+                    />
+                    }
+                    
+
+            {Array.isArray(formData) && formData.length>0 &&  formData.map((item,index)=>(
+                 <>
+
+                
                     <Grid container spacing={2}>
                       {[
                         { label: "VIN", name: "vin" },
@@ -136,15 +153,32 @@ function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                         { label: "Chassis Number", name: "chassis_number" },
                         { label: "Fuel Type", name: "fuel_type" },
                         { label: "Transmission", name: "transmission" },
-                      ].map(({ label, name }) => (
+                      ].map(({ label, name }) => (<>
                         <Grid item xs={12} sm={6} key={name}>
-                          <Typography variant="subtitle2" color="textSecondary">
+                         
+                        <Box display="flex" alignItems="center"  gap={1}>
+                        <Typography variant="subtitle2" color="textSecondary">
                             {label}
+                        </Typography>
+                        
+                        {label === "VIN"  && (kycStatus==KYC_STATUS.COMPLETED || kycStatus==KYC_STATUS.VERIFIED) &&  (
+                            <>     
+                            <Typography variant="subtitle2" color="textSecondary">
+                            (KYC varified)
                           </Typography>
+                             <DotLottieReact
+                            style={{ width: "20%", height: "20%" }}
+                            src="https://lottie.host/f1e18a8c-882e-4923-8135-990a69c64b08/1nAYkHPyNR.lottie"
+                            loop
+                            autoplay
+                            />  </> 
+                        )}
+                        </Box>
                           <Typography variant="body1" sx={{ fontWeight: "bold", color: colors[name] }}>
                             {formData[index][name].value || "N/A"}
                           </Typography>
                         </Grid>
+                        </>
                       ))}
 
                       {/* Screenshot One */}
@@ -172,8 +206,6 @@ function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                           sx={{ width: "50%", maxHeight: 200, borderRadius: 1, objectFit: "cover" }}
                         />
                       </Grid>
-
-                   
                   
                       {/* RC Document */}
                       <Grid item xs={12}>
@@ -186,8 +218,10 @@ function OwnerKycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                       </Grid>
 
                     </Grid>
+
+                    </>
+                        ))}
                   </Box>
-            ))}
    
     </>
   );

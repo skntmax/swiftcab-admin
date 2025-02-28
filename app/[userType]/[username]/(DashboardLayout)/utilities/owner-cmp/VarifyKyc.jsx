@@ -67,8 +67,8 @@ function VarifyKyc() {
           </AccordionSummary>
           <AccordionDetails>
 
-            {vehicle.kyc_varification==KYC_STATUS.PENDING &&  <KycForm fd={vehicle} formIndex={index} onRaiseKyc={handleKycSubmission} /> } 
-            {vehicle.kyc_varification==KYC_STATUS.INITIATED &&  <OwnerKycFormStatus  fd={[vehicle] || []}  formIndex={index}    /> } 
+            {vehicle.kyc_varification==KYC_STATUS.PENDING &&  <KycForm fd={vehicle}  kycStatus={vehicle.kyc_varification} formIndex={index} onRaiseKyc={handleKycSubmission} /> } 
+            {[KYC_STATUS.INITIATED , KYC_STATUS.VERIFIED ,KYC_STATUS.COMPLETED ].includes(vehicle.kyc_varification) &&  <OwnerKycFormStatus kycStatus={vehicle.kyc_varification}  fd={[vehicle] || []}  formIndex={index}    /> } 
 
           </AccordionDetails>
         </Accordion>

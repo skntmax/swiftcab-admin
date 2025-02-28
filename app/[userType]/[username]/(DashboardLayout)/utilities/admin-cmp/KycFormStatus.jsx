@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from "react";
-import { TextField, Select, MenuItem, Button, FormControl, InputLabel, Box, Grid, Typography,Link } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { TextField, Select, MenuItem, Button, FormControl, InputLabel, Box, Grid, Typography,Link, CircularProgress } from "@mui/material";
 import { useOwnerKycRequestMutation } from "@app/libs/apis/owner";
+import { KYC_STATUS } from "@constants";
+import { useUpdateKycStatusMutation } from "@app/libs/apis/admin";
+import { contextProvider } from "@components/AppProvider";
 
 
 const statusOptions = ["INITIATED", "PENDING", "VERIFIED", "COMPLETED"];
@@ -22,10 +25,11 @@ const colors = {
   rc_doc: "text.primary",
 };
 
-function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
+function KycFormStatus({ fd, formIndex, onRaiseKyc }) {
 
-  const [ownerKycRequest, { isLoading, data, error }] = useOwnerKycRequestMutation();
-
+  const [updateKyc, { isLoading:updateKycLoader, data, error }] = useUpdateKycStatusMutation();
+  const { successMessage , errorMessage ,setCookie  } = useContext(contextProvider)
+ 
   const [formData, setFormData] = useState(
     fd.map(ele=>(
       {
@@ -42,71 +46,39 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
         ss_one: { name: "ss_one", value: ele.ss_one, error: false, message: "screenshot is required" },
         ss_two: { name: "ss_two", value: ele.ss_two, error: false, message: "screenshot is required" },
         rc_doc: { name: "rc_doc", value: ele.rc_doc, error: false, message: "RC doc is required" },
-        // kyc_status: { name: "kyc_status", value: fd.is_kyc, error: false, message: "KYC status is required" },
+        kyc_status: { name: "kyc_status", value: ele.kyc_varification, error: false, message: "KYC status is required" },
       }
     ))
  );
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+ const handleStatusChange = (e , index)=>{
+ const { name , value}  = e.target
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        value: value,
-        error: false,
-      },
-    }));
-  };
-
-  const validateForm = () => {
-    let isValid = true;
-    const newFormData = { ...formData };
-
-    Object.keys(newFormData).forEach((key) => {
-      if (!newFormData[key].value) {
-        newFormData[key].error = true;
-        isValid = false;
-      } else {
-        newFormData[key].error = false;
-      }
-    });
-
-    setFormData(newFormData);
-    return isValid;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
+setFormData(p=>{
+   return p.map((ele, i)=>{
+    if(i==index) {
+      return {...ele , [name]:{ ...p[index][name] , value:value   } }
     }
+      return ele 
+     })
+    })
 
-    const payload = {
-      id: fd.vhicle_id,
-      vin: formData.vin.value,
-      license_plate: formData.license_plate.value,
-      manufacturer: formData.manufacturer.value,
-      model: formData.model.value,
-      // year: formData.year.value,
-      year: new Date(formData.year.value).toISOString(),
-      color: formData.color.value,
-      engine_number: formData.engine_number.value,
-      chassis_number: formData.chassis_number.value,
-      fuel_type: formData.fuel_type.value,
-      transmission: formData.transmission.value,
-      // kyc_status: formData.kyc_status.value,
-    };
+ }
 
-    try {
-      const response = await ownerKycRequest(payload).unwrap();
-      console.log("KYC Request Successful:", response);
-      onRaiseKyc(formIndex, response);
-    } catch (err) {
-      console.error("KYC Request Failed:", err);
+
+
+  const submitKycResponse = async (payload ,kycStatus ) => {
+ 
+    console.log(payload)
+    const { vhicle_owner_id:ownerId , id:vhicleId }  = payload
+    const  updateKycPaylod = {  vhicleId ,  ownerId , kycStatus }
+
+    
+    if(!vhicleId ||   !ownerId ||  !kycStatus) {
+      errorMessage(`please provide ,${vhicleId} ${ownerId} ${kycStatus} `)
     }
+    updateKyc(updateKycPaylod)
+
   };
 
   return (
@@ -173,7 +145,6 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                         />
                       </Grid>
 
-                   
                   
                       {/* RC Document */}
                       <Grid item xs={12}>
@@ -189,8 +160,8 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                       <Grid item xs={12}>
                         <FormControl fullWidth>
                           <InputLabel>Status</InputLabel>
-                          <Select value={status} onChange={handleStatusChange}>
-                            {statusOptions.map((option) => (
+                          <Select name={formData[index].kyc_status.name} value={formData[index].kyc_status.value || "N/A"} onChange={(e)=>handleStatusChange(e , index)}>
+                            {Object.keys(KYC_STATUS).map((option) => (
                               <MenuItem key={option} value={option}>
                                 {option}
                               </MenuItem>
@@ -198,8 +169,22 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                           </Select>
                         </FormControl>
 
-                
+
+
+                  {updateKycLoader ? (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              paddingTop: "10px",
+                            }}
+                          >
+                            <CircularProgress />
+                          </Box>
+                        ) : (
                           <Button
+                            onClick={()=> submitKycResponse(fd[index] , formData[index].kyc_status.value )}
                             type="submit"
                             fullWidth
                             variant="contained"
@@ -209,6 +194,8 @@ function KycFormStatus({ fd, formIndex, onRaiseKyc ,handleStatusChange }) {
                           >
                             Update 
                           </Button>
+                        )}
+                                           
                             
                       </Grid>
                     </Grid>

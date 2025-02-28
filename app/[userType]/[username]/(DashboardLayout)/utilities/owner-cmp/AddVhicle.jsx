@@ -93,29 +93,29 @@ function AddVhicle() {
         />
       )}
 
-      {isSubmitting ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingTop: "10px",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Button
-          variant="outlined"
-          color="primary"
-          sx={{ mt: 2, width: "100%" }}
-          onClick={handleSubmit}
-        >
-          Submit
-        </Button>
-      )}
+            {isSubmitting ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: "10px",
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{ mt: 2, width: "100%" }}
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+            )}
 
-      <RegisteredVhicles key={refresh}/>
+          <RegisteredVhicles key={refresh}/>
 
     </Box>
   );

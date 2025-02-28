@@ -13,5 +13,6 @@ export default {
 
     'get_active_users': "v1/admin/get-active-users",
     'get_vhicle_details': "v1/admin/get-vhicle-details",
+    'update_kyc_status': "v1/admin/approve-kyc-request",
 }
 

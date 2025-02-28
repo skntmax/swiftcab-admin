@@ -3,6 +3,7 @@ import { Autocomplete, TextField, Box, Button, CircularProgress, Alert } from "@
 import { useGetVehiclesTypeListQuery, useGetVehiclesServiceListQuery, useAddVehicleServiceMutation } from "@app/libs/apis/owner";
 import { contextProvider } from "@components/AppProvider";
 import VhicleOccupiedServies from "./VhicleOccupiedServies";
+import Chip from '@mui/material/Chip';
 
 function VhicleServices() {
   const { data: vehicleData, isLoading: vehicleLoading, error: vehicleError } = useGetVehiclesTypeListQuery(); 
@@ -19,7 +20,8 @@ function VhicleServices() {
   useEffect(() => {
     if (vehicleData?.data) {
       const formattedVehicles = vehicleData.data.map((item) => ({
-        label: item.name, // Display vehicle name
+        labelJsx: <Chip label={`${item.name}-${item.vhicle_username}`} color="success" variant="filled" />  , // Display vehicle name
+        label:`${item.name}-${item.vhicle_username}`  , // Display vehicle name
         value: item.id,   // Unique ID
       }));
       setVehicleOptions(formattedVehicles);
@@ -91,10 +93,18 @@ function VhicleServices() {
             <Autocomplete
               multiple={false}
               options={vehicleOptions}
-              getOptionLabel={(option) => option.label}
+              getOptionLabel={(option) => option.label }
               isOptionEqualToValue={(option, value) => option.value === value.value}
-              onChange={(event, value) => setSelectedVehicles(value)}
-              renderInput={(params) => <TextField {...params} label="Type of Vehicles" variant="outlined" />}
+              onChange={(event, valueObj) =>  setSelectedVehicles(valueObj)}
+              renderOption={(props, option) => ( 
+                  <li {...props}>
+                    {option.labelJsx}  {/* Display JSX in dropdown */}
+                  </li>
+                )}
+
+              renderInput={(params) => {
+                return <TextField {...params} label="Type of Vehicles" variant="outlined" />  
+              } }
               fullWidth
             />
             <Box sx={{ height: 16 }} />

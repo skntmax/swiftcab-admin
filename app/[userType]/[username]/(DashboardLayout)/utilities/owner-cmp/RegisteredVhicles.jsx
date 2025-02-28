@@ -47,7 +47,7 @@ import { getUserInfo } from "@utils";
         <Card sx={{ width: 200 }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              {vehicle.vhicle}
+              {vehicle.vhicle}  - {vehicle.vhicle_username}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {vehicle.disc}

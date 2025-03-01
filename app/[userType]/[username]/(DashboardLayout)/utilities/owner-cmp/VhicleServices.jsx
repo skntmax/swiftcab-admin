@@ -116,7 +116,9 @@ function VhicleServices() {
               getOptionLabel={(option) => option.label}
               isOptionEqualToValue={(option, value) => option.value === value.value}
               onChange={(event, value) => setSelectedServices(value)}
-              renderInput={(params) => <TextField {...params} label="Service" variant="outlined" />}
+              renderInput={(params) => <TextField  {...params}  label="Service" variant="outlined"
+  
+               />}
               fullWidth
             />
             <Box sx={{ height: 16 }} />

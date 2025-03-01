@@ -22,3 +22,102 @@
   from{border-right-color: green;}
   to{border-right-color: transparent;}
 }
+
+
+
+
+/* Background with slight transparency */
+.wrapper.login_box {
+  background: linear-gradient(
+    135deg,
+    rgba(173, 182, 246, 0.8),
+    rgba(152, 192, 255, 0.75),
+    rgba(129, 202, 255, 0.7),
+    rgba(107, 212, 255, 0.65),
+    rgba(90, 220, 255, 0.6),
+    rgba(82, 218, 255, 0.55),
+    rgba(73, 217, 255, 0.5),
+    rgba(63, 215, 255, 0.45),
+    rgba(70, 203, 255, 0.5),
+    rgba(89, 189, 255, 0.55),
+    rgba(112, 175, 250, 0.6),
+    rgba(135, 160, 240, 0.65)
+  );
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(10px); /* Glass effect */
+}
+
+/* Input fields */
+.field input,
+.field select,
+.field.btn input {
+  background: rgba(255, 255, 255, 0.2) !important; /* Slightly transparent */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important; /* Soft border */
+  color: black !important; /* White text */
+  padding: 10px;
+  border-radius: 6px;
+}
+
+input::placeholder,
+select option {
+  color: black !important; /* Visible placeholder */
+}
+
+/* Buttons */
+.field.btn {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.field.btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Labels and links */
+label,
+.signup-link a,
+.pass-link a {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+
+
+/* Parent container should use flexbox to center */
+.field.btn {
+  display: flex;
+  justify-content: center; /* Horizontally center */
+  align-items: center; /* Vertically center */
+  height: 100%; /* Ensure it takes the full height of the container */
+}
+
+/* Submit button styles */
+.field.btn input[type="submit"] {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-weight: bold;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+}
+
+/* Hover effect */
+.field.btn input[type="submit"]:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+/* Disabled state */
+/* .field.btn input[type="submit"]:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  transform: none;
+} */
+

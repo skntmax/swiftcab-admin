@@ -54,7 +54,7 @@ export default function RootLayout({children}) {
 
 return (
 
-    <MainWrapper className="mainwrapper" style={{background:"white"}}>     
+    <MainWrapper className="mainwrapper" style={{background:"white", zIndex:5}}>     
         <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}

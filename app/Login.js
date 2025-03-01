@@ -210,7 +210,7 @@ return (
     }
 
     
-    <div className="wrapper" style={{opacity: (newUserDataLoader || loginNewUserLoading || userLoggedIn) ?0.2:1}} >
+    <div className="wrapper login_box"  style={{opacity: (newUserDataLoader || loginNewUserLoading || userLoggedIn) ?0.2:1}} >
       <div className="title-text">
         <div className={`title login ${isLogin ? '' : 'slide'}`}>{isLogin?
         
@@ -281,8 +281,10 @@ return (
            {
             loginNewUserLoading? <ApiLoader height={"20px"} width={"20px"} /> :
             <div className="field btn" style={{opacity:isLoggedin?1:"0.4"}}>
-              <div className="btn-layer"></div>
+              <div className="btn-layer">
               <input type="submit" value="Login" disabled={isLoggedin?false:true} />
+              </div>
+            
             </div> 
            }
            
@@ -328,17 +330,16 @@ return (
                           
            {newUserDataLoader?  <ApiLoader height={"20px"} width={"20px"} />:
             <div className="field btn" style={{opacity : isSignup?1:"0.4"}} > 
-              <div className="btn-layer"></div>
+              <div className="btn-layer">
               <input type="submit" disabled={isSignup?false:true} value="Signup" />
+              </div>
+              
             </div>
            }
-          
-
+        
           </form>
         </div>
       </div>
-
-
     </div>
     </>
 

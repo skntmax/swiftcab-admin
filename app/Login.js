@@ -267,7 +267,8 @@ return (
             </div>
 
 
-            {isLoading ?  <ApiLoader height={"20px"} width={"20px"} />  :  <div className="field ">
+            {isLoading ?  <ApiLoader height={"20px"} width={"20px"} />  :  
+            <div className="field ">
               <select onBlur={loginOnBlur} onChange={loginOnchangeHandler}   name={loginFd.userType.name} value={loginFd.userType.value}  className='input' required>
                 <option value="" disabled selected>
                   Select User Type

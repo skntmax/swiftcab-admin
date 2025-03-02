@@ -1,7 +1,7 @@
 
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import {SWC_KEYS} from './constants/index'
+import {SWC_KEYS, USER_ROLES} from './constants/index'
 import { useAxios } from './utils/axios';
 import { getCookie } from 'cookies-next';
 export async function middleware(request) {
@@ -27,13 +27,17 @@ export async function middleware(request) {
       headers: {
         authorization: `Bearer ${details.value}`,
       },
-
-    }  ) .then(data => data ) .catch(error => console.error(error));
+    }) .then(data => data ) .catch(error => console.error(error));
   
-
+    
     if(!validUser?.data || validUser?.error) 
       return NextResponse.redirect(new URL('/', request.url))
     
+
+    // if user is  customer 
+    if(userType==USER_ROLES.customer && validUser?.data){
+      return NextResponse.redirect(new URL( process.env.NEXT_PUBLIC_CLIENT_PORTAL_URL, request.url))
+    }
 
      return NextResponse.next();  
   }

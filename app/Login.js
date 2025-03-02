@@ -173,8 +173,26 @@ useEffect(()=>{
 useEffect(()=>{
       if(loginNewUserData?.data?.token || newUserData?.data?.token) {
         
-        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token )  
-        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj)  
+        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token  , 
+          {
+            domain: '.swiftcab.in', // ✅ Makes the cookie available to all subdomains
+            path: '/',              // ✅ Accessible on the entire domain
+            secure: true,           // ✅ Required if using HTTPS
+            httpOnly: true,         // ✅ Prevents JavaScript access (optional)
+            sameSite: 'None'        // ✅ Allows cross-site requests (important for subdomain sharing)
+          }
+
+        )  
+        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj ,
+          {
+            domain: '.swiftcab.in', // ✅ Makes the cookie available to all subdomains
+            path: '/',              // ✅ Accessible on the entire domain
+            secure: true,           // ✅ Required if using HTTPS
+            httpOnly: true,         // ✅ Prevents JavaScript access (optional)
+            sameSite: 'None'        // ✅ Allows cross-site requests (important for subdomain sharing)
+          }
+
+        )  
 
          
          const  { username } = loginNewUserData?.data?.usersObj || newUserData.data?.usersObj

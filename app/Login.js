@@ -173,26 +173,30 @@ useEffect(()=>{
 useEffect(()=>{
       if(loginNewUserData?.data?.token || newUserData?.data?.token) {
         
-        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token  , 
-          {
-            domain: '.swiftcab.in', // ✅ Makes the cookie available to all subdomains
-            path: '/',              // ✅ Accessible on the entire domain
-            secure: true,           // ✅ Required if using HTTPS
-            httpOnly: true,         // ✅ Prevents JavaScript access (optional)
-            sameSite: 'None'        // ✅ Allows cross-site requests (important for subdomain sharing)
-          }
+        // if (!token || !userObj) {
+        //   alert("Login failed!");
+        //   return;
+        // }
+      
 
-        )  
-        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj ,
-          {
-            domain: '.swiftcab.in', // ✅ Makes the cookie available to all subdomains
-            path: '/',              // ✅ Accessible on the entire domain
-            secure: true,           // ✅ Required if using HTTPS
-            httpOnly: true,         // ✅ Prevents JavaScript access (optional)
-            sameSite: 'None'        // ✅ Allows cross-site requests (important for subdomain sharing)
-          }
+        //  (async function() {
+        //     // Send token and user object to the API route
+        // await fetch('/api/login', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(
+        //     { token:loginNewUserData?.data?.token || newUserData?.data?.token,
+        //       userObj : loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj 
+        //      }
+        //   )
+        // });
 
-        )  
+        //  })
+       
+        
+
+        setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token  ,)  
+        setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj)  
 
          
          const  { username } = loginNewUserData?.data?.usersObj || newUserData.data?.usersObj

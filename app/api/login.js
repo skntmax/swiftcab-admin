@@ -17,14 +17,14 @@ export default async function handler(req, res) {
     // ✅ Set cookies for the main domain (server-side)
     res.setHeader('Set-Cookie', [
       serialize(SWC_KEYS.SWC_TOKEN, token, {
-        path: '/',
+        path: process.env.NEXT_PUBLIC_CLIENT_COOKIE_PORTAL,
         httpOnly: true,
         secure: false, // ❌ Set to `true` only in HTTPS
         sameSite: 'Lax' // Use 'None' only in HTTPS
       }),
        
       serialize(SWC_KEYS.SWC_USER, JSON.stringify(userObj), {
-        path: '/',
+        path: process.env.NEXT_PUBLIC_CLIENT_COOKIE_PORTAL ,
         httpOnly: true,
         secure: false,
         sameSite: 'Lax'

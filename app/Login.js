@@ -171,34 +171,26 @@ useEffect(()=>{
 
 // on login ser 
 useEffect(()=>{
-      if(loginNewUserData?.data?.token || newUserData?.data?.token) {
+
+  if(loginNewUserData?.data?.token || newUserData?.data?.token) {
         
-        // if (!token || !userObj) {
-        //   alert("Login failed!");
-        //   return;
-        // }
-      
-
-        //  (async function() {
-        //     // Send token and user object to the API route
-        // await fetch('/api/login', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(
-        //     { token:loginNewUserData?.data?.token || newUserData?.data?.token,
-        //       userObj : loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj 
-        //      }
-        //   )
-        // });
-
-        //  })
+         (async function() {
+            // Send token and user object to the API route
+        await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            { token:loginNewUserData?.data?.token || newUserData?.data?.token,
+              userObj : loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj 
+             }
+          )
+        });
+         })
        
         
-
         setCookie(SWC_KEYS.SWC_TOKEN , loginNewUserData?.data?.token || newUserData?.data?.token  ,)  
         setCookie(SWC_KEYS.SWC_USER , loginNewUserData?.data?.usersObj || newUserData?.data?.usersObj)  
-
-         
+        
          const  { username } = loginNewUserData?.data?.usersObj || newUserData.data?.usersObj
 
          let selectedUserType = userTypes?.data.find(item=> item.id==loginFd.userType.value)?.name || 

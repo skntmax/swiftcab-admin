@@ -14,24 +14,22 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing token or user data' });
   }
 
-  // ✅ Set cookies for the main domain (server-side)
-  setCookie(SWC_KEYS.SWC_TOKEN, token, {
-    req, res,
-    domain: '.swiftcab.in', // ✅ Makes cookie available on all subdomains
-    path: '/',
-    secure: true,
-    httpOnly: true,
-    sameSite: 'None'
-  });
-
-  setCookie(SWC_KEYS.SWC_USER, JSON.stringify(userObj), {
-    req, res,
-    domain: '.swiftcab.in',
-    path: '/',
-    secure: true,
-    httpOnly: true,
-    sameSite: 'None'
-  });
+    // ✅ Set cookies for the main domain (server-side)
+    res.setHeader('Set-Cookie', [
+      serialize(SWC_KEYS.SWC_TOKEN, token, {
+        path: '/',
+        httpOnly: true,
+        secure: false, // ❌ Set to `true` only in HTTPS
+        sameSite: 'Lax' // Use 'None' only in HTTPS
+      }),
+       
+      serialize(SWC_KEYS.SWC_USER, JSON.stringify(userObj), {
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Lax'
+      })
+    ]);
 
   return res.status(200).json({ success: true });
 }

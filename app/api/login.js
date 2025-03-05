@@ -7,6 +7,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  console.log("token, userObj>>>" ,token, userObj )
   // Get user data from request body
   const { token, userObj } = req.body;
 

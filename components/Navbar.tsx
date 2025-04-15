@@ -9,7 +9,7 @@ const NavBar = () => (
       <Link href='/' className='flex justify-center items-center'>
         <Image
           src='/logo.svg'
-          alt='logo'
+          alt='logo'  
           width={118}
           height={18}
           className='object-contain'

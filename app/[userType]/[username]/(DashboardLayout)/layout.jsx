@@ -71,10 +71,7 @@ return (
         >
           <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
         </Container>
-      </PageWrapper>
-      
-   
-    
+      </PageWrapper>  
     </MainWrapper>
    
 

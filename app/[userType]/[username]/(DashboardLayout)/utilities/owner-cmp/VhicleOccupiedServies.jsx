@@ -28,9 +28,8 @@ const groupedData = data.reduce((acc, item) => {
 
 
 function VhicleOccupiedServies() {
- 
-  const {data:getVhicleServieListData , isLoading: getVhicleServieListLoading }  = useOwnerVhicleServiceListQuery()
 
+  const {data:getVhicleServieListData , isLoading: getVhicleServieListLoading }  = useOwnerVhicleServiceListQuery()
  
  
   return (  

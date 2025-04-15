@@ -36,6 +36,12 @@ export async function middleware(request) {
 
     // if user is  customer 
     if(userType==USER_ROLES.customer && validUser?.data){
+       // ✅ Attach cookies manually
+
+
+    // ✅ Attach cookies in response headers
+      // response.headers.append("Set-Cookie", `${SWC_KEYS.SWC_TOKEN}=${token}; Path=/; HttpOnly; Secure; SameSite=None`);
+      // response.headers.append("Set-Cookie", `${SWC_KEYS.SWC_USER}=${cookieStore.get(SWC_KEYS.SWC_USER)}; Path=/; HttpOnly; Secure; SameSite=None`);
       return NextResponse.redirect(new URL( process.env.NEXT_PUBLIC_CLIENT_PORTAL_URL, request.url))
     }
 

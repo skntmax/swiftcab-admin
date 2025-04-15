@@ -8,7 +8,7 @@ import { SWC_KEYS } from '@constants';
 // Define the base API
 const adminApi = createApi({
   reducerPath: 'adminApi',
-  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details'],
+  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,'remove-user-by-username'],
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      getAllUsers: builder.mutation({
@@ -51,6 +51,35 @@ const adminApi = createApi({
       },  
       ),
 
+      removeUser: builder.mutation({
+        query: (body) => (  {
+           url:urls.remove_user_by_username ,
+           method: 'POST',
+           body:body,
+           headers: {
+            authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+          },
+          }),
+          providesTags:['remove-user-by-username'],
+          invalidatesTags: ['all-users']
+        },  
+        ),
+
+
+      blockUnblockUser: builder.mutation({
+          query: (body) => (  {
+             url:urls.block_unblock_user ,
+             method: 'POST',
+             body:body,
+             headers: {
+              authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+            },
+            }),
+            providesTags:['block-unblock-user'],
+          },  
+          ),
+  
+
 
 
 
@@ -67,7 +96,7 @@ const adminApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
- useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation
+ useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation
 } = adminApi;
 
 

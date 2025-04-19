@@ -134,5 +134,6 @@ export const USER_ROLES = {
   partnerManager: "partner-manager",
   vendorCoordinator: "vendor-coordinator",
   customer: "customer",
-  owner: "owner"
+  owner: "owner",
+  ['driver-partner']:"driver-partner"
 };

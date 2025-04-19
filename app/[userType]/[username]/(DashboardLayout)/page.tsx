@@ -2,7 +2,7 @@ import React from 'react'
 import UsersDashboard from './backpage'
 import AdminBackPage from './AdminBackpage'
 import CustomerBackPage from './CustomerBackpage'
-
+import  DriverPage from './utilities/driver-cmp/Index'
 import { USER_ROLES } from '@constants'
 
 
@@ -20,6 +20,9 @@ function page(props:any) {
 
       {/* CUSTOMER */}
       {userType===USER_ROLES.customer?.toLocaleLowerCase() && <CustomerBackPage userType={userType} userName={username} />  } 
+      
+      {/* DRIVER */}
+      {userType===USER_ROLES['driver-partner']?.toLocaleLowerCase() && <DriverPage userType={userType} userName={username} />  } 
    
      </>
   )

@@ -90,12 +90,8 @@ const MSidebar = ({
       {/* Sidebar Box */}
       {/* ------------------------------------------- */}
       <Box px={2}>
-        
-        
       <SidebarItems />
             <Upgrade />
-          
-          
         {/* <Sidebar
           width={'270px'}
           collapsewidth="80px"

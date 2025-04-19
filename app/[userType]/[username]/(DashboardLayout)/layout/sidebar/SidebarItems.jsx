@@ -18,10 +18,10 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
   const pathDirect = `${ pathname}/?tabs=${tabs}`;
   const userInfo =useAppSelector((ele)=> ele.usersInfo)
 
-  
-  // let modifiedMenuItems =Menuitems.map(ele=>({
-  //    ...ele , href: `/${userInfo.userType}/${userInfo.userName}/${ele.href!="/"?"?tabs="+ele.href?.split('/')[1]:""} ` 
-  // }))
+
+    // let modifiedMenuItems =Menuitems.map(ele=>({
+    //    ...ele , href: `/${userInfo.userType}/${userInfo.userName}/${ele.href!="/"?"?tabs="+ele.href?.split('/')[1]:""} ` 
+    // }))
 
       let modifiedMenuItems =(navbar?.navbar).map(ele=>({
       ...ele , icon: all_cons[ele.icon] 

@@ -21,9 +21,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Button
+  Button,
+  Tooltip
 } from "@mui/material";
-import { Edit, Block, Delete } from "@mui/icons-material";
+import { Delete, CheckCircle, Cancel, Email } from "@mui/icons-material";
+import { Edit, Block} from "@mui/icons-material";
 import { useBlockUnblockUserMutation, useGetAllUsersMutation, useRemoveUserMutation } from "@app/libs/apis/admin";
 import { useAppSelector } from "@app/libs/store";
 import ContentLoader from "@components/loader/ContentLoader";
@@ -219,52 +221,61 @@ const UserManagement = () => {
         }
 
         {!getUserDataLoading && <TableContainer component={Paper}>
-          <Table>
+                  <Table>
             <TableHead>
               <TableRow style={{ backgroundColor: "#f5f5f5" }}>
-                <TableCell><b>Username</b></TableCell>
-                <TableCell><b>Email</b></TableCell>
-                <TableCell><b>Role ID</b></TableCell>
-                <TableCell><b>Role</b></TableCell>
-                <TableCell><b>Email Verified</b></TableCell>
-                <TableCell><b>Actions</b></TableCell>
-                <TableCell><b>Activate/Deactivate</b></TableCell>
+                <TableCell className="text-center"><b>Username</b></TableCell>
+                <TableCell className="text-center" ><b>Email</b></TableCell>
+                <TableCell className="text-center" ><b>Role ID</b></TableCell>
+                <TableCell className="text-center" ><b>Role</b></TableCell>
+                <TableCell className="text-center" >
+                  <b>Email Verified</b> <Email fontSize="small" />
+                </TableCell>
+                <TableCell className="text-center" ><b>Activate/Deactivate</b></TableCell>
+                <TableCell className="text-center" ><b>Actions</b></TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {getUserData?.data && Array.isArray(getUserData?.data?.users) && getUserData?.data?.users.length > 0 &&
                 getUserData?.data?.users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.role_id}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">{user.username}</TableCell>
+                    <TableCell className="text-center">{user.email}</TableCell>
+                    <TableCell className="text-center">{user.role_id}</TableCell>
+                    <TableCell className="text-center">
                       <Typography variant="body2" style={{ fontWeight: "bold", color: user.role === "owner" ? "#d32f2f" : "#1976d2" }}>
                         {user.role}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" style={{ fontWeight: "bold", color: user.role === "owner" ? "#d32f2f" : "#1976d2" }}>
-                        {user?.email_verification_pending ?
-                          <Chip label="Varified" color="primary" /> : <Chip label="Pending" color="error" />}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
 
-                      <Typography variant="body2" style={{ fontWeight: "bold", color: user.role === "owner" ? "#d32f2f" : "#1976d2" }}>
-                          <Chip  
-                           color={user?.email_verification_pending?"primary":"error" } 
-                           label={user?.email_verification_pending?"Deactivate":"Activate" }
-                           onClick={() =>handleBUClick({...user , status:user?.email_verification_pending?false:true  }) }  />
-                      </Typography>
-
-                   
+                    <TableCell className="text-center ">
+                      {user?.email_verification_pending ? (
+                        <Tooltip title="Email Verified">
+                          <CheckCircle style={{ color: "#4caf50" }} />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Pending Verification">
+                          <Cancel style={{ color: "#d32f2f" }} />
+                        </Tooltip>
+                      )}
                     </TableCell>
 
-                    <TableCell>
-                      <IconButton color="error" onClick={() => handleDeleteClick(user)}>
-                        <Delete />
-                      </IconButton>
+                    <TableCell className="text-center">
+                      <Chip
+                        color={user?.email_verification_pending ? "primary" : "error"}
+                        label={user?.email_verification_pending ? "Deactivate" : "Activate"}
+                        onClick={() => handleBUClick({ ...user, status: user?.email_verification_pending ? false : true })}
+                        style={{ cursor: "pointer" }}
+                      />
+                    </TableCell>
+
+                    <TableCell className="text-center">
+                      <Tooltip title="Delete User">
+                        <IconButton color="error" onClick={() => handleDeleteClick(user)}>
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
 
                   </TableRow>
@@ -327,7 +338,7 @@ const UserManagement = () => {
           </Button>
           <Button onClick={handleConfirmBlockUnblock} color="error">
           {blockUnblockLoading && <ContentLoader /> }  
-          {!blockUnblockLoading && "Block" }  
+          {!blockUnblockLoading && selectedUserToBlockUnblock?.status?"Activate":"Deactivate"  }  
           </Button>
         </DialogActions>
       </Dialog>

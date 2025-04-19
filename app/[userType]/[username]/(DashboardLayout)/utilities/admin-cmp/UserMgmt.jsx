@@ -165,13 +165,17 @@ const UserManagement = () => {
 
 
   const handleConfirmBlockUnblock = () => {
-    const { username } = selectedUserToBlockUnblock     
-    blockUnblock({username , "isActive": false}) // deleting users 
+   debugger
+    const { username ,status } = selectedUserToBlockUnblock     
+    blockUnblock({username , "isActive": status}) // deleting users 
+
+    setOpenOnBlock(false); // disable or enable v user
+    setSelectedUserToBlockUnblock(null);
   };
 
   const handleCancelBlockUnblock = () => {
-    const { username } = selectedUserToBlockUnblock     
-    blockUnblock({username , "isActive": true}) // deleting users 
+    // const { username ,status } = selectedUserToBlockUnblock     
+    // blockUnblock({username , "isActive": status}) // deleting users 
     
     setOpenOnBlock(false);
     setSelectedUserToBlockUnblock(null);
@@ -224,6 +228,7 @@ const UserManagement = () => {
                 <TableCell><b>Role</b></TableCell>
                 <TableCell><b>Email Verified</b></TableCell>
                 <TableCell><b>Actions</b></TableCell>
+                <TableCell><b>Activate/Deactivate</b></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -240,21 +245,28 @@ const UserManagement = () => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" style={{ fontWeight: "bold", color: user.role === "owner" ? "#d32f2f" : "#1976d2" }}>
-                        {!user?.email_verification_pending ?
+                        {user?.email_verification_pending ?
                           <Chip label="Varified" color="primary" /> : <Chip label="Pending" color="error" />}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <IconButton color="primary"  >
-                        <Edit />
-                      </IconButton>
-                      <IconButton color="warning" onClick={() => handleBUClick(user)}>
-                        <Block />
-                      </IconButton>
+
+                      <Typography variant="body2" style={{ fontWeight: "bold", color: user.role === "owner" ? "#d32f2f" : "#1976d2" }}>
+                          <Chip  
+                           color={user?.email_verification_pending?"primary":"error" } 
+                           label={user?.email_verification_pending?"Deactivate":"Activate" }
+                           onClick={() =>handleBUClick({...user , status:user?.email_verification_pending?false:true  }) }  />
+                      </Typography>
+
+                   
+                    </TableCell>
+
+                    <TableCell>
                       <IconButton color="error" onClick={() => handleDeleteClick(user)}>
                         <Delete />
                       </IconButton>
                     </TableCell>
+
                   </TableRow>
                 ))}
             </TableBody>

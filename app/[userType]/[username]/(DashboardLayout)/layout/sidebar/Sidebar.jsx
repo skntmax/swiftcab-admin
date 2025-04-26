@@ -1,11 +1,16 @@
-import { useMediaQuery, Box, Drawer } from "@mui/material";
-import SidebarItems from "./SidebarItems";
 import { Upgrade } from "./Updrade";
-import dynamic from "@node_modules/next/dynamic";
-// import { Sidebar, Logo } from 'react-mui-sidebar';
+import dynamic from "next/dynamic";
+import { CircularProgress, Box, Drawer, useMediaQuery } from "@mui/material";
 
-const Sidebar = dynamic(() => import('react-mui-sidebar').then(mod => mod.Sidebar), { ssr: false });
-const Logo = dynamic(() => import('react-mui-sidebar').then(mod => mod.Logo), { ssr: false });
+// Dynamic import with a loader
+const SidebarItems = dynamic(() => import("./SidebarItems"), {
+  loading: () => (
+    <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <CircularProgress size={40} />
+    </Box>
+  ),
+  ssr: false, // Optional: if you want to avoid SSR issues (recommended for sidebars)
+});
 
 // interface ItemType {
 //   isMobileSidebarOpen: boolean;
@@ -55,18 +60,9 @@ const MSidebar = ({
             },
           }}
         >
-         
-         <Box
-            sx={{
-              height: "100%",
-            }}
-          >
-            
+       <Box sx={{ height: "100%" }}>
             <SidebarItems />
-          
           </Box>
-
-          
         </Drawer>
       </Box>
     );

@@ -2,7 +2,10 @@
 const nextConfig = {
  
     images: {
-        domains: ["cdn.imagin.studio"]
+        domains: [
+            "cdn.imagin.studio",
+            "asset.cloudinary.com"
+        ]
     }
 }
 

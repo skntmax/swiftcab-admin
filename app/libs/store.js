@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from '@node_modules/react-redux/dist/react-r
 import ownerApi from './apis/owner'
 import navbarSlice from './slice/navMenuSlice'
 import adminApi from './apis/admin'
+import masterApi from './apis/master'
 import userRolesSlice from './slice/userRolesSlice' 
 export const reduxStore = configureStore({
   reducer: {
@@ -16,13 +17,15 @@ export const reduxStore = configureStore({
     [ownerApi.reducerPath]: ownerApi.reducer,
     [navbarSlice.reducerPath]:navbarSlice.reducer,
     [adminApi.reducerPath]:adminApi.reducer,
+    [masterApi.reducerPath]:masterApi.reducer,
     [userRolesSlice.reducerPath]:userRolesSlice.reducer 
     
   },
   middleware: (getDefaultMiddleware) =>getDefaultMiddleware().concat(
     userApi.middleware,
     ownerApi.middleware ,
-    adminApi.middleware
+    adminApi.middleware,
+    masterApi.middleware
   ),
 })
 

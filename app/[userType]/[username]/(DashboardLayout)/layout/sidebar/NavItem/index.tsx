@@ -31,6 +31,7 @@ interface ItemType {
 }
 
 const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
+debugger
   const Icon = item.icon;
   const theme = useTheme();
   const itemIcon = <Icon stroke={1.5} size="1.3rem" />;

@@ -1,41 +1,44 @@
 'use client';
-import React, { ReactElement, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Grid, Box } from '@mui/material';
-import PageContainer from './components/container/PageContainer';
-
-// components
-import SalesOverview from './components/dashboard/SalesOverview';
-import YearlyBreakup from './components/dashboard/YearlyBreakup';
-import RecentTransactions from './components/dashboard/RecentTransactions';
-import ProductPerformance from './components/dashboard/ProductPerformance';
-import Blog from './components/dashboard/Blog';
-import MonthlyEarnings from './components/dashboard/MonthlyEarnings';
+import dynamic from 'next/dynamic';
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
 import { useSearchParams } from 'next/navigation';
-import TypographyPage from './utilities/typography/page';
-import Shadow from './utilities/shadow/page';
-import Icons from './icons/page';
-import SamplePage from './sample-page/page';
-import AddVhicle from './utilities/owner-cmp/AddVhicle'
-import RegisteredVhicles from './utilities/owner-cmp/RegisteredVhicles'
-import VhicleServices from './utilities/owner-cmp/VhicleServices'
-import VhicleOccupiedServies from './utilities/owner-cmp/VhicleOccupiedServies'
-import VarifyKyc from './utilities/owner-cmp/VarifyKyc'
-function UsersDashboard({ userType, userName })  {
-  let params = useSearchParams();
-  let tabs = params.get('tabs');
+import { CenteredLoader } from './AdminBackpage';
 
-  let dispatch = useAppDispatch();
+// Dynamic imports
+const PageContainer = dynamic(() => import('./components/container/PageContainer', { loading:<CenteredLoader />} ));
+const SalesOverview = dynamic(() => import('./components/dashboard/SalesOverview' ,{ loading:<CenteredLoader />}));
+const YearlyBreakup = dynamic(() => import('./components/dashboard/YearlyBreakup'),{  ssr: false, loading: () => <CenteredLoader />,});
+const RecentTransactions = dynamic(() => import('./components/dashboard/RecentTransactions'),{  ssr: false, loading: () => <CenteredLoader />,});
+const ProductPerformance = dynamic(() => import('./components/dashboard/ProductPerformance'),{  ssr: false, loading: () => <CenteredLoader />,});
+const Blog = dynamic(() => import('./components/dashboard/Blog'),{  ssr: false, loading: () => <CenteredLoader />,});
+const MonthlyEarnings = dynamic(() => import('./components/dashboard/MonthlyEarnings'),{  ssr: false, loading: () => <CenteredLoader />,});
+const TypographyPage = dynamic(() => import('./utilities/typography/page'),{  ssr: false, loading: () => <CenteredLoader />,});
+const Shadow = dynamic(() => import('./utilities/shadow/page'),{  ssr: false, loading: () => <CenteredLoader />,});
+const Icons = dynamic(() => import('./icons/page'),{  ssr: false, loading: () => <CenteredLoader />,});
+const SamplePage = dynamic(() => import('./sample-page/page'),{  ssr: false, loading: () => <CenteredLoader />,});
+const AddVhicle = dynamic(() => import('./utilities/owner-cmp/AddVhicle'),{  ssr: false, loading: () => <CenteredLoader />,});
+
+  const RegisteredVhicles = dynamic(() => import('./utilities/owner-cmp/RegisteredVhicles'),{  ssr: false, loading: () => <CenteredLoader />,});
+const VhicleServices = dynamic(() => import('./utilities/owner-cmp/VhicleServices'),{  ssr: false, loading: () => <CenteredLoader />,});
+const VhicleOccupiedServies = dynamic(() => import('./utilities/owner-cmp/VhicleOccupiedServies'),{  ssr: false, loading: () => <CenteredLoader />,});
+const VarifyKyc = dynamic(() => import('./utilities/owner-cmp/VarifyKyc'),{  ssr: false, loading: () => <CenteredLoader />,});
+
+function UsersDashboard({ userType, userName }) {
+  const params = useSearchParams();
+  const tabs = params.get('tabs');
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(setUserInfo({ userName: userName, userType: userType }));
   }, [userType, userName, dispatch]);
 
   return (
-     <>
     <PageContainer title="Dashboard" description="this is Dashboard">
-       
-      {tabs === null ? (<Box>
+      {tabs === null ? (
+        <Box>
           <Grid container spacing={3}>
             <Grid item xs={12} lg={8}>
               <SalesOverview />
@@ -74,10 +77,7 @@ function UsersDashboard({ userType, userName })  {
       {tabs === 'roles' && <SamplePage />}
       {tabs === 'active-month-settlement' && <SamplePage />}
       {tabs === 'any-month-settlement' && <SamplePage />}
-      
     </PageContainer>
-    </>
-
   );
 }
 

@@ -15,7 +15,8 @@ export default {
     'get_vhicle_details': "v1/admin/get-vhicle-details",
     'update_kyc_status': "v1/admin/approve-kyc-request",
     'block_unblock_user': "v1/admin/block-unblock-user",
-
+    "get_user_by_role":"v1/admin/get-user-by-role",
+     
     // master api
     "get_vhicle_type":"v1/master/get-vhicle-type" 
 }

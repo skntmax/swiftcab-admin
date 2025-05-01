@@ -80,6 +80,21 @@ const adminApi = createApi({
           ),
   
 
+      getUserByRole: builder.mutation({
+        query: (body) => (  {
+            url:urls.get_user_by_role ,
+            method: 'POST',
+            body:body,
+            headers: {
+            authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+          },
+          }),
+          providesTags:['getUserByRoles'],
+        },  
+        ),
+        
+
+
 
 
 
@@ -96,7 +111,7 @@ const adminApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
- useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation
+ useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation
 } = adminApi;
 
 

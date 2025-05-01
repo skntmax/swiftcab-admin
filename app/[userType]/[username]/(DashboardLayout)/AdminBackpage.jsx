@@ -63,6 +63,11 @@ const VhicleTypes = dynamic(() => import('./utilities/admin-cmp/VhicleTypes'), {
   loading: () => <CenteredLoader />,
 });
 
+const AssingRoles = dynamic(() => import('./utilities/admin-cmp/AssignRoles'), {
+  loading: () => <CenteredLoader />,
+});
+
+
 function AdminBackpage({ userType, userName }) {
   const params = useSearchParams();
   const tabs = params.get('tabs');
@@ -108,6 +113,7 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'permission-management' && <PermissionMgmt />}
       {tabs === 'kyc-request-approval' && <KycRequestApproval />}
       {tabs === 'vhicle-types' && <VhicleTypes />}
+      {tabs === 'assing-roles' && <AssingRoles />}
     </PageContainer>
   );
 }

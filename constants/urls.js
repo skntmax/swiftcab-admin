@@ -18,6 +18,7 @@ export default {
     "get_user_by_role":"v1/admin/get-user-by-role",
      
     // master api
-    "get_vhicle_type":"v1/master/get-vhicle-type" 
+    "get_vhicle_type":"v1/master/get-vhicle-type",
+    "add_role_to_users":"v1/admin/add-role-to-users" 
 }
 

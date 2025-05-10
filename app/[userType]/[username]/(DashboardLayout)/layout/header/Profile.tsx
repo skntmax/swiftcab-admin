@@ -16,12 +16,15 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 import { SWC_KEYS } from "@constants";
 import { deleteCookie } from "@node_modules/cookies-next/lib";
+import { usePathname, useRouter } from "next/navigation";
 
 type userProfile ={ 
    username:string
 }
 const Profile = ({username}:userProfile) => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const router = useRouter()
+  const pathname = usePathname()
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
   };
@@ -34,6 +37,14 @@ const Profile = ({username}:userProfile) => {
     deleteCookie(SWC_KEYS.SWC_TOKEN);
   };
 
+  const  switchToMyProfile=()=>{
+    router.push(`${pathname}/my-profile`)  
+  }
+
+
+  const switchToMyAccound = ()=>{
+    router.push(`${pathname}/my-account` )  
+  }
   return (
     <Box>
       <IconButton
@@ -56,7 +67,6 @@ const Profile = ({username}:userProfile) => {
             height: 35,
           }}
          />
-
       </IconButton>
       {/* ------------------------------------------- */}
       {/* Message Dropdown */}
@@ -79,13 +89,13 @@ const Profile = ({username}:userProfile) => {
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
+          <ListItemText   onClick={()=>switchToMyProfile()}>My Profile</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
+          <ListItemText onClick={()=> switchToMyAccound() } >My Account</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>

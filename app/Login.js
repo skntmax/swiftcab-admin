@@ -133,7 +133,7 @@ const signupUser= (e)=>{
 const loginUser = (e)=>{
    
   e.preventDefault()
-  let payload = { emailOrUsername:loginFd.email.value ,  password:loginFd.password.value , userType:Number( loginFd.userType.value)}
+  let payload = { emailOrUsername:loginFd.email.value ,  password:loginFd.password.value , userType:Number(loginFd.userType.value)}
   loginNewUser(payload)
 
 }

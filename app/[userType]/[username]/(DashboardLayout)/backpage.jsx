@@ -25,6 +25,7 @@ const AddVhicle = dynamic(() => import('./utilities/owner-cmp/AddVhicle'),{  ssr
 const VhicleServices = dynamic(() => import('./utilities/owner-cmp/VhicleServices'),{  ssr: false, loading: () => <CenteredLoader />,});
 const VhicleOccupiedServies = dynamic(() => import('./utilities/owner-cmp/VhicleOccupiedServies'),{  ssr: false, loading: () => <CenteredLoader />,});
 const VarifyKyc = dynamic(() => import('./utilities/owner-cmp/VarifyKyc'),{  ssr: false, loading: () => <CenteredLoader />,});
+const OccupiedDrivers = dynamic(() => import('./utilities/owner-cmp/OccupiedDrivers'),{  ssr: false, loading: () => <CenteredLoader />,});
 
 function UsersDashboard({ userType, userName }) {
   const params = useSearchParams();
@@ -77,6 +78,8 @@ function UsersDashboard({ userType, userName }) {
       {tabs === 'roles' && <SamplePage />}
       {tabs === 'active-month-settlement' && <SamplePage />}
       {tabs === 'any-month-settlement' && <SamplePage />}
+      {tabs === 'occupied-drivers' && <OccupiedDrivers /> }
+      
     </PageContainer>
   );
 }

@@ -15,7 +15,7 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
   let tabs = params.get('tabs')
     const navbar =  useAppSelector((ele)=> ele['navbar-menu'])
   
-  const pathDirect = `${ pathname}/?tabs=${tabs}`;
+  const pathDirect = `${pathname}/?tabs=${tabs}`;
 
     let modifiedMenuItems =(navbar?.navbar).map(ele=>({
     ...ele , icon: all_cons[ele.icon] 
@@ -29,17 +29,15 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
 
           if (item.subheader)
             return <NavGroup item={item} key={item.subheader} />;
-
-
-        return (
-          <NavItem
-            item={item}
-            key={item.id}
-            pathDirect={pathDirect}
-            onClick={toggleMobileSidebar}
-          />
-        )
-        })}
+          return (
+            <NavItem
+              item={item}
+              key={item.id}
+              pathDirect={pathDirect}
+              onClick={toggleMobileSidebar}
+            />
+          )
+          })}
       </List>
     </Box>
   );

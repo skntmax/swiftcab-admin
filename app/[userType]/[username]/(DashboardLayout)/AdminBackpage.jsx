@@ -67,6 +67,9 @@ const AssingRoles = dynamic(() => import('./utilities/admin-cmp/AssignRoles'), {
   loading: () => <CenteredLoader />,
 });
 
+const NavItems = dynamic(() => import('./utilities/admin-cmp/NavItems'), {
+  loading: () => <CenteredLoader />,
+});  
 
 function AdminBackpage({ userType, userName }) {
   const params = useSearchParams();
@@ -114,6 +117,7 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'kyc-request-approval' && <KycRequestApproval />}
       {tabs === 'vhicle-types' && <VhicleTypes />}
       {tabs === 'assing-roles' && <AssingRoles />}
+      {tabs === 'nav-items' && <NavItems />}
     </PageContainer>
   );
 }

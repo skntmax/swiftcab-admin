@@ -19,6 +19,7 @@ export default {
      
     // master api
     "get_vhicle_type":"v1/master/get-vhicle-type",
-    "add_role_to_users":"v1/admin/add-role-to-users" 
+    "add_role_to_users":"v1/admin/add-role-to-users",
+    "add_navbar":"v1/admin/add-navbar" 
 }
 

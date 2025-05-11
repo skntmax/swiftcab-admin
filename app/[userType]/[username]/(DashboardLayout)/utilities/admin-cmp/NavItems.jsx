@@ -1,7 +1,6 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
-import { Box, TextField, Checkbox, FormControlLabel, Button, Typography, MenuItem } from "@mui/material";
+import { Box,  Typography } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import HomeIcon from "@mui/icons-material/Home";
@@ -9,6 +8,9 @@ import InfoIcon from "@mui/icons-material/Info";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import  { FormInput }  from "@components/FormController" ;
 import {all_menu_icons} from './all_tabler_react_icons'
+import { yupResolver } from '@hookform/resolvers/yup';
+import {navMenuSchema} from '@/components/FormSchema/test/NavMenuSchema.js'
+import { useAddNavbarMutation } from "@app/libs/apis/admin";
 let icons = 
  [
   { value: "PostAdd", label: "Post Add", icon: <PostAddIcon /> },
@@ -34,17 +36,29 @@ function NavItems() {
       icon: "",
       ['save-navbar']:false 
     },
+    resolver: yupResolver(navMenuSchema)
+
   });
 
+
+  // api calling
+
+  const [ addNavbar , { data:addNavbarData ,  isLoading:addNavbarLoading  }] = useAddNavbarMutation()
+  
   const  [iconsObjectArray ,  setIconNames] = useState([])
-
-
   const onSubmit = (data) => {
-    console.log("Form Data: ", data);
-    setError('root')
-    // reset(); // Reset form after submission
+    debugger
+    console.log("Form Submitted:", data);
+    if (isValid) {
+      try {
+        addNavbar(data);  // Adjust the payload structure as needed
+        reset(); // Reset form after successful submission
+      } catch (error) {
+        console.error("API Error: ", error);
+        setError("root", { type: "server", message: "Failed to add navbar" });
+      }
+    }
   };
-
 
   useEffect(() => {
     // const iconNames = Object.keys(all_icons).filter(
@@ -54,12 +68,6 @@ function NavItems() {
     setIconNames(all_menu_icons.map(ele=>( { value: ele , label: ele , icon:  ele } )))
   }, []);
 
-
-  useEffect(()=>{
-    console.log(errors)
-     
-  },[watch('nav_item')])
-   
    return (
     <Box
       component="form"
@@ -85,8 +93,8 @@ function NavItems() {
           control={control}
           rest={{
             label: "Navigation Item",
-            error: errors?.nav_item==""?true:false,
-            helperText: errors?.nav_item==""? "please enter navbar" : "",
+            error: !!errors?.nav_item,
+            helperText: errors?.nav_item?.message,
           }}
         />
             
@@ -106,6 +114,8 @@ function NavItems() {
           register={register}
           rest={{
             label: "Have Sub menu?",
+            error : !!errors?.sub_menu,
+            helperText: errors?.sub_menu?.message
           }}
         />
       </Box>
@@ -118,7 +128,8 @@ function NavItems() {
         register={register}
         rest={{
           label:"href",
-          error: !!errors?.sub_menu,  // This will give a boolean value for error
+          error : !!errors?.href,
+          helperText: errors?.href?.message
         }}
       />
 
@@ -138,16 +149,14 @@ function NavItems() {
       />
   } 
 
-      <FormInput
-        name="save-navbar"
-        type="button"
-        control={control}
-        options={icons}
-        register={register}
-        rest={{}}
-      >
-        Add  Navbar
-      </FormInput>
+        <FormInput
+          name="submit-button"
+          type="submit"
+          rest={{}}
+          isLoading={addNavbarLoading}
+        >
+          Add Navbar
+        </FormInput>
     </Box>
   );
 }

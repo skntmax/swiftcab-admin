@@ -105,6 +105,20 @@ const adminApi = createApi({
             providesTags:['updateRoles'],
           },  
           ),
+
+      addNavbar: builder.mutation({
+        query: (body) => (  {
+            url:urls.add_navbar ,
+            method: 'POST',
+            body:body,
+            headers: {
+            authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+          },
+          }),
+          providesTags:['add-navbar'],
+        },  
+        ),
+
         
           
         
@@ -127,7 +141,7 @@ const adminApi = createApi({
 // Export hooks for usage in functional components
 export const {
  useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
- useUpdateRolesMutation
+ useUpdateRolesMutation, useAddNavbarMutation
 } = adminApi;
 
 

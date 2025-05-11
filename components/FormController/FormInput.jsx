@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Box, Checkbox, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
 import * as  all_icons from "@tabler/icons-react";
+import ApiLoader from '@components/ApiLoader';
 
 let defaultOption = [
     { value: "chocolate", label: "Chocolate" },
@@ -29,7 +30,8 @@ function FormInput({
    name="name", 
    type="text",
    control, 
-   register ,   
+   register ,  
+   isLoading  = false , 
    options=defaultOption,  
    rest={ startIcon: <CloudUploadIcon />  }, 
    children}) {
@@ -39,10 +41,10 @@ function FormInput({
     <Controller
         name={name}
         control={control}
-        render={({ field }) => <TextField  
+        render={({ field }) =>
+         <TextField  
         {...field} 
         {...rest} 
-        
          /> }
         
       />
@@ -56,7 +58,7 @@ function FormInput({
           render={({ field }) => 
           <Button 
           variant="contained"  
-          type="submit"
+          type="button"
           {...rest} 
           {...field}
             >
@@ -64,6 +66,27 @@ function FormInput({
             </Button> }
         />
     )
+
+
+    if (type === "submit") {
+      if (isLoading) {
+        return (
+          <Button {...rest} disabled>
+            <ApiLoader />
+          </Button>
+        );
+      }
+    
+      return (
+        <Button
+          {...rest}
+          variant="contained"
+          type="submit" // Ensures form submission
+        >
+          {children}
+        </Button>
+      );
+    }
   
 
     if(type=="upload")

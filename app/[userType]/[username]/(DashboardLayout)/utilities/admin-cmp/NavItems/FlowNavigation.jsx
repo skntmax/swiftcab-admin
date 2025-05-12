@@ -1,34 +1,57 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { IconCar, IconFileText, IconMap2, IconMapPin, IconDiscount2, IconWallet, IconCircleX, IconHelpCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
-const iconMap = {
-  IconCar: <IconCar size={24} />,
-  IconFileText: <IconFileText size={24} />,
-  IconMap2: <IconMap2 size={24} />,
-  IconMapPin: <IconMapPin size={24} />,
-  IconDiscount2: <IconDiscount2 size={24} />,
-  IconWallet: <IconWallet size={24} />,
-  IconCircleX: <IconCircleX size={24} />,
-  IconHelpCircle: <IconHelpCircle size={24} />,
+const VectorNav = ({ navItems }) => {
+  return (
+    <div className="relative flex flex-col gap-4 p-4">
+      {navItems.map((item) => (
+        <NavItem key={item.id} item={item} />
+      ))}
+    </div>
+  );
 };
 
-const FlowNavigation = ({ data }) => {
+const NavItem = ({ item }) => {
+  const hasSubMenu = item.sub_menu;
+
   return (
-    <div className="flex flex-wrap justify-center gap-6 p-6">
-      {data.map((item) => (
+    <div className="relative group">
+      <motion.div
+        className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 cursor-pointer"
+        whileHover={{ scale: 1.05 }}
+      >
+        <div className="text-lg font-medium">{item.nav_item}</div>
+        {hasSubMenu && <ChevronRight className="ml-auto" />}
+      </motion.div>
+
+      {hasSubMenu && item.sub_items && item.sub_items.length > 0 && (
         <motion.div
-          key={item.id}
-          className="w-40 h-40 bg-white shadow-lg rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute left-full top-0 ml-4 mt-2 space-y-2"
         >
-          {item.icon && iconMap[item.icon]}
-          <span className="text-lg font-semibold text-center">{item.nav_item}</span>
+          <SubMenu items={item.sub_items} />
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+const SubMenu = ({ items }) => {
+  return (
+    <div className="flex flex-col gap-2">
+      {items.map((subItem) => (
+        <motion.div
+          key={subItem.id}
+          className="p-2 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 cursor-pointer"
+          whileHover={{ x: 5 }}
+        >
+          {subItem.label}
         </motion.div>
       ))}
     </div>
   );
 };
 
-export default FlowNavigation;
+export default VectorNav;

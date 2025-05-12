@@ -20,6 +20,9 @@ export default {
     // master api
     "get_vhicle_type":"v1/master/get-vhicle-type",
     "add_role_to_users":"v1/admin/add-role-to-users",
-    "add_navbar":"v1/admin/add-navbar" 
+    "add_navbar":"v1/admin/add-navbar", 
+    "get_navbar_list":"v1/admin/get-navbar-list",
+    "add_subnavbar":"v1/admin/add-subnavbar",
+
 }
 

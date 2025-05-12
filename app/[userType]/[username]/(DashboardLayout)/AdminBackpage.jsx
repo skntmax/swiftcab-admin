@@ -67,9 +67,19 @@ const AssingRoles = dynamic(() => import('./utilities/admin-cmp/AssignRoles'), {
   loading: () => <CenteredLoader />,
 });
 
-const NavItems = dynamic(() => import('./utilities/admin-cmp/NavItems'), {
+const NavItems = dynamic(() => import('./utilities/admin-cmp/NavItems/NavItems'), {
   loading: () => <CenteredLoader />,
 });  
+
+const SubNavForm = dynamic(() => import('./utilities/admin-cmp/NavItems/SubNavItem'), {
+  loading: () => <CenteredLoader />,
+});  
+
+const MenuAssignToRoles = dynamic(() => import('./utilities/admin-cmp/NavItems/MenuAssignToRoles'), {
+  loading: () => <CenteredLoader />,
+});  
+
+
 
 function AdminBackpage({ userType, userName }) {
   const params = useSearchParams();
@@ -118,6 +128,9 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'vhicle-types' && <VhicleTypes />}
       {tabs === 'assing-roles' && <AssingRoles />}
       {tabs === 'nav-items' && <NavItems />}
+      {tabs === 'sub-nav-items' && <SubNavForm />}
+      {tabs === 'menu-assigned-to-roles' && <MenuAssignToRoles />}
+      
     </PageContainer>
   );
 }

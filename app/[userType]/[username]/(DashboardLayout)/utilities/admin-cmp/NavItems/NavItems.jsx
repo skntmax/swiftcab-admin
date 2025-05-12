@@ -3,16 +3,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useForm} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import PostAddIcon from "@mui/icons-material/PostAdd";
-import HomeIcon from "@mui/icons-material/Home";
-import InfoIcon from "@mui/icons-material/Info";
-import ContactMailIcon from "@mui/icons-material/ContactMail";
 import { FormInput } from "@components/FormController";
-import { all_menu_icons } from "./all_tabler_react_icons";
+import { all_menu_icons } from "../all_tabler_react_icons";
 import { navMenuSchema } from "@/components/FormSchema/test/NavMenuSchema.js";
 import { useAddNavbarMutation } from "@app/libs/apis/admin";
 import { contextProvider } from "@components/AppProvider";
-import FlowNavigation from './NavItems/FlowNavigation'
+// import FlowNavigation from './FlowNavigation'
 
 function NavItems() {
   const {
@@ -63,8 +59,9 @@ function NavItems() {
     );
   }, []);
 
-  useEffect(()=>{
 
+  // when api is called 
+  useEffect(()=>{
     if(addNavbarData?.status==500 && addNavbarData?.error) return errorMessage(addNavbarData?.message)
     if(addNavbarData?.status==200 && !addNavbarData?.error ) {
        successMessage(addNavbarData?.message) 
@@ -156,8 +153,8 @@ function NavItems() {
       </FormInput>
     </Box>
     
-    <FlowNavigation
-    data={[
+    {/* <FlowNavigation
+    navItems={[
         {
             "id": 1,
             "nav_item": "Vhicles",
@@ -212,7 +209,7 @@ function NavItems() {
             "created_on": "2025-05-13T00:49:22.706Z",
             "updated_on": "2025-05-13T00:49:22.706Z"
         }] }
-      />
+      /> */}
      </>
 }
 

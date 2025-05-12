@@ -146,7 +146,7 @@ if (type === "dropdown") {
           render={({ field }) => (
             <TextField {...field} select fullWidth {...rest}>
               {options.map((option) => {
-                const IconComponent = all_icons[option.icon];
+                const IconComponent = all_icons[option.icon]??null;
                 return (
                   <MenuItem key={option.value} value={option.value}>
                     {IconComponent && (

@@ -69,22 +69,24 @@ function FormInput({
 
 
     if (type === "submit") {
-      if (isLoading) {
+       // in case of loading an api 
+       if(isLoading)   <Button {...rest} disabled={isLoading}  > <ApiLoader /> </Button>
+
         return (
-          <Button {...rest} disabled>
-            <ApiLoader />
-          </Button>
-        );
-      }
-    
-      return (
-        <Button
-          {...rest}
-          variant="contained"
-          type="submit" // Ensures form submission
-        >
-          {children}
-        </Button>
+        <Controller
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <Button
+              {...rest}
+              {...field}
+              variant="contained"
+              type="submit" // Ensures form submission                 
+            >
+              {children}
+            </Button>
+          )}
+        />
       );
     }
   

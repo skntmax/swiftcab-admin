@@ -1,3 +1,4 @@
+'use client'
 import * as yup from "yup";
 
 const navMenuSchema = yup.object({
@@ -17,10 +18,6 @@ const navMenuSchema = yup.object({
   icon: yup
     .string()
     .required("Icon is required"),
-
-  "save-navbar": yup
-    .boolean()
-    .oneOf([true], "You must save the navbar"),
 }).required();
 
 export { navMenuSchema };

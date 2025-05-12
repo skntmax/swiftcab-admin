@@ -234,7 +234,7 @@ const AssignRoles = () => {
           value={selectedRoles}
           onChange={(event, newValue) => setSelectedRoles(newValue)}
           renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
+            value.map((option, index)   => (
               <Chip
                 label={option}
                 {...getTagProps({ index })}

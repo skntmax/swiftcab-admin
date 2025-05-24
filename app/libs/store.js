@@ -10,6 +10,7 @@ import navbarSlice from './slice/navMenuSlice'
 import adminApi from './apis/admin'
 import masterApi from './apis/master'
 import userRolesSlice from './slice/userRolesSlice' 
+import profileSlice from './slice/profile'
 export const reduxStore = configureStore({
   reducer: {
      [usersSlice.reducerPath]:usersSlice.reducer,
@@ -18,7 +19,8 @@ export const reduxStore = configureStore({
     [navbarSlice.reducerPath]:navbarSlice.reducer,
     [adminApi.reducerPath]:adminApi.reducer,
     [masterApi.reducerPath]:masterApi.reducer,
-    [userRolesSlice.reducerPath]:userRolesSlice.reducer 
+    [userRolesSlice.reducerPath]:userRolesSlice.reducer,
+    [profileSlice.reducerPath]:profileSlice.reducer 
     
   },
   middleware: (getDefaultMiddleware) =>getDefaultMiddleware().concat(

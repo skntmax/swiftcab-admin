@@ -34,7 +34,7 @@ const App = () => {
                 username:{ name:"username" , value:"" , error: false , message:"Username is required" },
                 password:{ name:"password" , value:"" , error: false , message:"Password is required" },
                 userType:{ name:"userType" , value:"" , error: false , message:"User type is required " },
-   })
+      })
 
 
       const [ loginFd , setLoginFd ] = useState({

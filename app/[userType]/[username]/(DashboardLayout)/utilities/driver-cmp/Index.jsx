@@ -12,6 +12,14 @@ import Blog from './../../components/dashboard/Blog';
 import MonthlyEarnings from './../../components/dashboard/MonthlyEarnings';
 import  ViewSummary from './Dashboard/ViewSummary'
 import  Notification from './Dashboard/Notification'
+import UpComingRides from './Dashboard/UpComingRides'
+import CompletedRides from './Dashboard/CompletedRides'
+import CancelledRides from './Dashboard/CancelledRides'
+import DilyEarning from './Dashboard/DilyEarning'
+import RideHistory from './Dashboard/RideHistory'
+import ProfileView from './Dashboard/ProfileView'
+import HistoryEarning from './Dashboard/HistoryEarning'
+import MonthlyEarning from './Dashboard/MonthlyEarning'
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
 import { useSearchParams } from 'next/navigation';
@@ -63,14 +71,14 @@ export default function Index({userType, userName}) {
       {tabs === 'driver/dashboard/summary' && <ViewSummary />}
       {tabs === 'driver/dashboard/notifications' && <Notification />}
       {tabs === 'add-vhicles-services' && <VhicleServices />}
-      {tabs === 'driver/my-rides/upcoming' && <VhicleOccupiedServies />}
-      {tabs === 'driver/my-rides/completed' && <VarifyKyc />}
-      {tabs === 'driver/my-rides/cancelled' && <SamplePage />}
-      {tabs === 'driver/earnings/daily' && <SamplePage />}
-      {tabs === 'driver/earnings/monthly' && <SamplePage />}
-      {tabs === 'driver/earnings/history' && <SamplePage />}
-      {tabs === 'driver/ride-history/all' && <SamplePage />}
-      {tabs === 'driver/profile/view' && <SamplePage />}
+      {tabs === 'driver/my-rides/upcoming' && <UpComingRides />}
+      {tabs === 'driver/my-rides/completed' && <CompletedRides />}
+      {tabs === 'driver/my-rides/cancelled' && <CancelledRides />}
+      {tabs === 'driver/earnings/daily' && <DilyEarning />}
+      {tabs === 'driver/earnings/monthly' && <MonthlyEarning />}
+      {tabs === 'driver/earnings/history' && <HistoryEarning />}
+      {tabs === 'driver/ride-history/all' && <RideHistory />}
+      {tabs === 'driver/profile/view' && <ProfileView />}
       
 
     </PageContainer>  

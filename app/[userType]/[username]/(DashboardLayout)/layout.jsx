@@ -1,6 +1,6 @@
 "use client";
 import { styled, Container, Box, ThemeProvider } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Header from "./layout/header/Header";
 // import Sidebar from "./layout/sidebar/Sidebar";
 const Sidebar   = dynamic(()=> import("./layout/sidebar/Sidebar") , {ssr:false}) ;
@@ -8,11 +8,13 @@ import { baselightTheme } from '@utils/theme/DefaultColors'
 import CssBaseline from "@mui/material/CssBaseline";
 import dynamic from "@node_modules/next/dynamic";
 import { usePathname } from "@node_modules/next/navigation";
-import { USER_ROLES } from "@constants";
+import { SWC_KEYS, USER_ROLES } from "@constants";
 import { useDispatch } from "@node_modules/react-redux/dist/react-redux";
 import { fetGlobalNavbar } from "@app/libs/slice/navMenuSlice";
 import { useAppSelector } from "@app/libs/store";
 import { fetchUserRoles } from "@app/libs/slice/userRolesSlice";
+import { setBaseUrl } from "@app/libs/slice/profile";
+import { contextProvider } from "@components/AppProvider";
 const MainWrapper = styled("div")(() => ({
   display: "flex",
   minHeight: "100vh",
@@ -38,11 +40,10 @@ export default function RootLayout({children}) {
 
   const navbar =  useAppSelector((ele)=> ele['navbar-menu'])
   const userRoles =  useAppSelector((ele)=> ele['userRoles'])
-
+  const  profile =  useAppSelector((ele)=> ele.baseUrl)
   const [ userType ,  username] = pathname.split('/').filter(Boolean) 
-
-
-  useEffect(()=>{
+  
+useEffect(()=>{
  
     if(navbar?.navbar.length==0)
        dispatch(fetGlobalNavbar({userType:userType.toLowerCase()}))
@@ -50,8 +51,21 @@ export default function RootLayout({children}) {
    if(userRoles?.list?.length==0)
         dispatch(fetchUserRoles())
 
+
+   // setting baseUrl 
+    if(!profile?.baseUrl) {
+       let baseUrl =`${userType.toLowerCase()}/${username}`
+       dispatch(setBaseUrl({baseUrl}))
+    }
+
    },[])
 
+
+  
+
+
+   
+   
 return (
 
     <MainWrapper className="mainwrapper" style={{background:"white", zIndex:5}}>     

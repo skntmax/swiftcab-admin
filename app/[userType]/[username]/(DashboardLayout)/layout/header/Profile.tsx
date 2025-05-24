@@ -17,6 +17,7 @@ import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 import { SWC_KEYS } from "@constants";
 import { deleteCookie } from "@node_modules/cookies-next/lib";
 import { usePathname, useRouter } from "next/navigation";
+import { useAppSelector } from "@app/libs/store";
 
 type userProfile ={ 
    username:string
@@ -25,6 +26,8 @@ const Profile = ({username}:userProfile) => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const router = useRouter()
   const pathname = usePathname()
+    const  profile: any =  useAppSelector((ele:any)=> ele.profile)
+  
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
   };
@@ -38,12 +41,12 @@ const Profile = ({username}:userProfile) => {
   };
 
   const  switchToMyProfile=()=>{
-    router.push(`${pathname}/my-profile`)  
+    router.push(`/${profile?.baseUrl}/my-profile`)  
   }
 
 
   const switchToMyAccound = ()=>{
-    router.push(`${pathname}/my-account` )  
+    router.push(`/${profile?.baseUrl}/my-account` )  
   }
   return (
     <Box>

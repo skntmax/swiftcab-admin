@@ -24,5 +24,10 @@ export default {
     "get_navbar_list":"v1/admin/get-navbar-list",
     "add_subnavbar":"v1/admin/add-subnavbar",
 
+    // driver api 
+    "assing_menu_roles":"v1/admin/add-menu",
+    "get_driver_details":"get-driver-details"
+
+
 }
 

@@ -170,8 +170,6 @@ const SubNavForm = () => {
             />
           )}
 
-       
-
         {/* Submit Button */}
               <FormInput
                 name="submitButton"

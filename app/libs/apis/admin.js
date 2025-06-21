@@ -8,7 +8,7 @@ import { SWC_KEYS } from '@constants';
 // Define the base API
 const adminApi = createApi({
   reducerPath: 'adminApi',
-  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar"],
+  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar","add-menu-roles"],
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      getAllUsers: builder.mutation({
@@ -145,15 +145,18 @@ const adminApi = createApi({
         },  
         ),
 
-
-          
-        
-
-
-
-
-
-
+        addMenuToRoles: builder.mutation({
+        query: (body) => (  {
+            url:urls.assing_menu_roles ,
+            method: 'POST',
+            body:body,
+            headers: {
+            authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+          },
+          }),
+          providesTags:['add-menu-roles'],
+        },  
+        ),
     
   }),
 
@@ -167,7 +170,7 @@ const adminApi = createApi({
 // Export hooks for usage in functional components
 export const {
  useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
- useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation
+ useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation
 } = adminApi;
 
 

@@ -11,23 +11,26 @@ import adminApi from './apis/admin'
 import masterApi from './apis/master'
 import userRolesSlice from './slice/userRolesSlice' 
 import profileSlice from './slice/profile'
+import driversApi from './apis/driver'
 export const reduxStore = configureStore({
   reducer: {
-     [usersSlice.reducerPath]:usersSlice.reducer,
+    [usersSlice.reducerPath]:usersSlice.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [ownerApi.reducerPath]: ownerApi.reducer,
     [navbarSlice.reducerPath]:navbarSlice.reducer,
     [adminApi.reducerPath]:adminApi.reducer,
     [masterApi.reducerPath]:masterApi.reducer,
     [userRolesSlice.reducerPath]:userRolesSlice.reducer,
-    [profileSlice.reducerPath]:profileSlice.reducer 
+    [profileSlice.reducerPath]:profileSlice.reducer ,
+    [driversApi.reducerPath]:driversApi.reducer
     
   },
   middleware: (getDefaultMiddleware) =>getDefaultMiddleware().concat(
     userApi.middleware,
     ownerApi.middleware ,
     adminApi.middleware,
-    masterApi.middleware
+    masterApi.middleware,
+    driversApi.middleware
   ),
 })
 

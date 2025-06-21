@@ -35,20 +35,20 @@ function FormInput({
    options=defaultOption,  
    rest={ startIcon: <CloudUploadIcon />  }, 
    children}) {
-  
+
     if(type=="text")
     return (
-    <Controller
-        name={name}
-        control={control}
-        render={({ field }) =>
-         <TextField  
-        {...field} 
-        {...rest} 
-         /> }
-        
-      />
-  )
+        <Controller
+            name={name}
+            control={control}
+            render={({ field }) =>
+            <TextField  
+            {...field} 
+            {...rest} 
+            /> }
+            
+          />
+      )
 
     if(type=="button")
       return (

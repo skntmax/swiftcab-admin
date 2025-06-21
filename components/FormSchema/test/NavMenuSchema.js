@@ -48,4 +48,17 @@ const subNavbmenuSchema = yup.object({
     .required("Nav Item ID is required"),
 }).required();
 
-export { navMenuSchema ,subNavbmenuSchema };
+
+
+const assigningRoleMenuSchema = yup.object({
+  role: yup
+    .number()
+    .required("Role is required"),
+
+  nav_menu: yup
+    .number()
+    .typeError("Nav Item ID must be a number")
+    .required("Nav Item ID is required"),
+}).required();
+
+export { navMenuSchema ,subNavbmenuSchema ,assigningRoleMenuSchema };

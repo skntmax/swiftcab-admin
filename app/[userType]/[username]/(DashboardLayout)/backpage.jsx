@@ -34,7 +34,7 @@ function UsersDashboard({ userType, userName }) {
 
   useEffect(() => {
     dispatch(setUserInfo({ userName: userName, userType: userType }));
-  }, [userType, userName, dispatch]);
+  }, []);
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">

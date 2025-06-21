@@ -88,7 +88,7 @@ function AdminBackpage({ userType, userName }) {
 
   useEffect(() => {
     dispatch(setUserInfo({ userName, userType }));
-  }, [userType, userName, dispatch]);
+  }, []);
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">

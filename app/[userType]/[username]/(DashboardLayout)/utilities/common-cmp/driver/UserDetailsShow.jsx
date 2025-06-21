@@ -4,8 +4,6 @@ import {
   Box,
   Typography,
   Link,
-  Divider,
-  Stack,
   Grid,
   Paper,
   Backdrop,
@@ -20,7 +18,9 @@ import {
   CheckCircle,
   Cancel,
   CalendarToday,
-  DocumentScanner
+  DocumentScanner,
+  AccountBalance,
+  CreditCard
 } from '@mui/icons-material';
 
 const UserDetailsShow = ({ data, isLoading = false }) => {
@@ -53,58 +53,58 @@ const UserDetailsShow = ({ data, isLoading = false }) => {
               </Typography>
             </Grid>
 
-            {/* Documents & Info */}
+            {/* Info Cards */}
             <Grid item xs={12} md={8}>
-              <Card elevation={1} sx={{ mb: 3 }}>
-                <CardHeader
-                  title="Document Links"
-                  titleTypographyProps={{ variant: 'h6' }}
-                  avatar={<DocumentScanner />}
-                />
-                <CardContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Field label="Driving License" url={data.DL} />
-                      <Field label="RC Document" url={data.RC} />
-                      <Field label="Insurance" url={data.insurance} />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Field label="PAN Card" url={data.pan_card} />
-                      <Field label="Aadhar Card" url={data.adhar_card} />
-                    </Grid>
+              {/* Document Links */}
+              <InfoCard title="Document Links" icon={<DocumentScanner />}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Field label="Driving License" url={data.DL} />
+                    <Field label="RC Document" url={data.RC} />
+                    <Field label="Insurance" url={data.insurance} />
                   </Grid>
-                </CardContent>
-              </Card>
+                  <Grid item xs={12} sm={6}>
+                    <Field label="PAN Card" url={data.pan_card} />
+                    <Field label="Aadhar Card" url={data.adhar_card} />
+                  </Grid>
+                </Grid>
+              </InfoCard>
 
-              <Card elevation={1}>
-                <CardHeader
-                  title="Account & Verification Info"
-                  titleTypographyProps={{ variant: 'h6' }}
-                  avatar={<AttachMoney />}
-                />
-                <CardContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Info label="Wallet Code" value={data.wallet_code} />
-                      <Info label="Wallet Balance" value={`₹${data.wallet_balance}`} />
-                      <Info
-                        label="Bank Verified"
-                        value={data.is_bank_varified ? 'Yes' : 'No'}
-                        icon={data.is_bank_varified ? <CheckCircle color="success" /> : <Cancel color="error" />}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Info
-                        label="Driver Verified"
-                        value={data.is_varified ? 'Yes' : 'No'}
-                        icon={data.is_varified ? <CheckCircle color="success" /> : <Cancel color="error" />}
-                      />
-                      <Info label="Created On" value={new Date(data.created_on).toLocaleString()} icon={<CalendarToday />} />
-                      <Info label="Updated On" value={new Date(data.updated_on).toLocaleString()} icon={<CalendarToday />} />
-                    </Grid>
+              {/* Account & Verification Info */}
+              <InfoCard title="Account & Verification Info" icon={<AttachMoney />}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Info label="Wallet Code" value={data.wallet_code} />
+                    <Info label="Wallet Balance" value={`₹${data.wallet_balance}`} />
+                    <Info
+                      label="Bank Verified"
+                      value={data.is_bank_varified ? 'Yes' : 'No'}
+                      icon={data.is_bank_varified ? <CheckCircle color="success" /> : <Cancel color="error" />}
+                    />
                   </Grid>
-                </CardContent>
-              </Card>
+                  <Grid item xs={12} sm={6}>
+                    <Info
+                      label="Driver Verified"
+                      value={data.is_varified ? 'Yes' : 'No'}
+                      icon={data.is_varified ? <CheckCircle color="success" /> : <Cancel color="error" />}
+                    />
+                    <Info label="Created On" value={new Date(data.created_on).toLocaleString()} icon={<CalendarToday />} />
+                    <Info label="Updated On" value={new Date(data.updated_on).toLocaleString()} icon={<CalendarToday />} />
+                  </Grid>
+                </Grid>
+              </InfoCard>
+
+              {/* Bank Info */}
+              <InfoCard title="Bank Information" icon={<AccountBalance />}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Info label="IFSC Code" value={data.ifsc || "N/A"} icon={<CreditCard />} />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Info label="Branch Name" value={data.bank_account_branch || "N/A"} icon={<CreditCard />} />
+                  </Grid>
+                </Grid>
+              </InfoCard>
             </Grid>
           </Grid>
         </Paper>
@@ -112,6 +112,17 @@ const UserDetailsShow = ({ data, isLoading = false }) => {
     </>
   );
 };
+
+const InfoCard = ({ title, icon, children }) => (
+  <Card elevation={1} sx={{ mb: 3 }}>
+    <CardHeader
+      title={title}
+      avatar={icon}
+      titleTypographyProps={{ variant: 'h6' }}
+    />
+    <CardContent>{children}</CardContent>
+  </Card>
+);
 
 const Field = ({ label, url }) => (
   <Box sx={{ mb: 1 }}>

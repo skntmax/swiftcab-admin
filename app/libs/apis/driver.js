@@ -1,6 +1,8 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import  urls from '../../../constants/urls'
+import { getCookie } from '@node_modules/cookies-next/lib';
+import { SWC_KEYS } from '@constants';
 
 // Define the base API
 const driversApi = createApi({
@@ -12,6 +14,9 @@ const driversApi = createApi({
         query: (body) => (  {
            url: urls.get_driver_details,
            method: 'GET',
+          headers: {
+                      authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                    },
             // body:body
         }),
         providesTags:['get-driver-details']
@@ -28,7 +33,7 @@ const driversApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
-  driverDetailsMutation
+  useDriverDetailsMutation
 } = driversApi;
 
 

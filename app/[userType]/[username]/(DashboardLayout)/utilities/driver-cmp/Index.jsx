@@ -31,7 +31,7 @@ export default function Index({userType, userName}) {
     let dispatch = useAppDispatch();
     useEffect(() => {
       dispatch(setUserInfo({ userName: userName, userType: userType }));
-    }, [userType, userName, dispatch]);
+    }, []);
 
 
   return (

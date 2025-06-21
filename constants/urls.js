@@ -26,7 +26,7 @@ export default {
 
     // driver api 
     "assing_menu_roles":"v1/admin/add-menu",
-    "get_driver_details":"get-driver-details"
+    "get_driver_details":"v1/driver/get-driver-details"
 
 
 }

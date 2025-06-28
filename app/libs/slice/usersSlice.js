@@ -9,7 +9,6 @@ const usersSlice = createSlice({
   reducers: {
     setUserInfo(state, action) {
        const {userType , userName} = action.payload
-
        state.userName = userName
        state.userType = userType
     },

@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -33,8 +33,11 @@ function FormInput({
    register ,  
    isLoading  = false , 
    options=defaultOption,  
-   rest={ startIcon: <CloudUploadIcon />  }, 
+   rest={}, 
+   startIcon={startIcon:<CloudUploadIcon />},
    children}) {
+
+    const [files, setFiles] = useState()
 
     if(type=="text")
     return (
@@ -92,7 +95,7 @@ function FormInput({
   
 
     if(type=="upload")
-      return (
+      return <>
           <Controller
           name={name}
           control={control}
@@ -104,17 +107,27 @@ function FormInput({
               tabIndex={-1}
               {...rest} 
               {...field}
+              {...startIcon}
             >
             {children}
+             {rest.label && (
+              <Typography variant="body2">{rest.label}</Typography>
+            )}
             <VisuallyHiddenInput
               type="file"
-              onChange={(event) => field.onChange(event.target.files)}
+              onChange={(event) =>{ setFiles(event.target.files) &&  field.onChange(event.target.files)}}
               multiple
             />
           </Button> 
           }
         />
-    )
+              {files &&
+                Array.from(files).map((file, index) => (
+                  <Typography key={index} variant="body2">
+                    {file.name}
+                  </Typography>
+                ))}
+    </>
 
     if (type === "checkbox") {
       return (

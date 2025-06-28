@@ -22,11 +22,13 @@ import {
   AccountBalance,
   CreditCard
 } from '@mui/icons-material';
+import EditProfileDetail from './EditProfileDetail'
 
-const UserDetailsShow = ({ data, isLoading = false }) => {
+const UserDetailsShow = ({ data, isLoading = false , userName , userType }) => {
   return (
     <>
       {/* Fullscreen Loader */}
+      {!data && <EditProfileDetail />}
       <Backdrop
         open={isLoading}
         sx={{

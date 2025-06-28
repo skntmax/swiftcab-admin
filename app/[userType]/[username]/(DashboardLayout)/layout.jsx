@@ -15,6 +15,7 @@ import { useAppSelector } from "@app/libs/store";
 import { fetchUserRoles } from "@app/libs/slice/userRolesSlice";
 import { setBaseUrl } from "@app/libs/slice/profile";
 import { contextProvider } from "@components/AppProvider";
+import UseReduxSelector from "@app/libs/slice/useReduxSelector";
 const MainWrapper = styled("div")(() => ({
   display: "flex",
   minHeight: "100vh",
@@ -68,13 +69,13 @@ useEffect(()=>{
    
 return (
 
+  <UseReduxSelector>
     <MainWrapper className="mainwrapper" style={{background:"white", zIndex:5}}>     
         <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}
         onSidebarClose={() => setMobileSidebarOpen(false)}
       />
-  
       <PageWrapper className="page-wrapper">
         <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
         <Container
@@ -87,7 +88,7 @@ return (
         </Container>
       </PageWrapper>  
     </MainWrapper>
-   
+ </UseReduxSelector>   
 
   );
 }

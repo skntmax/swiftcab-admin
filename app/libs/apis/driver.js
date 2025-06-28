@@ -7,7 +7,7 @@ import { SWC_KEYS } from '@constants';
 // Define the base API
 const driversApi = createApi({
   reducerPath: 'driversApi',
-  tagTypes: ["get-driver-details"],
+  tagTypes: ["get-driver-details","get-banks","get-bank-branch"],
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      driverDetails: builder.mutation({ 
@@ -22,6 +22,34 @@ const driversApi = createApi({
         providesTags:['get-driver-details']
       },  
      ),
+
+      getBanks: builder.mutation({ 
+        query: (body) => (  {
+           url: urls.get_banks,
+           method: 'GET',
+          headers: {
+                      // authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                    },
+            // body:body
+        }),
+        providesTags:['get-banks']
+      },  
+     ),
+
+      getBankBranch: builder.mutation({ 
+        query: (query) => (  {
+           url: `${urls.get_bank_branch}?${query}`,
+           method: 'GET',
+          headers: {
+                      // authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                    },
+            // body:body
+        }),
+        providesTags:['get-bank-branch']
+      },  
+     ),
+
+
   }),
 
      
@@ -33,7 +61,7 @@ const driversApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
-  useDriverDetailsMutation
+  useDriverDetailsMutation,useGetBanksMutation, useGetBankBranchMutation
 } = driversApi;
 
 

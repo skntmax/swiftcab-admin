@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -7,6 +7,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Box, Checkbox, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
 import * as  all_icons from "@tabler/icons-react";
 import ApiLoader from '@components/ApiLoader';
+import Image from '@node_modules/next/image';
 
 let defaultOption = [
     { value: "chocolate", label: "Chocolate" },
@@ -34,10 +35,42 @@ function FormInput({
    isLoading  = false , 
    options=defaultOption,  
    rest={}, 
-   startIcon={startIcon:<CloudUploadIcon />},
-   children}) {
+   children,
+   
+   // for file uploads  
+   startIcon=<CloudUploadIcon />,
+   multiple=false,
+   preview=false,
+
+   //  custom dropdown selector 
+   optionFunctionCaller=()=>{},
+   customOptions=[],
+   customOptionKeys={label:"",value:""},
+   onCustomFuntionCaller,
+
+   // for file uploads only 
+   errors
+
+  }) {
 
     const [files, setFiles] = useState()
+    const [previewUrls, setPreviewUrls] = useState([])
+   const [open, setOpen] = useState(false);
+
+      useEffect(() => {
+    // Generate preview URLs
+    if (files && files.length > 0) {
+      const urls = Array.from(files).map((file) =>
+        file.type.startsWith("image/") ? URL.createObjectURL(file) : null
+      )
+      setPreviewUrls(urls)
+
+      return () => {
+        // Revoke all preview URLs to avoid memory leaks
+        urls.forEach((url) => url && URL.revokeObjectURL(url))
+      }
+    }
+  }, [files])
 
     if(type=="text")
     return (
@@ -96,37 +129,72 @@ function FormInput({
 
     if(type=="upload")
       return <>
-          <Controller
-          name={name}
-          control={control}
-          render={({ field }) => 
-            <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              {...rest} 
-              {...field}
-              {...startIcon}
-            >
+      <Box display="flex" flexDirection="column" alignItems="flex-start">
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <>
+          <Button
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            {...rest}
+            startIcon={startIcon}
+          >
             {children}
-             {rest.label && (
+            {rest.label && (
               <Typography variant="body2">{rest.label}</Typography>
             )}
             <VisuallyHiddenInput
               type="file"
-              onChange={(event) =>{ setFiles(event.target.files) &&  field.onChange(event.target.files)}}
-              multiple
+              onChange={(event) => {
+                setFiles(event.target.files);
+                field.onChange(event.target.files); // Update RHF state
+              }}
+              multiple={multiple}
             />
-          </Button> 
-          }
-        />
-              {files &&
-                Array.from(files).map((file, index) => (
-                  <Typography key={index} variant="body2">
-                    {file.name}
-                  </Typography>
-                ))}
+          </Button>
+
+              {/* Validation Error */}
+              {errors?.[name] && (
+                <Typography variant="caption" color="error">
+                  {errors?.[name]?.message}
+                </Typography>
+              )}
+              </>
+            )}
+    />
+
+      {/* File Name List */}
+      <Box mt={1}>
+        {files &&
+          Array.from(files).map((file, index) => (
+            <Typography key={index} variant="body2">
+              {file.name}
+            </Typography>
+          ))}
+      </Box>
+
+    {/* Image Preview */}
+    {preview && (
+      <Box mt={2} display="flex" gap={2} flexWrap="wrap">
+        {previewUrls.map(
+          (url, index) =>
+            url && (
+              <Image
+                key={index}
+                src={url}
+                width={400}
+                height={100}
+                alt={`preview-${index}`}
+              />
+            )
+        )}
+      </Box>
+    )}
+  </Box>
     </>
 
     if (type === "checkbox") {
@@ -150,7 +218,6 @@ function FormInput({
       );
     }
 
-    
 if (type === "dropdown") {
       return (
         <Controller
@@ -175,6 +242,52 @@ if (type === "dropdown") {
           )}
         />
       );
+    }
+
+  if (type === "on_demand_dropdown") {
+  return (
+    <Box display="flex" alignItems="center" gap={2}>
+      <Box flex={1}>
+        {isLoading ? (
+          <Select fullWidth open={true} disabled displayEmpty value="" >
+            <MenuItem value="">
+              <ApiLoader  />
+            </MenuItem>
+          </Select>
+        ) : (
+          <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                fullWidth
+                open={open}
+                onOpen={() => {
+                  setOpen(true);
+                  if (!customOptions.length) {
+                    onCustomFuntionCaller?.(); // fetch API
+                  }
+                }}
+                onClose={() => setOpen(false)}
+                displayEmpty
+                {...rest}
+              >
+                {customOptions.map((option, index) => (
+                  <MenuItem
+                    key={option[customOptionKeys["labelValue"]] || index}
+                    value={option[customOptionKeys["labelValue"]]}
+                  >
+                    {option[customOptionKeys["labelKey"]]}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+        )}
+      </Box>
+    </Box>
+  );
 }
 
 }

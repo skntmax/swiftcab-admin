@@ -23,6 +23,8 @@ export default {
     "add_navbar":"v1/admin/add-navbar", 
     "get_navbar_list":"v1/admin/get-navbar-list",
     "add_subnavbar":"v1/admin/add-subnavbar",
+    "get_banks":"v1/master/get-banks",
+    "get_bank_branch":"v1/master/get-bank-branches",
 
     // driver api 
     "assing_menu_roles":"v1/admin/add-menu",

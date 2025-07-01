@@ -1,4 +1,3 @@
-"use client";
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useForm} from "react-hook-form";

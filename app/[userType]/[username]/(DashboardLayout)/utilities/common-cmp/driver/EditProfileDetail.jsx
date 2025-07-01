@@ -36,7 +36,7 @@ const EditProfileDetail = () => {
   const [loader ,setLoader] = useState(false)
   const [bankOptions ,setBankOptions] = useState([])
   const onSubmit= (data)=>{
-     
+console.log(data)     
   }
 
 
@@ -60,11 +60,24 @@ const EditProfileDetail = () => {
   }, [watch("bank_account")])
   return (
     <>
-
+    <Typography variant="h5" sx={{ mb: 3, textAlign: 'center' }}>
+    Update Driver Detail
+    </Typography>
 
     <Paper elevation={3} sx={{ p: 4, borderRadius: 3, maxWidth: 1000, mx: 'auto' }}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={4}>
+
+        {/* Profile Preview */}
+        {watch("profile_pic")?.[0] && (
+            <Box
+            component="img"
+            src={URL.createObjectURL(watch("profile_pic")[0])}
+            alt="Profile Preview"
+            sx={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", border: "2px solid #ccc" }}
+            />
+        )}
+
           {/* Profile Picture */}
           <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <FormInput

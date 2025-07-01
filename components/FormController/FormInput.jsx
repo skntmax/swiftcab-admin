@@ -42,10 +42,11 @@ function FormInput({
    multiple=false,
    preview=false,
 
+
    //  custom dropdown selector 
    optionFunctionCaller=()=>{},
    customOptions=[],
-   customOptionKeys={label:"",value:""},
+   customOptionKeys={label:"label",value:"value"},
    onCustomFuntionCaller,
 
    // for file uploads only 
@@ -127,45 +128,46 @@ function FormInput({
     }
   
 
-    if(type=="upload")
-      return <>
-      <Box display="flex" flexDirection="column" alignItems="flex-start">
-    <Controller
-      name={name}
-      control={control}
-      render={({ field }) => (
-        <>
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            {...rest}
-            startIcon={startIcon}
-          >
-            {children}
-            {rest.label && (
-              <Typography variant="body2">{rest.label}</Typography>
-            )}
-            <VisuallyHiddenInput
-              type="file"
-              onChange={(event) => {
-                setFiles(event.target.files);
-                field.onChange(event.target.files); // Update RHF state
-              }}
-              multiple={multiple}
-            />
-          </Button>
-
-              {/* Validation Error */}
-              {errors?.[name] && (
-                <Typography variant="caption" color="error">
-                  {errors?.[name]?.message}
-                </Typography>
+      if(type=="upload")
+        return <>
+        <Box display="flex" flexDirection="column" alignItems="flex-start">
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <>
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              {...rest}
+              startIcon={startIcon}
+            >
+              {children}
+              {rest.label && (
+                <Typography variant="body2">{rest.label}</Typography>
               )}
-              </>
-            )}
-    />
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => {
+                  setFiles(event.target.files);
+                  field.onChange(event.target.files); // Update RHF state
+                  // setValue(name, event.target.files); 
+                }}
+                multiple={multiple}
+              />
+            </Button>
+
+                {/* Validation Error */}
+                {errors?.[name] && (
+                  <Typography variant="caption" color="error">
+                    {errors?.[name]?.message}
+                  </Typography>
+                )}
+                </>
+              )}
+      />
 
       {/* File Name List */}
       <Box mt={1}>

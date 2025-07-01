@@ -1,15 +1,26 @@
 'use client'
 
-import { getUserInfo } from '@utils';
-import Login from './Login'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-export default async function Home() { 
-   const router = useRouter()
-   const { firstName , lastName , username , roleTypeName}  =getUserInfo()
-  
-   if(roleTypeName && username)
-    return window.location.href=(`/${roleTypeName}/${username}`)
-   else 
-    return  <Login/>   
- 
+import { getUserInfo } from '@utils'
+import Login from './Login'
+
+export default function Home() {
+  const router = useRouter()
+  const [checkingAuth, setCheckingAuth] = useState(true)
+
+  useEffect(() => {
+    const { username, roleTypeName } = getUserInfo()
+
+    if (username && roleTypeName) {
+      router.push(`/${roleTypeName}/${username}`)
+    } else {
+      setCheckingAuth(false)
+    }
+  }, [router])
+
+  // Block rendering Login until after check is done
+  if (checkingAuth) return null
+
+  return <Login />
 }

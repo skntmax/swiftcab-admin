@@ -80,7 +80,7 @@ function UsersDashboard({ userType, userName }) {
       {tabs === 'active-month-settlement' && <SamplePage />}
       {tabs === 'any-month-settlement' && <SamplePage />}
       {tabs === 'occupied-drivers' && <OccupiedDrivers /> }
-      {tabs === 'assing-self-driver' && <AssingDrivers /> }
+      {tabs === 'assign-self-driver' && <AssingDrivers /> }
       
     </PageContainer>
   );

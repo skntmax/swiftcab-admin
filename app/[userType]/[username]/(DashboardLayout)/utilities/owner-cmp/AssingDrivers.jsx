@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { FormInput } from '@components/FormController';
@@ -9,7 +9,9 @@ import {driverAssignmentSchema} from "@components/FormSchema/AssingDriverSchema/
 import { DevTool } from "@hookform/devtools";
 import driversApi, { useGetBankBranchMutation, useGetBanksMutation, useGetDriverListMutation } from '@app/libs/apis/driver';
 import { useAppDispatch } from '@app/libs/store';
-import { useGetActiveOwnerVehiclesTypeListMutation } from '@app/libs/apis/owner';
+import { useAssignDriverToVhicleMutation, useGetActiveOwnerVehiclesTypeListMutation } from '@app/libs/apis/owner';
+import { contextProvider } from '@components/AppProvider';
+import { getUserInfo } from '@utils';
 const AssingDrivers = () => {
   const {
     control,
@@ -17,7 +19,8 @@ const AssingDrivers = () => {
     register,
     watch,
     setValue,
-    formState: { errors }
+    reset,
+    formState: { errors,  },
   } = useForm({
     defaultValues: {
       self : true,
@@ -29,25 +32,46 @@ const AssingDrivers = () => {
   });
 
  const dispatch  = useAppDispatch()
+ let users = getUserInfo()
   const [loader ,setLoader] = useState(false)
-  const [bankOptions ,setBankOptions] = useState([])
-  const onSubmit= (data)=>{
-  }
+  const [userOptions ,setUserOptions] = useState([])
+   // root states
+      const { successMessage, errorMessage } = useContext(contextProvider);
 
-
+      
 
   // api calling 
-
 
   const [ getBanks , {data:getBankData , isLoading:getBankDataLoading}] = useGetBanksMutation()
   const [ getDriverList , {data:getDriverListData , isLoading:getDriverListLoading}] = useGetDriverListMutation()
   const [activeOwnerVhicle , {data:activeOwnerVhicleData , isLoading:activeOwnerVhicleLoading } ] = useGetActiveOwnerVehiclesTypeListMutation()
+  const [assingDriverToVhicle ,{data:assingDriverToVhicleData , isLoading:assingDriverToVhicleLoading }] = useAssignDriverToVhicleMutation()
+  
+
+  const onSubmit= async  (data)=>{
+        let payload = {
+          "owner":data?.owner,
+          "driver":data?.self==true?data?.owner:Number(data?.driver) ,
+          "vhicle_assigned":data?.vhicle,
+           self: data?.self
+        }
+        assingDriverToVhicle(payload)
+  }
+
+
+
+  const setUser = ()=>{
+    setUserOptions([{name:users.username, value:users.username}])
+  }
+  
+
+  
   useEffect(()=>{
     if(watch("self")==true) {
         // Reset this specific endpoint's mutation state
-        setValue("owner","rohnit23_nova9827",{shouldDirty:true, shouldTouch:true})
+        setValue("owner",users?.username,{shouldDirty:true, shouldTouch:true})
 
-        setValue("driver","rohnit23_nova9827",{shouldDirty:true, shouldTouch:true})
+        setValue("driver",users?.username,{shouldDirty:true, shouldTouch:true})
     }else{
          setValue("owner","",{shouldDirty:false, shouldTouch:false})
 
@@ -58,9 +82,23 @@ const AssingDrivers = () => {
 
 
   useEffect(()=>{
-        setValue("owner","rohnit23_nova9827",{shouldDirty:true, shouldTouch:true})
-        setValue("driver","rohnit23_nova9827",{shouldDirty:true, shouldTouch:true})
+        setValue("owner",users?.username,{shouldDirty:true, shouldTouch:true})
+        setValue("driver",users?.username,{shouldDirty:true, shouldTouch:true})
   }, [])
+
+
+   // when api is called 
+    useEffect(()=>{
+      if(assingDriverToVhicleData?.status==500 && assingDriverToVhicleData?.error) return errorMessage(assingDriverToVhicleData?.message)
+      if(assingDriverToVhicleData?.status==200 && !assingDriverToVhicleData?.error ) {
+         successMessage(assingDriverToVhicleData?.message) 
+         reset(); // reset all the states 
+        }
+       // 🚀 Reset the fetched vehicle list after successful assignment
+       (async function(){ await activeOwnerVhicle().unwrap()})() 
+      }
+      
+    ,[assingDriverToVhicleData?.data])
 
   
   return (
@@ -108,9 +146,9 @@ const AssingDrivers = () => {
                type="on_demand_dropdown" 
                control={control}
                rest={{ label: "Select Owner",fullWidth: true ,disabled:watch("self")?true:false }} 
-               onCustomFuntionCaller={getBanks}
+               onCustomFuntionCaller={setUser}
                customOptionKeys={{labelKey:"name", labelValue:"value"}}
-               customOptions={[{name:"rohnit23_nova9827", value:"rohnit23_nova9827"}]}
+               customOptions={userOptions}
                errors={errors}
                />
               </Grid>
@@ -174,7 +212,7 @@ const AssingDrivers = () => {
               name="submit"
               type="submit"
               control={control}
-              rest={{ fullWidth: true }}
+              rest={{ fullWidth: true,disabled:assingDriverToVhicleLoading  }}
             >
               Assing driver 
             </FormInput>

@@ -53,7 +53,7 @@ const ownerApi = createApi({
 
      getActiveOwnerVehiclesTypeList: builder.mutation({
       query: () => ({
-        url: urls.owner_service_list,
+        url: urls.owner_varified_vhicles,
         method: "GET",
         headers: {
           authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
@@ -133,6 +133,18 @@ const ownerApi = createApi({
       providesTags: ["owner-kyc-request"],
     }),
 
+     assignDriverToVhicle: builder.mutation({
+      query: (body) => ({
+        url: urls.assign_driver_to_vhicle,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+        body: body,
+      }),
+      providesTags: ["owner-kyc-request"],
+    }),
+
 
     transformResponse: (response) => response.data,
     transformErrorResponse: (response) => response.data,
@@ -149,7 +161,8 @@ export const {
   useGetVehiclesServiceListRenderQuery,
   useOwnerVhicleServiceListQuery,
   useOwnerKycRequestMutation,
-  useGetActiveOwnerVehiclesTypeListMutation
+  useGetActiveOwnerVehiclesTypeListMutation,
+  useAssignDriverToVhicleMutation
 } = ownerApi;
 
 export default ownerApi;

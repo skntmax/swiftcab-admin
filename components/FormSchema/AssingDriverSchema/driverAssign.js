@@ -22,10 +22,10 @@ export const driverAssignmentSchema = yup.object({
     }),
 
   vhicle: yup
-    .string()
+    .number()
     .nullable()
     .when("self", {
-      is: false,
+      is: true,
       then: (schema) => schema.required("Vehicle is required when self is false"),
       otherwise: (schema) => schema.nullable(),
     }),

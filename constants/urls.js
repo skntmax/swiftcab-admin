@@ -4,9 +4,11 @@ export default {
     insert_owner_vhicles: 'v1/owner/insert-owner-vhicles',
     owner_ownes_vhicle: "v1/owner/owner-ownes-vhicle",
     owner_service_list: "v1/owner/owner-active-vhicle-list",
+    "owner_varified_vhicles":"v1/owner/owner-varified-vhicle-list",
     admin_service_list: "v1/admin/service-list",
     owner_active_vhicle_service_list: "v1/owner/get-vhicle-services-list",
     owner_kyc_request: "/v1/owner/kyc-request",
+    assign_driver_to_vhicle:"v1/owner/assign-driver-to-vhicle",
 
 
     //  admin api 

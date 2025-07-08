@@ -25,6 +25,7 @@ export default {
     "add_subnavbar":"v1/admin/add-subnavbar",
     "get_banks":"v1/master/get-banks",
     "get_bank_branch":"v1/master/get-bank-branches",
+    "get_driver_list":"v1/master/get-driver-list",
 
     // driver api 
     "assing_menu_roles":"v1/admin/add-menu",

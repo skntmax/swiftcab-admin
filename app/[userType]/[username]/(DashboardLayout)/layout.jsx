@@ -16,6 +16,7 @@ import { fetchUserRoles } from "@app/libs/slice/userRolesSlice";
 import { setBaseUrl } from "@app/libs/slice/profile";
 import { contextProvider } from "@components/AppProvider";
 import UseReduxSelector from "@app/libs/slice/useReduxSelector";
+import { SocketClient } from "../../../../components/Socket/SocketProvider";
 const MainWrapper = styled("div")(() => ({
   display: "flex",
   minHeight: "100vh",
@@ -84,7 +85,11 @@ return (
             maxWidth: "1200px",
           }}
         >
-          <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
+          <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
+            <SocketClient>
+              {children}
+             </SocketClient>
+          </Box>
         </Container>
       </PageWrapper>  
     </MainWrapper>

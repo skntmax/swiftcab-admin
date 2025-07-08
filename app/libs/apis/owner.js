@@ -51,6 +51,18 @@ const ownerApi = createApi({
       providesTags: ["owner_active_vhicle_list"],
     }),
 
+     getActiveOwnerVehiclesTypeList: builder.mutation({
+      query: () => ({
+        url: urls.owner_service_list,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+      }),
+      providesTags: ["owner_active_vhicle_list"],
+    }),
+
+
     getVehiclesServiceList: builder.query({
       query: () => ({
         url: "v1/admin/service-list",
@@ -136,7 +148,8 @@ export const {
   useAddVehicleServiceMutation,
   useGetVehiclesServiceListRenderQuery,
   useOwnerVhicleServiceListQuery,
-  useOwnerKycRequestMutation
+  useOwnerKycRequestMutation,
+  useGetActiveOwnerVehiclesTypeListMutation
 } = ownerApi;
 
 export default ownerApi;

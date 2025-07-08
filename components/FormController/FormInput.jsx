@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Checkbox, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
+import { Box, Checkbox, FormControl, InputLabel, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
 import * as  all_icons from "@tabler/icons-react";
 import ApiLoader from '@components/ApiLoader';
 import Image from '@node_modules/next/image';
@@ -260,30 +260,33 @@ if (type === "dropdown") {
           <Controller
             name={name}
             control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                fullWidth
-                open={open}
-                onOpen={() => {
-                  setOpen(true);
-                  if (!customOptions.length) {
-                    onCustomFuntionCaller?.(); // fetch API
-                  }
-                }}
-                onClose={() => setOpen(false)}
-                displayEmpty
-                {...rest}
-              >
-                {customOptions.map((option, index) => (
-                  <MenuItem
-                    key={option[customOptionKeys["labelValue"]] || index}
-                    value={option[customOptionKeys["labelValue"]]}
-                  >
-                    {option[customOptionKeys["labelKey"]]}
-                  </MenuItem>
-                ))}
-              </Select>
+              render={({ field }) => (
+                <FormControl fullWidth>
+                <InputLabel id={`${name}-label`}>{rest?.label || "Select an option"}</InputLabel>
+                <Select
+                  {...field}
+                  labelId={`${name}-label`}
+                  label={rest?.label || "Select an option"}
+                  open={open}
+                  onOpen={() => {
+                    setOpen(true);
+                    if (!customOptions.length) {
+                      onCustomFuntionCaller?.(); // fetch API
+                    }
+                  }}
+                  onClose={() => setOpen(false)}
+                  {...rest}
+                >
+                  {customOptions.map((option, index) => (
+                    <MenuItem
+                      key={option[customOptionKeys["labelValue"]] || index}
+                      value={option[customOptionKeys["labelValue"]]}
+                    >
+                      {option[customOptionKeys["labelKey"]]}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           />
         )}

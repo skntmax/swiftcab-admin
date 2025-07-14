@@ -1,5 +1,5 @@
 'use client'
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useContext, useEffect } from 'react';
 import { Grid, Box } from '@mui/material';
 import PageContainer from './../../components/container/PageContainer';
 
@@ -23,16 +23,28 @@ import MonthlyEarning from './Dashboard/MonthlyEarning'
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
 import { useSearchParams } from 'next/navigation';
+import { SocketProvider } from '@components/Socket/SocketProvider';
+import { SOCKET_EVENTS } from '@constants';
+import { getUserInfo } from '@utils';
 
 export default function Index({userType, userName}) {
   let params = useSearchParams();
     let tabs = params.get('tabs');
   
+    const {socket} = useContext(SocketProvider)
     let dispatch = useAppDispatch();
     useEffect(() => {
       dispatch(setUserInfo({ userName: userName, userType: userType }));
     }, []);
 
+
+     useEffect(()=>{
+  socket.on('connect', () => {
+  console.log('✅ Connected to socket server:', socket.id);
+   socket.emit(SOCKET_EVENTS.SEARCH_CUSTOMER, getUserInfo() )
+    });
+
+  },[])
 
   return (
     <>

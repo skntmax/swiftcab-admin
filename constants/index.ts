@@ -137,3 +137,9 @@ export const USER_ROLES = {
   owner: "owner",
   ['driver-partner']:"driver-partner"
 };
+
+
+export const SOCKET_EVENTS = {
+  SEARCH_CUSTOMER :"SEARCH_CUSTOMER" 
+};
+

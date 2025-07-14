@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Checkbox, FormControl, InputLabel, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
 import * as  all_icons from "@tabler/icons-react";
 import ApiLoader from '@components/ApiLoader';
 import Image from '@node_modules/next/image';
@@ -167,35 +167,43 @@ function FormInput({
                 )}
                 </>
               )}
-      />
+           />
 
-      {/* File Name List */}
-      <Box mt={1}>
-        {files &&
-          Array.from(files).map((file, index) => (
-            <Typography key={index} variant="body2">
-              {file.name}
-            </Typography>
-          ))}
-      </Box>
+            {/* File Name List */}
+           <Box mt={1}>
+            {files &&
+              Array.from(files).map((file, index) => (
+                <Box
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                  gap={1} // spacing between spinner and text
+                  mb={0.5} // optional spacing between each row
+                >
+                  {isLoading && <CircularProgress size={15} />}
+                  {!isLoading && file.name  && <Typography variant="body2">{file.name}</Typography>} 
+                </Box>
+              ))}
+          </Box>
 
-    {/* Image Preview */}
-    {preview && (
-      <Box mt={2} display="flex" gap={2} flexWrap="wrap">
-        {previewUrls.map(
-          (url, index) =>
-            url && (
-              <Image
-                key={index}
-                src={url}
-                width={400}
-                height={100}
-                alt={`preview-${index}`}
-              />
-            )
-        )}
-      </Box>
+          {/* Image Preview */}
+          {preview && (
+            <Box mt={2} display="flex" gap={2} flexWrap="wrap">
+              {previewUrls.map(
+                (url, index) =>
+                  url && (
+                    <Image
+                      key={index}
+                      src={url}
+                      width={400}
+                      height={100}
+                      alt={`preview-${index}`}
+                    />
+                  )
+              )}
+            </Box>
     )}
+
   </Box>
     </>
 

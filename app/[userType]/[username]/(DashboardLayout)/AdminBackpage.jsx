@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
 import dynamic from 'next/dynamic';
+import { glbalFileUploader } from '@app/libs/apis/fileUploader';
 
 // Create a reusable Centered Loader
 export const CenteredLoader = () => (

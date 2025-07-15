@@ -33,7 +33,7 @@ const EditProfileDetail = () => {
       adhar_card: null,
       bank_account: "",
       ifsc: "",
-      bank_account_branch: "",
+      bank_account_branch: ""
     },
     resolver: yupResolver(driverProfileSchema),
   });
@@ -58,15 +58,20 @@ const EditProfileDetail = () => {
   useEffect(() => {
     if (watch("bank_account")) {
       driversApi.util.resetApiState();
-      setValue("bank_account_branch", {
-        defaultValues: "",
-      });
+      getBankBranch(`bankId=${watch("bank_account")}`)
     }
   }, [watch("bank_account")]);
 
   // Helper function to trigger upload
   const handleFileUpload = (fieldName) => {
+    // Case 1: If it's already a string URL, do nothing or handle as needed
     const files = watch(fieldName);
+
+    if (typeof files === "string") {
+      console.log(`${fieldName} is already a URL:`, files);
+      return;
+    }
+
 
     if (files && Array.from(files).length) {
       const file = files[0];
@@ -79,11 +84,14 @@ const EditProfileDetail = () => {
         contentType: file.type,
       }).then((uploadedUrl) => {
         console.log(`${fieldName} Uploaded URL:`, uploadedUrl);
+        setValue(fieldName ,uploadedUrl,{shouldTouch:true} )
         // Optionally, update form state with uploadedUrl
         // setValue(fieldName, uploadedUrl);
       });
     }
   };
+
+  
 
   // Apply upload logic for each upload field
   useEffect(() => {
@@ -123,10 +131,10 @@ const EditProfileDetail = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={4}>
             {/* Profile Preview */}
-            {watch("profile_pic")?.[0] && (
+            {watch("profile_pic") && (
               <Box
                 component="img"
-                src={URL.createObjectURL(watch("profile_pic")[0])}
+                src={watch("profile_pic")}
                 alt="Profile Preview"
                 sx={{
                   width: 120,
@@ -242,7 +250,7 @@ const EditProfileDetail = () => {
                       labelKey: "bank_name",
                       labelValue: "id",
                     }}
-                    customOptions={getBankData?.data}
+                    customOptions={getBankData?.data || []}
                     errors={errors}
                   />
                 </Grid>
@@ -278,7 +286,7 @@ const EditProfileDetail = () => {
                       labelKey: "branch_name",
                       labelValue: "id",
                     }}
-                    customOptions={getBankBranchData?.data}
+                    customOptions={getBankBranchData?.data || []}
                     errors={errors}
                   />
                 </Grid>
@@ -288,9 +296,10 @@ const EditProfileDetail = () => {
             {/* Submit Button */}
             <Grid item xs={12}>
               <FormInput
-                name="submit"
+                name="submitButton"
                 type="submit"
                 control={control}
+                isLoading={false}
                 rest={{ fullWidth: true }}
               >
                 Save Driver Info
@@ -305,3 +314,17 @@ const EditProfileDetail = () => {
 };
 
 export default EditProfileDetail;
+
+
+// {
+//     "bank_account_branch": "22",
+//     "ifsc": "SBIN0012345",
+//     "bank_account": "2",
+//     "adhar_card": "https://swiftcab-dev.s3.ap-south-1.amazonaws.com/swiftcab-dev/assets/Insurance Operations Sample Life Questions 1.pdf1752616489184-9xs9yupdm.pdf",
+//     "pan_card": "https://swiftcab-dev.s3.ap-south-1.amazonaws.com/swiftcab-dev/assets/Screenshot Capture - 2025-04-13 - 01-46-39.png1752616485000-gf0id6bvc.png",
+//     "insurance": "https://swiftcab-dev.s3.ap-south-1.amazonaws.com/swiftcab-dev/assets/Screenshot Capture - 2025-06-04 - 00-59-38.png1752616479787-uuryhoa1i.png",
+//     "RC": "https://swiftcab-dev.s3.ap-south-1.amazonaws.com/swiftcab-dev/assets/Screenshot Capture - 2025-06-04 - 01-13-51.png1752616475937-c9pi85byx.png",
+//     "DL": "https://swiftcab-dev.s3.ap-south-1.amazonaws.com/swiftcab-dev/assets/WhatsApp Image 2025-06-02 at 8.41.20 PM.jpeg1752616472786-cxvqtyqci.jpeg",
+//     "profile_pic": "https://swiftcab-dev.s3.ap-south-1.amazonaws.com/swiftcab-dev/assets/Screenshot Capture - 2025-06-04 - 01-15-52.png1752616469457-3sl4k0w4s.png",
+//     "submitButton": false
+// }

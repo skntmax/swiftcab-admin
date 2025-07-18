@@ -33,7 +33,6 @@ const SubNavForm = () => {
 
 
   const onSubmit = (data) => {
-  debugger
     if(isValid) {
       addSubnavbar(data) 
     }

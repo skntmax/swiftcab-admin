@@ -109,22 +109,14 @@ function FormInput({
        // in case of loading an api 
        if(isLoading)   <Button {...rest} disabled={isLoading}  > <ApiLoader /> </Button>
 
-        return (
-        <Controller
-          name={name}
-          control={control}
-          render={({ field }) => (
-            <Button
-              {...rest}
-              {...field}
-              variant="contained"
-              type="submit" // Ensures form submission                 
-            >
-              {children}
-            </Button>
-          )}
-        />
-      );
+        return <Button
+            type="submit"
+            variant="contained"
+            disabled={isLoading}
+            {...rest}
+          >
+            {children}
+          </Button>
     }
   
 

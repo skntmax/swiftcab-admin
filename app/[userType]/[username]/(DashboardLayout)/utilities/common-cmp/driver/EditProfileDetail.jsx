@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+'use client'
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Box, Grid, Paper, Typography, CircularProgress } from "@mui/material";
 import { FormInput } from "@components/FormController";
@@ -10,27 +11,30 @@ import { DevTool } from "@hookform/devtools";
 import driversApi, {
   useGetBankBranchMutation,
   useGetBanksMutation,
+  useUpdateDriverDetailsMutation,
 } from "@app/libs/apis/driver";
 import { useAppDispatch } from "@app/libs/store";
 import { getUniqueString } from "@utils";
 import { useFileUploader } from "@app/libs/apis/FileUploaderHook";
+import { contextProvider } from "@components/AppProvider";
 
-const EditProfileDetail = () => {
+const EditProfileDetail = ({driverEdit,setDriverEdit}) => {
   const {
     control,
     handleSubmit,
     register,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      profile_pic: null,
-      DL: null,
-      RC: null,
-      insurance: null,
-      pan_card: null,
-      adhar_card: null,
+      profile_pic: "",
+      DL: "",
+      RC: "",
+      insurance: "",
+      pan_card: "",
+      adhar_card: "",
       bank_account: "",
       ifsc: "",
       bank_account_branch: ""
@@ -42,16 +46,30 @@ const EditProfileDetail = () => {
   const [loader, setLoader] = useState(false);
   const [bankOptions, setBankOptions] = useState([]);
   const { uploadFile, loading, error } = useFileUploader();
+  const { successMessage, errorMessage } = useContext(contextProvider);
 
-  const [getBanks, { data: getBankData, isLoading: getBankDataLoading }] =
-    useGetBanksMutation();
-  const [
-    getBankBranch,
-    { data: getBankBranchData, isLoading: getBankBranchDataLoading },
-  ] = useGetBankBranchMutation();
+  // api calling 
+  const [getBanks, { data: getBankData, isLoading: getBankDataLoading }] =   useGetBanksMutation();
+  const [  getBankBranch, { data: getBankBranchData, isLoading: getBankBranchDataLoading }, ] = useGetBankBranchMutation();
+  const [  updatDriverDetails, { data: updatDriverDetailsData, isLoading: updatDriverDetailsLoading }, ] = useUpdateDriverDetailsMutation();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit =async (data) => {
+    if(data){
+      const payload ={
+         docs:{
+          dl:data?.DL , 
+          rc:data?.RC , 
+          adhaar_card:data?.adhar_card , 
+          insurance:data?.insurance,  
+          pan_card:data?.pan_card
+          },
+        bank_account:data?.bank_account,
+        bank_account_branch:data?.bank_account_branch,
+        ifsc:data?.ifsc,
+      }
+      updatDriverDetails(payload)
+    }
+    
   };
 
   // Reset bank branch when bank account changes
@@ -84,7 +102,7 @@ const EditProfileDetail = () => {
         contentType: file.type,
       }).then((uploadedUrl) => {
         console.log(`${fieldName} Uploaded URL:`, uploadedUrl);
-        setValue(fieldName ,uploadedUrl,{shouldTouch:true} )
+        setValue(fieldName ,uploadedUrl,{shouldTouch:true , shouldDirty:true} )
         // Optionally, update form state with uploadedUrl
         // setValue(fieldName, uploadedUrl);
       });
@@ -117,6 +135,21 @@ const EditProfileDetail = () => {
   useEffect(() => {
     handleFileUpload("adhar_card");
   }, [watch("adhar_card")]);
+
+
+
+  // when api is called 
+  useEffect(()=>{
+    if(updatDriverDetailsData?.status==500 && updatDriverDetailsData?.error) return errorMessage(updatDriverDetailsData?.message)
+    if(updatDriverDetailsData?.status==200 && !updatDriverDetailsData?.error ) {
+        successMessage(updatDriverDetailsData?.message) 
+        reset(); // reset all the states 
+      }
+     setDriverEdit(false); // Reset edit mode after successful update
+    }
+    
+  ,[updatDriverDetailsData?.data])
+
 
   return (
     <>
@@ -299,8 +332,8 @@ const EditProfileDetail = () => {
                 name="submitButton"
                 type="submit"
                 control={control}
-                isLoading={false}
-                rest={{ fullWidth: true }}
+                isLoading={updatDriverDetailsLoading}
+                rest={{fullWidth: true}}
               >
                 Save Driver Info
               </FormInput>

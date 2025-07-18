@@ -17,7 +17,6 @@ function page(props:any) {
        {/* ADMIN */}
       {userType===USER_ROLES.admin?.toLocaleLowerCase() && <AdminBackPage userType={userType} userName={username} />  } 
 
-
       {/* CUSTOMER */}
       {userType===USER_ROLES.customer?.toLocaleLowerCase() && <CustomerBackPage userType={userType} userName={username} />  } 
       

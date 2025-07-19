@@ -4,7 +4,8 @@ const nextConfig = {
     images: {
         domains: [
             "cdn.imagin.studio",
-            "asset.cloudinary.com"
+            "asset.cloudinary.com",
+            "swiftcab-dev.s3.ap-south-1.amazonaws.com"
         ]
     },
     webpack(config) {

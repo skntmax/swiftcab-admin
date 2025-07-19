@@ -18,7 +18,7 @@ import { getUniqueString } from "@utils";
 import { useFileUploader } from "@app/libs/apis/FileUploaderHook";
 import { contextProvider } from "@components/AppProvider";
 
-const EditProfileDetail = ({driverEdit,setDriverEdit}) => {
+const EditProfileDetail = ({data , userDetails}) => {
   const {
     control,
     handleSubmit,
@@ -137,6 +137,22 @@ const EditProfileDetail = ({driverEdit,setDriverEdit}) => {
   }, [watch("adhar_card")]);
 
 
+  useEffect(() => {
+  if (data) {
+    reset({
+      profile_pic: data.profile_pic || "",
+      DL: data.DL || "",
+      RC: data.RC || "",
+      insurance: data.insurance || "",
+      pan_card: data.pan_card || "",
+      adhar_card: data.adhar_card || "",
+      bank_account:Number(data.bank_account)  || "",
+      ifsc: data.ifsc || "",
+      bank_account_branch: Number(data.bank_account_branch)  || "",
+    });
+  }
+}, [data, reset]);
+
 
   // when api is called 
   useEffect(()=>{
@@ -145,7 +161,7 @@ const EditProfileDetail = ({driverEdit,setDriverEdit}) => {
         successMessage(updatDriverDetailsData?.message) 
         reset(); // reset all the states 
       }
-     setDriverEdit(false); // Reset edit mode after successful update
+    //  setDriverEdit(false); // Reset edit mode after successful update
     }
     
   ,[updatDriverDetailsData?.data])
@@ -153,10 +169,6 @@ const EditProfileDetail = ({driverEdit,setDriverEdit}) => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 3, textAlign: "center" }}>
-        Update Driver Detail
-      </Typography>
-
       <Paper
         elevation={3}
         sx={{ p: 4, borderRadius: 3, maxWidth: 1000, mx: "auto" }}

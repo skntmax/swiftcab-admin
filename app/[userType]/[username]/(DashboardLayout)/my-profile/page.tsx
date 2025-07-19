@@ -21,8 +21,7 @@ function Page() {
   const { username: userName, userType } = params;
 
   const dispatch = useAppDispatch();
-  const [driverEdit, setDriverEdit] = useState<boolean>(false);
-  const [hasInit, setHasInit] = useState<boolean>(false);
+  const  [driverUpdatedOrCreated , setDriverUpdatedOrCreated] = useState(false);
 
   const [getDriverDetails, { data: getDriverDetailsData, isLoading: getDriverDetailsLoading }] = useDriverDetailsMutation();
 
@@ -33,17 +32,14 @@ function Page() {
     }
   }, []);
 
-  // Only set initial mode once
+
   useEffect(() => {
-    if (!hasInit && userType === USER_ROLES['driver-partner']) {
-      if (getDriverDetailsData?.data) {
-        setDriverEdit(false); // View mode if data exists
-      } else {
-        setDriverEdit(true); // Edit mode if data missing
-      }
-      setHasInit(true); // Prevent re-setting
+    if (userType === USER_ROLES['driver-partner']) {
+      getDriverDetails();
+      dispatch(setUserInfo({ userName, userType }));
     }
-  }, [getDriverDetailsData, userType, hasInit]);
+  }, [driverUpdatedOrCreated]); 
+ 
 
   switch (userType) {
     case USER_ROLES['driver-partner']:
@@ -53,9 +49,8 @@ function Page() {
           data={getDriverDetailsData?.data}
           userName={userName}
           userType={userType}
-          // driverEdit={driverEdit}
-          // setDriverEdit={setDriverEdit}
           userDetails={userDetails}
+          setDriverUpdatedOrCreated={()=>setDriverUpdatedOrCreated(p=> !p)}
         />
       );
     case USER_ROLES.admin:

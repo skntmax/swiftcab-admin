@@ -36,7 +36,13 @@ export const driverProfileSchema = yup.object({
     .string()
     .trim()
     .required("Bank account number is required"),
-
+bank_account_no: yup
+  .string()
+  .trim()
+  .required("Bank account number is required")
+  .matches(/^\d+$/, "Bank account number must contain only digits")
+  .min(9, "Bank account number must be at least 9 digits")
+  .max(18, "Bank account number can't be more than 18 digits"),
   ifsc: yup
     .string()
     .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter a valid IFSC code")

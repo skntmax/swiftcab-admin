@@ -76,25 +76,25 @@ function ViewDriverDetails({data,userDetails}) {
           />
           <Typography variant="h6" sx={{ mt: 2, fontWeight: 'bold' }}>
             <AccountCircle fontSize="small" sx={{ mr: 1 }} />
-            Username: {userDetails?.username}
+            Username: {userDetails?.username || ""}
           </Typography>
         </Grid>
 
         <Grid item xs={12} md={8}>
-          <InfoCard title="Document Links" icon={<DocumentScanner />}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Field label="Driving License" url={data.DL} />
-                <Field label="RC Document" url={data.RC} />
-                <Field label="Insurance" url={data.insurance} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Field label="PAN Card" url={data.pan_card} />
-                <Field label="Aadhar Card" url={data.adhar_card} />
-              </Grid>
+         <InfoCard title="Document Links" icon={<DocumentScanner />}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Field label="Driving License" url={data.DL} />
+              <Field label="RC Document" url={data.RC} />
+              <Field label="Insurance" url={data.insurance} />
             </Grid>
-          </InfoCard>
-
+            <Grid item xs={12} sm={6}>
+              <Field label="PAN Card" url={data.pan_card} />
+              <Field label="Aadhar Card" url={data.adhar_card} />
+               <Field label="Passbook" url={data.passbook} /> 
+            </Grid>
+          </Grid>
+        </InfoCard>
           <InfoCard title="Account & Verification Info" icon={<AttachMoney />}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -118,16 +118,17 @@ function ViewDriverDetails({data,userDetails}) {
             </Grid>
           </InfoCard>
 
-          <InfoCard title="Bank Information" icon={<AccountBalance />}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Info label="IFSC Code" value={data.ifsc || 'N/A'} icon={<CreditCard />} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Info label="Branch Name" value={data?.bank_have_branch?.branch_name || 'N/A'} icon={<CreditCard />} />
-              </Grid>
+         <InfoCard title="Bank Information" icon={<AccountBalance />}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Info label="IFSC Code" value={data.ifsc || 'N/A'} icon={<CreditCard />} />
+              <Info label="Account Number" value={data.bank_account_no || 'N/A'} icon={<CreditCard />} /> {/* ✅ ADDED */}
             </Grid>
-          </InfoCard>
+            <Grid item xs={12} sm={6}>
+              <Info label="Branch Name" value={data?.bank_have_branch?.branch_name || 'N/A'} icon={<CreditCard />} />
+            </Grid>
+          </Grid>
+        </InfoCard>
         </Grid>
       </Grid>
     </Paper>

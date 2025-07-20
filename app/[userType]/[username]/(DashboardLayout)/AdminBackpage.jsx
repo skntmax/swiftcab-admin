@@ -80,6 +80,9 @@ const MenuAssignToRoles = dynamic(() => import('./utilities/admin-cmp/NavItems/M
   loading: () => <CenteredLoader />,
 });  
 
+const DriverOnboardAms = dynamic(() => import('./utilities/admin-cmp/DriverOnboardAms'), {
+  loading: () => <CenteredLoader />,
+});  
 
 
 function AdminBackpage({ userType, userName }) {
@@ -131,6 +134,8 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'nav-items' && <NavItems />}
       {tabs === 'sub-nav-items' && <SubNavForm />}
       {tabs === 'menu-assigned-to-roles' && <MenuAssignToRoles />}
+      {tabs === 'driver-onboard-ams' && <DriverOnboardAms />}
+      
       
     </PageContainer>
   );

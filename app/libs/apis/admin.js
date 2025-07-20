@@ -8,7 +8,7 @@ import { SWC_KEYS } from '@constants';
 // Define the base API
 const adminApi = createApi({
   reducerPath: 'adminApi',
-  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar","add-menu-roles"],
+  tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar","add-menu-roles","get-driver-detail-by-userid","ams-drivers"],
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      getAllUsers: builder.mutation({
@@ -157,6 +157,47 @@ const adminApi = createApi({
           providesTags:['add-menu-roles'],
         },  
         ),
+
+        getUserByRoles: builder.mutation({
+          query: (body) => (  {
+              url:urls.get_user_by_roles ,
+              method: 'POST',
+              body:body,
+              headers: {
+              authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+            },
+            }),
+            providesTags:['get-users-by-roles'],
+          },  
+          ),
+
+        getKycDriverDetailsById: builder.mutation({
+          query: (body) => (  {
+              url:urls.get_driver_detail_by_userid ,
+              method: 'POST',
+              body:body,
+              headers: {
+              authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+            },
+            }),
+            providesTags:['get-driver-detail-by-userid'],
+          },  
+          ),
+
+          approveDriverKyc: builder.mutation({
+          query: (body) => (  {
+              url:urls.ams_drivers ,
+              method: 'POST',
+              body:body,
+              headers: {
+              authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+            },
+            }),
+            providesTags:['ams-drivers'],
+          },  
+          ),
+
+
     
   }),
 
@@ -170,7 +211,7 @@ const adminApi = createApi({
 // Export hooks for usage in functional components
 export const {
  useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
- useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation
+ useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation ,useGetUserByRolesMutation ,useGetKycDriverDetailsByIdMutation ,useApproveDriverKycMutation
 } = adminApi;
 
 

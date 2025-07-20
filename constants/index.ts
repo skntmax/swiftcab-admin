@@ -113,6 +113,8 @@ export const  KYC_STATUS= {
   COMPLETED:"COMPLETED"
 }
 
+export const KYC_STATUS_ARRAY = Object.entries(KYC_STATUS).map(([key,value])=> ({ label:key , value:value }))
+
 export const USER_ROLES = {
   superAdmin: "super-admin",
   admin: "admin",

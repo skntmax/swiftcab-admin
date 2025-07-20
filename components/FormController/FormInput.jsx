@@ -115,7 +115,7 @@ function FormInput({
             disabled={isLoading}
             {...rest}
           >
-            {children}
+            {isLoading ? <ApiLoader /> : children}
           </Button>
     }
   

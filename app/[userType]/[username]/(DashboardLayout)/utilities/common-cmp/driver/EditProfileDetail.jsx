@@ -35,7 +35,9 @@ const EditProfileDetail = ({data , userDetails}) => {
       insurance: "",
       pan_card: "",
       adhar_card: "",
+      passbook: "",
       bank_account: "",
+      bank_account_no: "",
       ifsc: "",
       bank_account_branch: ""
     },
@@ -61,10 +63,13 @@ const EditProfileDetail = ({data , userDetails}) => {
           rc:data?.RC , 
           adhaar_card:data?.adhar_card , 
           insurance:data?.insurance,  
-          pan_card:data?.pan_card
+          pan_card:data?.pan_card,
+          passbook:data?.passbook,
+          profile_pic:data?.profile_pic
           },
         bank_account:data?.bank_account,
         bank_account_branch:data?.bank_account_branch,
+        bank_account_no:data?.bank_account_no,
         ifsc:data?.ifsc,
       }
       updatDriverDetails(payload)
@@ -86,7 +91,6 @@ const EditProfileDetail = ({data , userDetails}) => {
     const files = watch(fieldName);
 
     if (typeof files === "string") {
-      console.log(`${fieldName} is already a URL:`, files);
       return;
     }
 
@@ -136,6 +140,10 @@ const EditProfileDetail = ({data , userDetails}) => {
     handleFileUpload("adhar_card");
   }, [watch("adhar_card")]);
 
+   useEffect(() => {
+    handleFileUpload("passbook");
+  }, [watch("passbook")]);
+
 
   useEffect(() => {
   if (data) {
@@ -146,7 +154,10 @@ const EditProfileDetail = ({data , userDetails}) => {
       insurance: data.insurance || "",
       pan_card: data.pan_card || "",
       adhar_card: data.adhar_card || "",
+      passbook: data.passbook || "",
       bank_account:Number(data.bank_account)  || "",
+      bank_account_no: Number(data.bank_account_no) || "", 
+      profile_pic: data.profile_pic || "",
       ifsc: data.ifsc || "",
       bank_account_branch: Number(data.bank_account_branch)  || "",
     });
@@ -277,6 +288,19 @@ const EditProfileDetail = ({data , userDetails}) => {
                     isLoading={loading}
                   />
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <FormInput
+                    name="passbook"
+                    errors={errors}
+                    type="upload"
+                    preview={true}
+                    startIcon={<PictureAsPdfIcon />}
+                    control={control}
+                    rest={{ label: "Passbook Photocopy"  }}
+                    isLoading={loading}
+                  />
+                </Grid>
               </Grid>
             </Grid>
 
@@ -308,6 +332,19 @@ const EditProfileDetail = ({data , userDetails}) => {
                       label: "IFSC Code",
                       fullWidth: true,
                       helperText: errors?.ifsc?.message,
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <FormInput
+                    name="bank_account_no"
+                    type="text"
+                    control={control}
+                    rest={{
+                      label: "Bank Account Number",
+                      fullWidth: true,
+                      helperText: errors?.bank_account_no?.message,
                     }}
                   />
                 </Grid>

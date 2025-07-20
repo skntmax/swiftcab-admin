@@ -18,22 +18,23 @@ import {
   Box,
 } from "@mui/material";
 import { Edit, Block, Delete, ExpandMore } from "@mui/icons-material";
-import { useGetAllUsersMutation, useGetVhicleDetailsMutation } from "@app/libs/apis/admin";
+import { useGetKycDriverDetailsByIdMutation, useGetUserByRolesMutation, useGetVhicleDetailsMutation } from "@app/libs/apis/admin";
 import { useAppSelector } from "@app/libs/store";
 import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import KycFormStatus from "../admin-cmp/KycFormStatus";
 
 import Alert from '@mui/material/Alert';
+import { USER_ROLES } from "@constants";
+import AMSViewDriver from "../common-cmp/driver/AMSViewDriver";
 
-const KycRequest = () => {
+const DriverOnboardAms = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const [usernameOrEmail , setusernameOrEmail] =  useState()
-    const [debouncedUsernameOrEmail, setDebouncedUsernameOrEmail] = useState("");
-    const [debounceLoader , setDebounceLoader] = useState(false);
   const userRoles =  useAppSelector((ele)=> ele['userRoles'])
+  const [debouncedUsernameOrEmail, setDebouncedUsernameOrEmail] = useState("");
+  const [debounceLoader , setDebounceLoader] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [kycStatusUpdated, setKycStatusUpdated] = useState(false);
   const [meta , setMeta] = useState({
     "page":1,
     "rowPerPage":10,
@@ -41,88 +42,93 @@ const KycRequest = () => {
      total:0
    })
   
-  const [ getUser , { data:getUserData , isLoading:getUserDataLoading }   ] = useGetAllUsersMutation()
+  const [ getUsersByRole , { data:getUsersByRoleData , isLoading:getUsersByRoleLoading }   ] = useGetUserByRolesMutation()
 
-  const [getVhicleDetails , {data:getVhicleDetailsData  , isLoading:getVhicleDetailsLoader }] = useGetVhicleDetailsMutation()
-
-  const handleExpandClick = (userId  , vhicleIds) => {
+  const [getDriverDetails , {data:getDriverDetailsData  , isLoading:getDriverDetailsLoader }] = useGetKycDriverDetailsByIdMutation()
+  const handleExpandClick = (userId ) => {
     setExpandedRow(expandedRow === userId ? null : userId);
-
-    if(!vhicleIds || !Array.isArray(vhicleIds) || vhicleIds.length==0  )
-       return 
-
-    getVhicleDetails({vhicleIds:vhicleIds ,ownerId:userId})
+    getDriverDetails({driverId:userId })
 
   };
 
+
+  // on first load 
   useEffect(()=>{
-    if(userRoles?.list.length>0) // default owner role 
-        setSelectedRoles(userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.name))
+    if(userRoles?.list.length>0) // default driver role 
+        setSelectedRoles(userRoles?.list?.filter(_=> _.name==USER_ROLES["driver-partner"]).map(_=> _.name))
+    
     if(userRoles?.list.length>0) {
-      getUser({
-        "roles":userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.id),
+      getUsersByRole({
+        "roles":userRoles?.list?.filter(_=> _.name==USER_ROLES["driver-partner"]).map(_=> _.id),
         "page":meta.page,
         "limit":meta.rowPerPage,
-         searchByManual:true
+        "usernameOrEmail":""
       })
     }
   },[userRoles?.list])
 
-   // for debouncing purpose
-    useEffect(() => {
-    setDebounceLoader(true)
-    const handler = setTimeout(() => {
-      setDebouncedUsernameOrEmail(usernameOrEmail);
-    }, 1000); // 500ms delay
-  
-    return () => {
-      clearTimeout(handler); // Clear the previous timeout on every keypress
-    };
-  }, [usernameOrEmail]);
-  
+
+  // for debouncing purpose
+  useEffect(() => {
+  setDebounceLoader(true)
+  const handler = setTimeout(() => {
+    setDebouncedUsernameOrEmail(usernameOrEmail);
+  }, 1000); // 500ms delay
+
+  return () => {
+    clearTimeout(handler); // Clear the previous timeout on every keypress
+  };
+}, [usernameOrEmail]);
+
+
+
+//  immediate relaod  on  kyc status changes 
+useEffect(()=>{
+ getDriverDetails({driverId:expandedRow})
+},[kycStatusUpdated])
+
 
   useEffect(()=>{    
+    // if search by  username
     try{
-    if(debouncedUsernameOrEmail) {
-      getUser(
-         { 
-         usernameOrEmail:debouncedUsernameOrEmail ,
+      if(debouncedUsernameOrEmail) {
+        getUsersByRole(
+           { 
+           roles:userRoles?.list?.filter(_=> _.name==USER_ROLES["driver-partner"]).map(_=> _.id),
+           usernameOrEmail:debouncedUsernameOrEmail ,
+          "page":meta.page,
+          "limit":meta.rowPerPage
+           }
+        )
+        return 
+      }
+      getUsersByRole({
+        "roles":userRoles?.list?.filter(_=> _.name==USER_ROLES["driver-partner"]).map(_=> _.id),
         "page":meta.page,
-        "limit":meta.rowPerPage
-         }
-      )
-      return 
-    }
-    getUser({
-      "roles":userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.id),
-      "page":meta.page,
-      "limit":meta.rowPerPage,
-       searchByManual:true
-    })
+        "limit":meta.rowPerPage,
+        "usernameOrEmail":""
+      })
     }catch(err) {
-    console.log(err)
+      console.log(err)       
     }finally{
-    setDebounceLoader(false)
+       setDebounceLoader(false)
     }
-   
-  },[debouncedUsernameOrEmail , meta.page , meta.rowPerPage])
+  },[debouncedUsernameOrEmail , meta.page , meta.rowPerPage ])
 
   useEffect(()=>{
-     if(getUserData?.data?.metadata) {
-      const { total}  =getUserData?.data?.metadata
+     if(getUsersByRoleData?.data?.metadata) {
+      const { total}  =getUsersByRoleData?.data?.metadata
       setMeta(prev => ({ ...prev, total }));
      }
-  },[getUserData?.data])
+  },[getUsersByRoleData?.data])
   
-
-  console.log("getVhicleDetailsData?.data>>", getVhicleDetailsData?.data)
   return (
     <div style={{ padding: 20 }}>
       <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
-        KYC Approvals
+        Driver Onboard Approvals
       </Typography>
       <Typography variant="subtitle1" style={{ marginBottom: 20, color: "#555" }}>
-        Search and manage KYC approvals efficiently.
+      Driver Onboard  KYC Approvals.
       </Typography>
       
       {userRoles?.list && userRoles?.list.length>0 && 
@@ -147,60 +153,53 @@ const KycRequest = () => {
       <TextField
         sx={{marginBottom:"10px"}}
         fullWidth
-        label="Search By Username or Email"
+        label="Search By Driver's Username or Email"
         variant="standard"
         onChange={(e)=> setusernameOrEmail(e.target.value) }
       />
      
-      {(getUserDataLoading || debounceLoader) && <Box style={{display:"flex", justifyContent:'center', height:"80vh", alignItems:"center"}}>
+      {(getUsersByRoleLoading || debounceLoader) && 
+      <Box style={{display:"flex", justifyContent:'center', height:"80vh", alignItems:"center"}}>
           <CircularProgress style={{width:"20px", height:"20px"}} />
       </Box>}
 
-      {!getUserDataLoading && <TableContainer component={Paper}>
+      {!getUsersByRoleLoading && <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow style={{ backgroundColor: "#f5f5f5" }}>
               <TableCell><b>Username</b></TableCell>
               <TableCell><b>Email</b></TableCell>
-              <TableCell><b>Role ID</b></TableCell>
               <TableCell><b>Role</b></TableCell>
               <TableCell><b>Owns Vehicles</b></TableCell>
-              <TableCell><b>View Details</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {getUserData?.data?.users?.map((user,index) => (
+            {getUsersByRoleData?.data?.users?.map((user,index) => (
               <>
                 <TableRow key={user.id}>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role_id}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user?.vhicles?.length || 0}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleExpandClick(user.id , user?.vhicles.map(_=> _.vhicle_id) ) }>
+                    <IconButton onClick={() => handleExpandClick(user.user_id )}>
                       <ExpandMore />
                     </IconButton>
                   </TableCell>
                 </TableRow>
                 
 
-                {getVhicleDetailsLoader &&   expandedRow === user.id && <Box style={{display:"flex", justifyContent:'center'}}> <CircularProgress style={{width:"20px", height:"20px"}} /> </Box> }
+                {getDriverDetailsLoader &&   expandedRow === user.user_id && <Box style={{display:"flex", justifyContent:'center'}}> <CircularProgress style={{width:"20px", height:"20px"}} /> </Box> }
                
-                {!getVhicleDetailsLoader &&  expandedRow === user.id && (
+                {!getDriverDetailsLoader &&  expandedRow === user.user_id && (
                   <TableRow>
-                    <TableCell colSpan={6}>
+                    <TableCell colSpan={12}>
                       <Accordion expanded>
-                        <AccordionSummary>
-                          <Typography>Additional Details</Typography>
-                        </AccordionSummary>
                         <AccordionDetails>
-
-                       {  (getVhicleDetailsData?.data  && getVhicleDetailsData?.data?.length>0) ?  
-                        <KycFormStatus 
-                        fd={getVhicleDetailsData?.data || []} 
+                       {  (getDriverDetailsData?.data) ?  
+                        <AMSViewDriver 
+                        data={getDriverDetailsData?.data || {}} 
                         formIndex={index} 
-                        //  onRaiseKyc={handleKycSubmission}
+                        kycUpdated={()=>setKycStatusUpdated(p=>!p) }
                          /> :
                           <Alert variant="outlined" severity="error">
                             Owner havn't raised for any Vhicle KYC yet 
@@ -231,4 +230,4 @@ const KycRequest = () => {
   );
 };
 
-export default KycRequest;
+export default DriverOnboardAms;

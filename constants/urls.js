@@ -18,6 +18,9 @@ export default {
     'update_kyc_status': "v1/admin/approve-kyc-request",
     'block_unblock_user': "v1/admin/block-unblock-user",
     "get_user_by_role":"v1/admin/get-user-by-role",
+    "get_user_by_roles":"v1/admin/get-active-by-role",
+    "get_driver_detail_by_userid":"v1/admin/get-driver-detail-by-userid",
+    "ams_drivers":"v1/admin/ams-drivers",
      
     // master api
     "get_vhicle_type":"v1/master/get-vhicle-type",

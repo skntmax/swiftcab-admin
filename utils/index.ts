@@ -111,3 +111,20 @@ export function capitalizeFirstLetter(string:string) {
 export function getUniqueString() {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
+
+
+// Map status to label and color
+export const getStatusProps = (status: string) => {
+  switch (status) {
+    case 'INITIATED':
+      return { label: 'Initiated', color: 'warning' };
+    case 'PENDING':
+      return { label: 'Pending', color: 'info' };
+    case 'VERIFIED':
+      return { label: 'Verified', color: 'success' };
+    case 'COMPLETED':
+      return { label: 'Completed', color: 'primary' };
+    default:
+      return { label: 'Unknown', color: 'default' };
+  }
+};

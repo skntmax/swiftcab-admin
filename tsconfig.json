@@ -23,6 +23,6 @@
       "@*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/[userType]/[username]/(DashboardLayout)/layout/sidebar/MenuItems.jsx", "app/[userType]/[username]/(DashboardLayout)/layout/sidebar/Sidebar.jsx", "app/[userType]/[username]/(DashboardLayout)/layout/sidebar/SidebarItems.jsx", "app/[userType]/[username]/(DashboardLayout)/backpage.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/[userType]/[username]/(DashboardLayout)/layout/sidebar/MenuItems.jsx", "app/[userType]/[username]/(DashboardLayout)/layout/sidebar/Sidebar.jsx", "app/[userType]/[username]/(DashboardLayout)/layout/sidebar/SidebarItems.jsx", "app/[userType]/[username]/(DashboardLayout)/backpage.jsx", "app/[userType]/[username]/(DashboardLayout)/utilities/common-cmp/driver/EditProfileDetail.jsx", "app/libs/apis/CustomeRouter.js"],
   "exclude": ["node_modules"]
 }

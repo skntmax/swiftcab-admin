@@ -170,7 +170,7 @@ useEffect(()=>{
               <TableCell><b>Username</b></TableCell>
               <TableCell><b>Email</b></TableCell>
               <TableCell><b>Role</b></TableCell>
-              <TableCell><b>Owns Vehicles</b></TableCell>
+              <TableCell><b>Show Details</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -202,7 +202,7 @@ useEffect(()=>{
                         kycUpdated={()=>setKycStatusUpdated(p=>!p) }
                          /> :
                           <Alert variant="outlined" severity="error">
-                            Owner havn't raised for any Vhicle KYC yet 
+                            Driver havn't Updated their  KYC details yet 
                           </Alert>
                        }
 

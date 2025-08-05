@@ -3,12 +3,13 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import  urls from '../../../constants/urls'
 import { getCookie } from '@node_modules/cookies-next/lib';
 import { SWC_KEYS } from '@constants';
+import { encryptedBaseQuery } from './encryptedBaseQuery';
 
 // Define the base API
 const driversApi = createApi({
   reducerPath: 'driversApi',
   tagTypes: ["get-driver-details","get-banks","get-bank-branch","get-driver-list","update-driver-details"],
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
+  baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      driverDetails: builder.mutation({ 
         query: (body) => (  {

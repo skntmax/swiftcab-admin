@@ -35,7 +35,11 @@ export default {
 
     // driver api 
     "assing_menu_roles":"v1/admin/add-menu",
-    "get_driver_details":"v1/driver/get-driver-details"
+    "get_driver_details":"v1/driver/get-driver-details",
+
+
+     // socket api 
+    "driver_live_location":"driver-live-location"
 
 
 }

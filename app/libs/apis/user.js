@@ -2,12 +2,13 @@
 'use client'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import  urls from './../../../constants/urls'
+import { encryptedBaseQuery } from './encryptedBaseQuery';
 
 // Define the base API
 const usersApi = createApi({
   reducerPath: 'userApi',
   tagTypes: ['user-types' ,'register-user'],
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
+  baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),    
   endpoints: (builder) => ({ 
      getUser: builder.query({
             query: (body) => (  {

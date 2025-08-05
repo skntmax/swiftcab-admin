@@ -3,6 +3,7 @@ import { SWC_KEYS } from "@constants";
 import urls from "../../../constants/urls";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getCookie } from "@node_modules/cookies-next/lib/client";
+import { encryptedBaseQuery } from "./encryptedBaseQuery";
 
 const ownerApi = createApi({
   reducerPath: "ownerApi",
@@ -18,7 +19,7 @@ const ownerApi = createApi({
     "owner-kyc-request",
   ],
 
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
+  baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),    
   endpoints: (builder) => ({
     getVehiclesList: builder.query({
       query: () => ({

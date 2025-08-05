@@ -1,8 +1,8 @@
 'use client'
-import React, { ReactElement, useContext, useEffect } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { Grid, Box } from '@mui/material';
 import PageContainer from './../../components/container/PageContainer';
-
+import AcceptRideModal from './AcceptOrCancelRider'
 // components
 import SalesOverview from './../../components/dashboard/SalesOverview';
 import YearlyBreakup from './../../components/dashboard/YearlyBreakup';
@@ -26,25 +26,103 @@ import { useSearchParams } from 'next/navigation';
 import { SocketProvider } from '@components/Socket/SocketProvider';
 import { SOCKET_EVENTS } from '@constants';
 import { getUserInfo } from '@utils';
+import { useSendLiveLocationMutation } from '@app/libs/apis/socketApi';
 
 export default function Index({userType, userName}) {
   let params = useSearchParams();
     let tabs = params.get('tabs');
-  
+    const [ driverLoc, setDriverLoc ] = React.useState({lat:0,lng:0,driver:userName , time: new Date().toISOString(), isAvailable:true});
+   const [sendLiveLocation ,  {data:sendLiveLocationData ,isLoading:sendLiveLocationLoading }] = useSendLiveLocationMutation()
     const {socket} = useContext(SocketProvider)
     let dispatch = useAppDispatch();
+    const [rideRequest, setRideRequest] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    
+    //  save user info in redux store
     useEffect(() => {
       dispatch(setUserInfo({ userName: userName, userType: userType }));
+      // socket connection 
+      socket.on('connect', () => {
+      console.log('✅ Connected to socket server:', socket.id);
+    });
+
+    return ()=>{ 
+       socket.emit(SOCKET_EVENTS.EV_DRIVER_LOGGED_OUT, {...driverLoc ,isLoggedIn:false }  )  // reset the driver location from the redis stack  
+    }
     }, []);
 
 
-     useEffect(()=>{
-  socket.on('connect', () => {
-  console.log('✅ Connected to socket server:', socket.id);
-   socket.emit(SOCKET_EVENTS.SEARCH_CUSTOMER, getUserInfo() )
-    });
 
-  },[])
+
+    // sending live location in every 5 seconds to driver pool  kafka topic 
+      useEffect(() => {
+        if(driverLoc?.lat && driverLoc?.lng) {
+          socket.emit(SOCKET_EVENTS.EV_DRIVER_LIVE_LOCATION, driverLoc  )   
+        }
+    }, [driverLoc]);
+
+
+    // 
+    useEffect(() => {
+        const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            // console.log("Current Location:", { lat, lng , driver:userName  });
+            setDriverLoc(p=>  ({...p,lat, lng , driver:userName ,timestamp: new Date().toISOString() ,isAvailable:driverLoc.isAvailable  ,isLoggedIn:true }));
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+          }
+        );
+      } else {
+        console.warn("Geolocation is not supported by this browser.");
+      }
+    };
+
+    // Fetch immediately
+    getLocation();
+
+    // Fetch every 5 seconds
+    const intervalId = setInterval(getLocation, 5000);
+
+    return () => {
+      clearInterval(intervalId)
+    }; // Cleanup on unmount
+      },[])
+
+
+      useEffect(() => {
+        if (!socket) return;
+
+        const handleRideRequest = (data) => {
+          console.log("rider request data " ,data)
+          setRideRequest(data);
+          setIsModalOpen(true);
+          console.log("🚕 Received ride request:", data);
+        };
+
+        socket.on(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
+
+        return () => {
+          socket.off(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
+        };
+      }, [socket]);
+
+          
+    const handleAccept = () => {
+      console.log("✅ Ride accepted");
+      // emit back to server if needed
+      setIsModalOpen(false);
+    };
+
+    const handleClose = () => {
+      console.log("❌ Ride declined");
+      setIsModalOpen(false);
+    };
 
   return (
     <>
@@ -92,8 +170,14 @@ export default function Index({userType, userName}) {
       {tabs === 'driver/ride-history/all' && <RideHistory />}
       {tabs === 'driver/profile/view' && <ProfileView />}
       
+    </PageContainer>
 
-    </PageContainer>  
+    <AcceptRideModal
+  open={isModalOpen}
+  onClose={handleClose}
+  onAccept={handleAccept}
+  rideData={rideRequest}
+/>  
     </>
   )
 }

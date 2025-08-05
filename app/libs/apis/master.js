@@ -4,12 +4,13 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import  urls from './../../../constants/urls'
 import { getCookie } from '@node_modules/cookies-next/lib';
 import { SWC_KEYS } from '@constants';
+import { encryptedBaseQuery } from './encryptedBaseQuery';
 
 // Define the base API
 const masterApi = createApi({
   reducerPath: 'adminApi',
   tagTypes: ['vhicle-types' ,],
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
+  baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),  
   endpoints: (builder) => ({ 
      getVhicleTypes: builder.mutation({
             query: (body) => (  {

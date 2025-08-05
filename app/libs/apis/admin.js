@@ -4,12 +4,13 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import  urls from './../../../constants/urls'
 import { getCookie } from '@node_modules/cookies-next/lib';
 import { SWC_KEYS } from '@constants';
+import { encryptedBaseQuery } from './encryptedBaseQuery';
 
 // Define the base API
 const adminApi = createApi({
   reducerPath: 'adminApi',
   tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar","add-menu-roles","get-driver-detail-by-userid","ams-drivers"],
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
+  baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
      getAllUsers: builder.mutation({
             query: (body) => (  {

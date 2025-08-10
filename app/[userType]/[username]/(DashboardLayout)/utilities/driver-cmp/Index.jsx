@@ -35,7 +35,7 @@ export default function Index({userType, userName}) {
    const [sendLiveLocation ,  {data:sendLiveLocationData ,isLoading:sendLiveLocationLoading }] = useSendLiveLocationMutation()
     const {socket} = useContext(SocketProvider)
     let dispatch = useAppDispatch();
-    const [rideRequest, setRideRequest] = useState(null);
+    const [rideRequests, setRideRequests] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     
     
@@ -99,10 +99,7 @@ export default function Index({userType, userName}) {
         if (!socket) return;
 
         const handleRideRequest = (data) => {
-          console.log("rider request data " ,data)
-          setRideRequest(data);
-          setIsModalOpen(true);
-          console.log("🚕 Received ride request:", data);
+          setRideRequests(prev => [...prev, data]); // append to the queue
         };
 
         socket.on(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
@@ -114,16 +111,16 @@ export default function Index({userType, userName}) {
 
           
     const handleAccept = () => {
-      console.log("✅ Ride accepted");
-      // emit back to server if needed
-      setIsModalOpen(false);
+     console.log("✅ Ride accepted", req);
+          setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleClose = () => {
-      console.log("❌ Ride declined");
-      setIsModalOpen(false);
+        setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 
+
+    
   return (
     <>
 
@@ -172,12 +169,15 @@ export default function Index({userType, userName}) {
       
     </PageContainer>
 
-    <AcceptRideModal
-  open={isModalOpen}
-  onClose={handleClose}
-  onAccept={handleAccept}
-  rideData={rideRequest}
-/>  
+      {rideRequests.map((req, index) => (
+      <AcceptRideModal
+        key={req.customerViewDetails?.correlationId || index}
+        open={true} // always show if in array
+        rideData={req}
+        onClose={handleAccept}
+        onAccept={handleAccept}
+      />
+    ))}
     </>
   )
 }

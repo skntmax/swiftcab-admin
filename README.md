@@ -65,3 +65,13 @@ For other deployment options, refer to the deployment documentation of Next.js (
 
 ## Contributing
 Contributions are welcome! If you find any issues or want to enhance the project, please create a pull request.
+
+<!-- 
+
+navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            console.log("Current Location:", { lat, lng  });
+          
+        }); -->

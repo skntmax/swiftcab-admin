@@ -1,81 +1,58 @@
 'use client';
 import React from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Grid,
-  Divider,
-  Box
-} from '@mui/material';
+import { Paper, Typography, Divider, Box, Button } from '@mui/material';
+import Draggable from 'react-draggable';
 
-export default function AcceptRideModal({ open, onClose, onAccept, rideData }) {
+export default function AcceptRideNotification({ open, onClose, onAccept, rideData }) {
+  if (!open) return null; // Hide when not open
+
   const customer = rideData?.customerViewDetails || {};
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>New Ride Request</DialogTitle>
-      <DialogContent dividers>
-        <Box mb={2}>
-          <Typography variant="h6" gutterBottom>Customer Info</Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
-              <Typography variant="body2"><strong>Username:</strong> {rideData?.userDetails?.username}</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2"><strong>Portal:</strong> {customer.portal}</Typography>
-            </Grid>
-          </Grid>
+    <Draggable handle=".drag-handle" cancel={'button, strong, p'}>
+      <Paper
+        sx={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          zIndex: 1500,
+          p: 2,
+          width: 320,
+          boxShadow: 4,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+          cursor: 'move'
+        }}
+      >
+        {/* Drag handle */}
+        <Typography className="drag-handle" variant="h6" gutterBottom sx={{ cursor: 'move' }}>
+          🚕 New Ride Request
+        </Typography>
+
+        <Typography variant="body2"><strong>Username:</strong> {rideData?.userDetails?.username}</Typography>
+        <Typography variant="body2"><strong>Portal:</strong> {customer.portal}</Typography>
+
+        <Divider sx={{ my: 1 }} />
+
+        <Typography variant="subtitle2" gutterBottom>Trip Details</Typography>
+        <Typography variant="body2"><strong>Pickup:</strong> {customer.pickup_name}</Typography>
+        <Typography variant="body2"><strong>Drop:</strong> {customer.drop_name}</Typography>
+        <Typography variant="body2"><strong>Date:</strong> {customer.pickup_date}</Typography>
+        <Typography variant="body2"><strong>Time:</strong> {customer.pickup_time || 'Not specified'}</Typography>
+        <Typography variant="body2"><strong>Distance:</strong> {customer.distance?.toFixed(2)} km</Typography>
+        <Typography variant="body2"><strong>Travel Type:</strong> {customer.travel_way === '1' ? 'One Way' : 'Round Trip'}</Typography>
+
+        <Divider sx={{ my: 1 }} />
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+          <Button size="small" color="secondary" onClick={onClose}>
+            Decline
+          </Button>
+          <Button size="small" variant="contained" color="secondary" onClick={onAccept}>
+            Accept
+          </Button>
         </Box>
-
-        <Divider />
-
-        <Box my={2}>
-          <Typography variant="h6" gutterBottom>Trip Details</Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Typography variant="body2"><strong>Pickup:</strong> {customer.pickup_name}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body2"><strong>Drop:</strong> {customer.drop_name}</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2"><strong>Pickup Date:</strong> {customer.pickup_date}</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2"><strong>Pickup Time:</strong> {customer.pickup_time || 'Not specified'}</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2"><strong>Distance:</strong> {customer.distance?.toFixed(2)} km</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2"><strong>Travel Type:</strong> {customer.travel_way === '1' ? 'One Way' : 'Round Trip'}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body2"><strong>Vehicle Type ID:</strong> {customer.vhicleType}</Typography>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Divider />
-
-        <Box mt={2}>
-          <Typography variant="body2" color="textSecondary">
-            <strong>UTM Source:</strong> {customer.utm_source}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            <strong>Correlation ID:</strong> {customer.correlationId}
-          </Typography>
-        </Box>
-      </DialogContent>
-      
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">Decline</Button>
-        <Button onClick={onAccept} variant="contained" color="primary">Accept</Button>
-      </DialogActions>
-    </Dialog>
+      </Paper>
+    </Draggable>
   );
 }

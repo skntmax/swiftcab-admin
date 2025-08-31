@@ -38,6 +38,10 @@ const subNavbmenuSchema = yup.object({
     )
     .required("Href is required"),
 
+    extra_paths :yup
+    .string()
+    .nullable(),
+     
   icon: yup
     .string()
     .required("Icon is required"),

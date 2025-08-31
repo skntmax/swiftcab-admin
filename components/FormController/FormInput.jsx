@@ -1,155 +1,156 @@
-'use client'
-import React, { useEffect, useState } from 'react'
+"use client";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemIcon, MenuItem, Select, styled, Typography } from '@mui/material';
-import * as  all_icons from "@tabler/icons-react";
-import ApiLoader from '@components/ApiLoader';
-import Image from '@node_modules/next/image';
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import {
+  Box,
+  Checkbox,
+  CircularProgress,
+  Divider,
+  FormControl,
+  InputLabel,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Select,
+  styled,
+  Typography,
+} from "@mui/material";
+import * as all_icons from "@tabler/icons-react";
+import ApiLoader from "@components/ApiLoader";
+import Image from "@node_modules/next/image";
 
 let defaultOption = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" }
-  ]
+  { value: "chocolate", label: "Chocolate" },
+  { value: "strawberry", label: "Strawberry" },
+  { value: "vanilla", label: "Vanilla" },
+];
 
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
   height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
+  overflow: "hidden",
+  position: "absolute",
   bottom: 0,
   left: 0,
-  whiteSpace: 'nowrap',
+  whiteSpace: "nowrap",
   width: 1,
 });
 
 function FormInput({
-   name="name", 
-   type="text",
-   control, 
-   register ,  
-   isLoading  = false , 
-   options=defaultOption,  
-   rest={}, 
-   children,
-   
-   // for file uploads  
-   startIcon=<CloudUploadIcon />,
-   multiple=false,
-   preview=false,
+  name = "name",
+  type = "text",
+  control,
+  register,
+  isLoading = false,
+  options = defaultOption,
+  rest = {},
+  children,
 
+  // for file uploads
+  startIcon = <CloudUploadIcon />,
+  multiple = false,
+  preview = false,
 
-   //  custom dropdown selector 
-   optionFunctionCaller=()=>{},
-   customOptions=[],
-   customOptionKeys={label:"label",value:"value"},
-   onCustomFuntionCaller,
+  //  custom dropdown selector
+  optionFunctionCaller = () => {},
+  customOptions = [],
+  customOptionKeys = { label: "label", value: "value" },
+  onCustomFuntionCaller,
 
-   // for file uploads only 
-   errors
+  // for file uploads only
+  errors,
+}) {
+  const [files, setFiles] = useState();
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const [open, setOpen] = useState(false);
 
-  }) {
-
-    const [files, setFiles] = useState()
-    const [previewUrls, setPreviewUrls] = useState([])
-   const [open, setOpen] = useState(false);
-
-      useEffect(() => {
+  useEffect(() => {
     // Generate preview URLs
     if (files && files.length > 0) {
       const urls = Array.from(files).map((file) =>
         file.type.startsWith("image/") ? URL.createObjectURL(file) : null
-      )
-      setPreviewUrls(urls)
+      );
+      setPreviewUrls(urls);
 
       return () => {
         // Revoke all preview URLs to avoid memory leaks
-        urls.forEach((url) => url && URL.revokeObjectURL(url))
-      }
+        urls.forEach((url) => url && URL.revokeObjectURL(url));
+      };
     }
-  }, [files])
+  }, [files]);
 
-    if(type=="text")
+  if (type == "text")
     return (
-        <Controller
-            name={name}
-            control={control}
-            render={({ field }) =>
-            <TextField  
-            {...field} 
-            {...rest} 
-            /> }
-            
-          />
-      )
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => <TextField {...field} {...rest} />}
+      />
+    );
 
-    if(type=="button")
-      return (
-          <Controller
-          name={name}
-          control={control}
-          render={({ field }) => 
-          <Button 
-          variant="contained"  
-          type="button"
-          {...rest} 
-          {...field}
-            >
-              {children}
-            </Button> }
-        />
-    )
-
-
-    if (type === "submit") {
-       // in case of loading an api 
-       if(isLoading)   <Button {...rest} disabled={isLoading}  > <ApiLoader /> </Button>
-
-        return <Button
-            type="submit"
-            variant="contained"
-            disabled={isLoading}
-            {...rest}
-          >
-            {isLoading ? <ApiLoader /> : children}
-          </Button>
-    }
-  
-
-      if(type=="upload")
-        return <>
-        <Box display="flex" flexDirection="column" alignItems="flex-start">
+  if (type == "button")
+    return (
       <Controller
         name={name}
         control={control}
         render={({ field }) => (
-          <>
-            <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              {...rest}
-              startIcon={startIcon}
-            >
-              {children}
-              {rest.label && (
-                <Typography variant="body2">{rest.label}</Typography>
-              )}
-              <VisuallyHiddenInput
-                type="file"
-                onChange={(event) => {
-                  setFiles(event.target.files);
-                  field.onChange(event.target.files); // Update RHF state
-                  // setValue(name, event.target.files); 
-                }}
-                multiple={multiple}
-              />
-            </Button>
+          <Button variant="contained" type="button" {...rest} {...field}>
+            {children}
+          </Button>
+        )}
+      />
+    );
+
+  if (type === "submit") {
+    // in case of loading an api
+    if (isLoading)
+      <Button {...rest} disabled={isLoading}>
+        {" "}
+        <ApiLoader />{" "}
+      </Button>;
+
+    return (
+      <Button type="submit" variant="contained" disabled={isLoading} {...rest}>
+        {isLoading ? <ApiLoader /> : children}
+      </Button>
+    );
+  }
+
+  if (type == "upload")
+    return (
+      <>
+        <Box display="flex" flexDirection="column" alignItems="flex-start">
+          <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+              <>
+                <Button
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  {...rest}
+                  startIcon={startIcon}
+                >
+                  {children}
+                  {rest.label && (
+                    <Typography variant="body2">{rest.label}</Typography>
+                  )}
+                  <VisuallyHiddenInput
+                    type="file"
+                    onChange={(event) => {
+                      setFiles(event.target.files);
+                      field.onChange(event.target.files); // Update RHF state
+                      // setValue(name, event.target.files);
+                    }}
+                    multiple={multiple}
+                  />
+                </Button>
 
                 {/* Validation Error */}
                 {errors?.[name] && (
@@ -157,12 +158,12 @@ function FormInput({
                     {errors?.[name]?.message}
                   </Typography>
                 )}
-                </>
-              )}
-           />
+              </>
+            )}
+          />
 
-            {/* File Name List */}
-           <Box mt={1}>
+          {/* File Name List */}
+          <Box mt={1}>
             {files &&
               Array.from(files).map((file, index) => (
                 <Box
@@ -173,7 +174,9 @@ function FormInput({
                   mb={0.5} // optional spacing between each row
                 >
                   {isLoading && <CircularProgress size={15} />}
-                  {!isLoading && file.name  && <Typography variant="body2">{file.name}</Typography>} 
+                  {!isLoading && file.name && (
+                    <Typography variant="body2">{file.name}</Typography>
+                  )}
                 </Box>
               ))}
           </Box>
@@ -194,43 +197,159 @@ function FormInput({
                   )
               )}
             </Box>
-    )}
+          )}
+        </Box>
+      </>
+    );
 
-  </Box>
-    </>
-
-    if (type === "checkbox") {
-      return (
-        <Controller
-          name={name}
-          control={control}
-          render={({ field }) => (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Checkbox 
-            {...field}
-            checked={!!field.value} // Convert to boolean to prevent React warnings
+  if (type === "checkbox") {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Checkbox
+              {...field}
+              checked={!!field.value} // Convert to boolean to prevent React warnings
               {...rest}
             />
             {rest.label && (
               <Typography variant="body2">{rest.label}</Typography>
             )}
-            </Box>
-          )}
-        />
-      );
-    }
+          </Box>
+        )}
+      />
+    );
+  }
 
-if (type === "dropdown") {
-      return (
-        <Controller
-          name={name}
-          control={control}
-          render={({ field }) => (
-            <TextField {...field} select fullWidth {...rest}>
+  if (type === "dropdown") {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <TextField {...field} select fullWidth {...rest}>
+            {options.map((option) => {
+              const IconComponent = all_icons[option.icon] ?? null;
+              return (
+                <MenuItem key={option.value} value={option.value}>
+                  {IconComponent && (
+                    <ListItemIcon>
+                      <IconComponent stroke={1.5} size="1.3rem" />
+                    </ListItemIcon>
+                  )}
+                  {option.label}
+                </MenuItem>
+              );
+            })}
+          </TextField>
+        )}
+      />
+    );
+  }
+
+  if (type === "on_demand_dropdown") {
+    return (
+      <Box display="flex" alignItems="center" gap={2}>
+        <Box flex={1}>
+          {isLoading ? (
+            <Select fullWidth open={true} disabled displayEmpty value="">
+              <MenuItem value="">
+                <ApiLoader />
+              </MenuItem>
+            </Select>
+          ) : (
+            <Controller
+              name={name}
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth>
+                  <InputLabel id={`${name}-label`}>
+                    {rest?.label || "Select an option"}
+                  </InputLabel>
+                  <Select
+                    {...field}
+                    labelId={`${name}-label`}
+                    label={rest?.label || "Select an option"}
+                    open={open}
+                    onOpen={() => {
+                      setOpen(true);
+                      if (!customOptions.length) {
+                        onCustomFuntionCaller?.(); // fetch API
+                      }
+                    }}
+                    onClose={() => setOpen(false)}
+                    {...rest}
+                  >
+                    {customOptions.map((option, index) => (
+                      <MenuItem
+                        key={option[customOptionKeys["labelValue"]] || index}
+                        value={option[customOptionKeys["labelValue"]]}
+                      >
+                        {option[customOptionKeys["labelKey"]]}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          )}
+        </Box>
+      </Box>
+    );
+  }
+if (type === "multi-select") {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => {
+        const allValues = options.map((opt) => opt.value);
+        const isAllSelected = field.value?.length === allValues.length;
+
+        const handleToggleAll = () => {
+          if (isAllSelected) {
+            field.onChange([]); // unselect all
+          } else {
+            field.onChange(allValues); // select all
+          }
+        };
+
+        return (
+          <FormControl fullWidth>
+            <InputLabel id={`${name}-label`}>
+              {rest?.label || "Select Options"}
+            </InputLabel>
+            <Select
+              {...field}
+              labelId={`${name}-label`}
+              multiple
+              renderValue={(selected) =>
+                options
+                  .filter((opt) => selected.includes(opt.value))
+                  .map((opt) => opt.label)
+                  .join(", ")
+              }
+              {...rest}
+            >
+              {/* Select All Option */}
+              <MenuItem onClick={handleToggleAll}>
+                <Checkbox checked={isAllSelected} />
+                <ListItemText primary="Select All" />
+              </MenuItem>
+
+              {/* Divider */}
+              <Divider />
+
+              {/* Normal Options */}
               {options.map((option) => {
-                const IconComponent = all_icons[option.icon]??null;
+                const IconComponent = all_icons[option.icon] ?? null;
                 return (
                   <MenuItem key={option.value} value={option.value}>
+                    <Checkbox
+                      checked={field.value?.includes(option.value) || false}
+                    />
                     {IconComponent && (
                       <ListItemIcon>
                         <IconComponent stroke={1.5} size="1.3rem" />
@@ -240,61 +359,21 @@ if (type === "dropdown") {
                   </MenuItem>
                 );
               })}
-            </TextField>
-          )}
-        />
-      );
-    }
+            </Select>
 
-  if (type === "on_demand_dropdown") {
-  return (
-    <Box display="flex" alignItems="center" gap={2}>
-      <Box flex={1}>
-        {isLoading ? (
-          <Select fullWidth open={true} disabled displayEmpty value="" >
-            <MenuItem value="">
-              <ApiLoader  />
-            </MenuItem>
-          </Select>
-        ) : (
-          <Controller
-            name={name}
-            control={control}
-              render={({ field }) => (
-                <FormControl fullWidth>
-                <InputLabel id={`${name}-label`}>{rest?.label || "Select an option"}</InputLabel>
-                <Select
-                  {...field}
-                  labelId={`${name}-label`}
-                  label={rest?.label || "Select an option"}
-                  open={open}
-                  onOpen={() => {
-                    setOpen(true);
-                    if (!customOptions.length) {
-                      onCustomFuntionCaller?.(); // fetch API
-                    }
-                  }}
-                  onClose={() => setOpen(false)}
-                  {...rest}
-                >
-                  {customOptions.map((option, index) => (
-                    <MenuItem
-                      key={option[customOptionKeys["labelValue"]] || index}
-                      value={option[customOptionKeys["labelValue"]]}
-                    >
-                      {option[customOptionKeys["labelKey"]]}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            {/* Validation error */}
+            {rest.error && (
+              <Typography variant="caption" color="error">
+                {rest.helperText}
+              </Typography>
             )}
-          />
-        )}
-      </Box>
-    </Box>
+          </FormControl>
+        );
+      }}
+    />
   );
 }
 
 }
 
-export default FormInput
+export default FormInput;

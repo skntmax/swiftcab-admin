@@ -13,10 +13,12 @@ import { useDispatch } from "@node_modules/react-redux/dist/react-redux";
 import { fetGlobalNavbar } from "@app/libs/slice/navMenuSlice";
 import { useAppSelector } from "@app/libs/store";
 import { fetchUserRoles } from "@app/libs/slice/userRolesSlice";
+import {fetchGlobalCapability} from "@app/libs/slice/capabilities";
 import { setBaseUrl } from "@app/libs/slice/profile";
 import { contextProvider } from "@components/AppProvider";
 import UseReduxSelector from "@app/libs/slice/useReduxSelector";
 import { SocketClient } from "../../../../components/Socket/SocketProvider";
+import { fetchGlobalNavPermissions } from "@app/libs/slice/navPermissions";
 const MainWrapper = styled("div")(() => ({
   display: "flex",
   minHeight: "100vh",
@@ -42,17 +44,29 @@ export default function RootLayout({children}) {
 
   const navbar =  useAppSelector((ele)=> ele['navbar-menu'])
   const userRoles =  useAppSelector((ele)=> ele['userRoles'])
+  const  capabilities =  useAppSelector((ele)=> ele['capability-list'])
+  const navPermList = useAppSelector((ele)=> ele['navbar-perm-list'])
   const  profile =  useAppSelector((ele)=> ele.baseUrl)
   const [ userType ,  username] = pathname.split('/').filter(Boolean) 
   
 useEffect(()=>{
  
+   // navbar
     if(navbar?.navbar.length==0)
        dispatch(fetGlobalNavbar({userType:userType.toLowerCase()}))
 
-   if(userRoles?.list?.length==0)
-        dispatch(fetchUserRoles())
+    // user roles
+    if(userRoles?.list?.length==0)
+          dispatch(fetchUserRoles())
+ 
+   // capabilities
+    if(capabilities?.list?.length==0)
+      dispatch(fetchGlobalCapability())
 
+
+     // capabilities
+    if(navPermList?.list?.length==0)
+      dispatch(fetchGlobalNavPermissions())
 
    // setting baseUrl 
     if(!profile?.baseUrl) {

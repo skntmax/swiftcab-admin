@@ -17,30 +17,6 @@ import { Edit, Block, Delete } from "@mui/icons-material";
 
 import { useAppSelector } from "@app/libs/store";
 
-// const rolesData = [
-//   { id: 1, name: "super-admin" },
-//   { id: 2, name: "admin" },
-//   { id: 3, name: "sales-manager" },
-//   { id: 4, name: "sales-executive" },
-//   { id: 5, name: "sales-representative" },
-//   { id: 6, name: "account-manager" },
-//   { id: 7, name: "marketing-manager" },
-//   { id: 8, name: "marketing-executive" },
-//   { id: 9, name: "marketing-specialist" },
-//   { id: 10, name: "customer-support manager" },
-//   { id: 11, name: "support-agent" },
-//   { id: 12, name: "helpdesk-agent" },
-//   { id: 13, name: "technical-support-engineer" },
-//   { id: 14, name: "operations-manager" },
-//   { id: 15, name: "finance-manager" },
-//   { id: 16, name: "crm-developer" },
-//   { id: 17, name: "crm-analyst" },
-//   { id: 18, name: "partner-manager" },
-//   { id: 19, name: "vendor-coordinator" },
-//   { id: 20, name: "customer" },
-//   { id: 21, name: "owner" },
-// ];
-
 const RolesManagement = () => {
   const rolesData = useAppSelector((state) => state.userRoles.list);
 
@@ -99,7 +75,7 @@ const RolesManagement = () => {
                 <TableRow key={role.id}>
                   <TableCell>
                     <Typography variant="body2" style={{ fontWeight: "bold", color: "#1976d2" }}>
-                      {role.name}
+                      {role.label}
                     </Typography>
                   </TableCell>
                   <TableCell>

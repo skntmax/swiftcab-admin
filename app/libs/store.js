@@ -13,6 +13,8 @@ import userRolesSlice from './slice/userRolesSlice'
 import profileSlice from './slice/profile'
 import driversApi from './apis/driver'
 import socketsApi from './apis/socketApi'
+import capabilitySlice from './slice/capabilities'
+import navPermSlice from './slice/navPermissions'
 export const reduxStore = configureStore({
   reducer: {
     [usersSlice.reducerPath]:usersSlice.reducer,
@@ -22,6 +24,8 @@ export const reduxStore = configureStore({
     [adminApi.reducerPath]:adminApi.reducer,
     [masterApi.reducerPath]:masterApi.reducer,
     [userRolesSlice.reducerPath]:userRolesSlice.reducer,
+    [capabilitySlice.reducerPath]:capabilitySlice.reducer,
+    [navPermSlice.reducerPath]:navPermSlice.reducer,
     [profileSlice.reducerPath]:profileSlice.reducer ,
     [driversApi.reducerPath]:driversApi.reducer,
     [socketsApi.reducerPath]:socketsApi.reducer,

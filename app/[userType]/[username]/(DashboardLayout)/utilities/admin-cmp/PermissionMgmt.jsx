@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {  useEffect, useState } from "react";
 import {
   Autocomplete,
   TextField,
@@ -12,59 +12,27 @@ import {
   IconButton,
   TablePagination,
   Typography,
+  Button,
 } from "@mui/material";
 import { Edit, Block, Delete } from "@mui/icons-material";
-
-const permissionsData = [
-  { id: 1, name: "Create Users" },
-  { id: 2, name: "Edit Users" },
-  { id: 3, name: "Delete Users" },
-  { id: 4, name: "View Users" },
-  { id: 5, name: "Assign Roles" },
-  { id: 6, name: "Create Leads" },
-  { id: 7, name: "Edit Leads" },
-  { id: 8, name: "Delete Leads" },
-  { id: 9, name: "View Leads" },
-  { id: 10, name: "Assign Leads" },
-  { id: 11, name: "Create Contacts" },
-  { id: 12, name: "Edit Contacts" },
-  { id: 13, name: "Delete Contacts" },
-  { id: 14, name: "View Contacts" },
-  { id: 15, name: "Create Deals" },
-  { id: 16, name: "Edit Deals" },
-  { id: 17, name: "Delete Deals" },
-  { id: 18, name: "View Deals" },
-  { id: 19, name: "Assign Deals" },
-  { id: 20, name: "Create Tasks" },
-  { id: 21, name: "Edit Tasks" },
-  { id: 22, name: "Delete Tasks" },
-  { id: 23, name: "View Tasks" },
-  { id: 24, name: "Assign Tasks" },
-  { id: 25, name: "Create Campaigns" },
-  { id: 26, name: "Edit Campaigns" },
-  { id: 27, name: "Delete Campaigns" },
-  { id: 28, name: "View Campaigns" },
-  { id: 29, name: "Send Marketing Emails" },
-  { id: 30, name: "View Reports" },
-  { id: 31, name: "Generate Reports" },
-  { id: 32, name: "Export Reports" },
-  { id: 33, name: "Manage Invoices" },
-  { id: 34, name: "View Transactions" },
-  { id: 35, name: "Process Payments" },
-  { id: 36, name: "Access CRM Settings" },
-  { id: 37, name: "Manage Integrations" },
-  { id: 38, name: "Customize Workflows" },
-  { id: 39, name: "Configure Automations" },
-];
-
+import { ReduxProvider } from "@app/libs/slice/useReduxSelector";
+import ExtraComponent from "../common-cmp/ExtraComponent";
+import { extraPathsUrls } from "@constants/urls";
+import { useGetMenuPermissionsMutation } from "@app/libs/apis/admin";
+import CreatePermission from "./ExtraPathComponents/CreatePermission";
+import EditPermissions from "./ExtraPathComponents/EditPermissions";
 const PermissionManagement = () => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  const [ permissionsData , setPermissionsData ] = useState([])
+  const [ count , setCount ] = useState()
+  const [ getPermissionList, {data:permissionData ,isLoading:permissionIsLoading} ] = useGetMenuPermissionsMutation()
+  const [ activeExtraPath, setActiveExtraPath ] = useState("")
+  
   const filteredData =
     selectedPermissions.length > 0
-      ? permissionsData.filter((permission) => selectedPermissions.includes(permission.name))
+      ? permissionsData.filter((permission) => selectedPermissions.includes(permission.permission_name))
       : permissionsData;
 
   const handleChangePage = (event, newPage) => {
@@ -76,75 +44,142 @@ const PermissionManagement = () => {
     setPage(0);
   };
 
+  useEffect(()=>{
+    getPermissionList({
+        page:page+1,
+       rowsPerPage 
+    })
+  },[page, rowsPerPage])
+
+   useEffect(() => {
+      if (permissionData?.data) {
+        setPermissionsData(permissionData?.data?.permissions);
+        setCount(permissionData?.data?.totalCount || 0);
+
+      }
+    }, [permissionData?.data]);
+  
+
+    // for adding extra paths 
+    const handleBack = ()=> ( setActiveExtraPath("") )
+   switch (activeExtraPath) {
+    case extraPathsUrls.create_permission:
+      return renderWithBackButton(<CreatePermission {...{selectedPermissions ,filteredData}} />, handleBack);
+    case extraPathsUrls.edit_permission:
+      return renderWithBackButton(<EditPermissions {...{selectedPermissions,filteredData}} />,handleBack);
+    default:
+      break;
+    }
+    // for adding extra paths
+
   return (
-    <div style={{ padding: 20 }}>
-      {/* Title */}
-      <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
-        Permission Management
-      </Typography>
-      <Typography variant="subtitle1" style={{ marginBottom: 20, color: "#555" }}>
-        Search and manage permissions efficiently.
-      </Typography>
-      
-      {/* Typeahead Search */}
-      <Autocomplete
-        multiple
-        options={permissionsData.map((p) => p.name)}
-        getOptionLabel={(option) => option}
-        value={selectedPermissions}
-        onChange={(event, newValue) => setSelectedPermissions(newValue)}
-        renderInput={(params) => (
-          <TextField {...params} label="Filter by Permission" variant="outlined" fullWidth />
-        )}
-        style={{ marginBottom: 20 }}
-      />
+  <div style={{ padding: 20 }}>
+  {/* Title + Create Button in one row */}
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <Typography
+      variant="h4"
+      gutterBottom
+      style={{ fontWeight: "bold", color: "#3f51b5" }}
+    >
+      Permission Management
+    </Typography>
 
-      {/* Permissions Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow style={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell><b>ID</b></TableCell>
-              <TableCell><b>Permission</b></TableCell>
-              <TableCell><b>Actions</b></TableCell>
+      <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        onClick={() => setActiveExtraPath(extraPathsUrls.create_permission)}
+        style={{ marginBottom: "10px" }}
+      >
+        Create Permissions
+      </Button>
+  </div>
+
+  <Typography
+    variant="subtitle1"
+    style={{ marginBottom: 20, color: "#555" }}
+  >
+    Search and manage permissions efficiently.
+  </Typography>
+
+  {/* Typeahead Search */}
+  <Autocomplete
+    multiple
+    options={permissionsData.map((p) => p.permission_name)}
+    getOptionLabel={(option) => option}
+    value={selectedPermissions}
+    onChange={(event, newValue) => setSelectedPermissions(newValue)}
+    renderInput={(params) => (
+      <TextField {...params} label="Filter by Permission" variant="outlined" fullWidth />
+    )}
+    style={{ marginBottom: 20 }}
+  />
+
+  {/* Permissions Table */}
+  {filteredData && Array.isArray(filteredData) && filteredData.length>0 && <TableContainer component={Paper}>
+    <Table>
+      <TableHead>
+        <TableRow style={{ backgroundColor: "#f5f5f5" }}>
+          <TableCell><b>ID</b></TableCell>
+          <TableCell><b>Permission</b></TableCell>
+          <TableCell><b>Actions</b></TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        { filteredData.map((permission) => (
+            <TableRow key={permission?.id || 0}>
+              <TableCell>{permission?.id || ""}</TableCell>
+              <TableCell>{permission?.permission_name || ""}</TableCell>
+              <TableCell>
+                <IconButton color="primary" onClick={(e) => {
+                  setSelectedPermissions(permission?.permission_name)
+                  setActiveExtraPath(extraPathsUrls.edit_permission)
+                  }
+                 } ><Edit /></IconButton>
+                <IconButton color="warning"><Block /></IconButton>
+                <IconButton color="error"><Delete /></IconButton>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((permission) => (
-                <TableRow key={permission.id}>
-                  <TableCell>{permission.id}</TableCell>
-                  <TableCell>{permission.name}</TableCell>
-                  <TableCell>
-                    <IconButton color="primary">
-                      <Edit />
-                    </IconButton>
-                    <IconButton color="warning">
-                      <Block />
-                    </IconButton>
-                    <IconButton color="error">
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          ))}
+      </TableBody>
+    </Table>
+  </TableContainer> }
 
-      {/* Pagination */}
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 15]}
-        component="div"
-        count={filteredData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </div>
+  {/* Pagination */}
+  <TablePagination
+    rowsPerPageOptions={[5, 10, 15]}
+    component="div"
+    count={count}
+    rowsPerPage={rowsPerPage}
+    page={page}
+    onPageChange={handleChangePage}
+    onRowsPerPageChange={handleChangeRowsPerPage}
+  />
+</div>
+
   );
 };
+
+ const renderWithBackButton = (child,handleBack) => (
+    <div>
+      <Button 
+        variant="outlined" 
+        color="primary" 
+        size="small" 
+        onClick={handleBack} 
+        style={{ marginBottom: "10px" }}
+      >
+        Back
+      </Button>
+      {child}
+    </div>
+  );
+
+
+
+
+
+
+
 
 export default PermissionManagement;

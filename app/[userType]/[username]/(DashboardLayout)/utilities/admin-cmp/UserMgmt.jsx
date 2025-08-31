@@ -34,6 +34,7 @@ const UserManagement = () => {
   const userRoles = useAppSelector((ele) => ele['userRoles']);
   const [selectedRoles, setSelectedRoles] = useState([]);
   
+  const [activeExtraPath, setActiveExtraPath] = useState(null);
   // Delete dialog state and handlers
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
@@ -135,10 +136,6 @@ const UserManagement = () => {
      
   } ,[removeUserData?.data ,blockUnblockData?.data])
 
-
-
-
-  
   const handleBUClick = (user) => {
     setSelectedUserToBlockUnblock(user);
     setOpenOnBlock(true);
@@ -164,10 +161,7 @@ const UserManagement = () => {
   };
 
 
-
-
   const handleConfirmBlockUnblock = () => {
-   debugger
     const { username ,status } = selectedUserToBlockUnblock     
     blockUnblock({username , "isActive": status}) // deleting users 
 
@@ -184,9 +178,9 @@ const UserManagement = () => {
   };
 
 
-
   return (
     <>
+     
       <div style={{ padding: 20 }}>
         <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
           User Management

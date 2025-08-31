@@ -10,6 +10,7 @@ import {
   ListItemButton,
 } from "@mui/material";
 import Link from "next/link";
+import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined"; 
 
 type NavGroup = {
   [x: string]: any;
@@ -31,9 +32,9 @@ interface ItemType {
 }
 
 const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
-  const Icon = item.icon;
   const theme = useTheme();
-  const itemIcon = <Icon stroke={1.5} size="1.3rem" />;
+  const Icon = item.icon || CircleOutlinedIcon; ;
+  const itemIcon =  <Icon stroke={1.5} size="1.3rem" />;
 
   const ListItemStyled = styled(ListItem)(() => ({
     padding: 0,
@@ -60,7 +61,6 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
     },
   }));
 
-
   return (
     <List component="div" disablePadding key={item.id}>
       <ListItemStyled>
@@ -68,23 +68,25 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
           component={Link}
           href={item.href}
           disabled={item.disabled}
-          selected={pathDirect?.trim()?.toLocaleLowerCase() === item.href?.trim()?.toLocaleLowerCase()}
+          selected={
+            pathDirect?.trim()?.toLocaleLowerCase() ===
+            item.href?.trim()?.toLocaleLowerCase()
+          }
           target={item.external ? "_blank" : ""}
           onClick={onClick}
         >
-          <ListItemIcon
-            sx={{
-              minWidth: "36px",
-              p: "3px 0",
-              color: "inherit",
-            }}
-          >
-            {itemIcon}
-          </ListItemIcon>
-            
-          <ListItemText>
-            <>{item.title}</>
-          </ListItemText>
+          {itemIcon && (
+            <ListItemIcon
+              sx={{
+                minWidth: "36px",
+                p: "3px 0",
+                color: "inherit",
+              }}
+            >
+              {itemIcon}
+            </ListItemIcon>
+          )}
+          <ListItemText primary={item.title} />
         </ListItemButton>
       </ListItemStyled>
     </List>

@@ -84,6 +84,10 @@ const DriverOnboardAms = dynamic(() => import('./utilities/admin-cmp/DriverOnboa
   loading: () => <CenteredLoader />,
 });  
 
+const Capabilities = dynamic(() => import('./utilities/admin-cmp/Capabilities'), {
+  loading: () => <CenteredLoader />,
+}); 
+
 
 function AdminBackpage({ userType, userName }) {
   const params = useSearchParams();
@@ -94,6 +98,7 @@ function AdminBackpage({ userType, userName }) {
     dispatch(setUserInfo({ userName, userType }));
   }, []);
 
+  
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       {tabs === null ? (
@@ -135,6 +140,7 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'sub-nav-items' && <SubNavForm />}
       {tabs === 'menu-assigned-to-roles' && <MenuAssignToRoles />}
       {tabs === 'driver-onboard-ams' && <DriverOnboardAms />}
+      {tabs === 'add-capabilites' && <Capabilities />}
       
       
     </PageContainer>

@@ -21,7 +21,10 @@ export default {
     "get_user_by_roles":"v1/admin/get-active-by-role",
     "get_driver_detail_by_userid":"v1/admin/get-driver-detail-by-userid",
     "ams_drivers":"v1/admin/ams-drivers",
-     
+    "add_capabilities":"v1/admin/add-capabilities",
+    "add_capabilities_have_permissions":"v1/admin/add-capabilities-have-permissions",
+    "get_role_has_capabilities":"v1/master/get-role-has-capabilities",
+    "get_cap_has_permissions":"v1/master/get-cap-has-permissions", 
     // master api
     "get_vhicle_type":"v1/master/get-vhicle-type",
     "add_role_to_users":"v1/admin/add-role-to-users",
@@ -32,6 +35,7 @@ export default {
     "get_bank_branch":"v1/master/get-bank-branches",
     "get_driver_list":"v1/master/get-driver-list",
     "update_driver_details":"v1/driver/update-driver-profile2",
+    "get_menu_permissions":"v1/master/get-menu-permissions",
 
     // driver api 
     "assing_menu_roles":"v1/admin/add-menu",
@@ -44,3 +48,8 @@ export default {
 
 }
 
+
+export const extraPathsUrls = {
+    create_permission : "/permission-management/create",
+    edit_permission : "/permission-management/edit",
+}

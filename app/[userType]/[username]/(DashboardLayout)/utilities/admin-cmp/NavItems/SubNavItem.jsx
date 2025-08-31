@@ -16,7 +16,8 @@ const SubNavForm = () => {
       sub_menu: false,
       href: '',
       icon: '',
-      nav_item_id: ''
+      nav_item_id: '',
+      extra_paths: ""
     },
     resolver: yupResolver(subNavbmenuSchema),
   });
@@ -151,6 +152,20 @@ const SubNavForm = () => {
               error: !!errors?.href,
               helperText: errors?.href?.message,
               placeholder: "Enter URL (e.g., /home/about)",
+            }}
+          />
+
+           {/* Href */}
+          <FormInput
+            name="extra_paths"
+            type="text"
+            control={control}
+            register={register}
+            rest={{
+              label: "Extra Paths",
+              error: !!errors?.extra_paths,
+              helperText: errors?.extra_paths?.message,
+              placeholder: ["/permission-management/create...",],
             }}
           />
 

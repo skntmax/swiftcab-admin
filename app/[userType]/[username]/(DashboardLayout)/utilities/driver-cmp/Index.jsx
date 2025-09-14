@@ -63,25 +63,25 @@ export default function Index({userType, userName}) {
     }, [driverLoc]);
 
 
-    // 
-    useEffect(() => {
-        const getLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            // console.log("Current Location:", { lat, lng , driver:userName  });
-            setDriverLoc(p=>  ({...p,lat, lng , driver:userName ,timestamp: new Date().toISOString() ,isAvailable:driverLoc.isAvailable  ,isLoggedIn:true }));
-          },
-          (error) => {
-            console.error("Geolocation error:", error);
-          }
-        );
-      } else {
-        console.warn("Geolocation is not supported by this browser.");
-      }
-    };
+    // responsible for sending live location of driver to server in every 5 sec interval 
+      useEffect(() => {
+          const getLocation = () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+              // console.log("Current Location:", { lat, lng , driver:userName  });
+              setDriverLoc(p=>  ({...p,lat, lng , driver:userName ,timestamp: new Date().toISOString() ,isAvailable:driverLoc.isAvailable  ,isLoggedIn:true }));
+            },
+            (error) => {
+              console.error("Geolocation error:", error);
+            }
+          );
+        } else {
+          console.warn("Geolocation is not supported by this browser.");
+        }
+      };
 
     // Fetch immediately
     getLocation();
@@ -110,12 +110,16 @@ export default function Index({userType, userName}) {
       }, [socket]);
 
           
-    const handleAccept = () => {
-     console.log("✅ Ride accepted", req);
-          setRideRequests(prev => prev.filter((_, i) => i !== index));
+    const handleAccept = (index) => {
+     let  userInfo  = rideRequests[index]
+     console.log("userInfo",userInfo )
+      socket.emit(SOCKET_EVENTS.DRIVER_ACCEPTED_THE_RIDE, userInfo);
+
+          // setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleClose = () => {
+    const handleClose = (index) => {
+      console.log("handleClose", index)
         setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 
@@ -174,8 +178,8 @@ export default function Index({userType, userName}) {
         key={req.customerViewDetails?.correlationId || index}
         open={true} // always show if in array
         rideData={req}
-        onClose={handleAccept}
-        onAccept={handleAccept}
+        onClose={()=>handleClose(index)}
+        onAccept={()=>handleAccept(index)}
       />
     ))}
     </>

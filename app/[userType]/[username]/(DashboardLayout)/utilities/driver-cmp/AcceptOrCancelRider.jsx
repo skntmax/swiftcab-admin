@@ -2,8 +2,8 @@
 import React from 'react';
 import { Paper, Typography, Divider, Box, Button } from '@mui/material';
 import Draggable from 'react-draggable';
-
-export default function AcceptRideNotification({ open, onClose, onAccept, rideData }) {
+import { CircularProgress } from '@mui/material';
+export default function AcceptRideNotification({  open, onClose, onAccept, rideData, loading}) {
   if (!open) return null; // Hide when not open
 
   const customer = rideData?.customerViewDetails || {};
@@ -45,11 +45,17 @@ export default function AcceptRideNotification({ open, onClose, onAccept, rideDa
         <Divider sx={{ my: 1 }} />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-          <Button size="small" color="secondary" onClick={onClose}>
+          <Button size="small" color="secondary" onClick={onClose} disabled={loading}>
             Decline
           </Button>
-          <Button size="small" variant="contained" color="secondary" onClick={onAccept}>
-            Accept
+          <Button
+            size="small"
+            variant="contained"
+            color="secondary"
+            onClick={onAccept}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={20} color="inherit" /> : "Accept"}
           </Button>
         </Box>
       </Paper>

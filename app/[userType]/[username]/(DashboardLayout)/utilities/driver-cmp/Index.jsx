@@ -37,6 +37,8 @@ export default function Index({userType, userName}) {
     let dispatch = useAppDispatch();
     const [rideRequests, setRideRequests] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loadingIndex, setLoadingIndex] = useState(null);
+
     
     
     //  save user info in redux store
@@ -104,6 +106,17 @@ export default function Index({userType, userName}) {
 
         socket.on(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
 
+
+
+      socket.on(SOCKET_EVENTS?.RIDE_INTIATED_BY_DRIVER, (data) => {
+      console.log("🚖 RIDE_INTIATED_BY_DRIVER", data);
+      setLoadingIndex(null);
+      // setDriverData(data);
+      // setShowDriverPopup(true);
+      // dispatch(toggleStep({ step: 4 }));
+      });
+
+
         return () => {
           socket.off(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
         };
@@ -111,8 +124,12 @@ export default function Index({userType, userName}) {
 
           
     const handleAccept = (index) => {
-     let  userInfo  = rideRequests[index]
-     console.log("userInfo",userInfo )
+      const userInfo = rideRequests[index];
+      console.log("userInfo", userInfo);
+
+      // mark this ride as loading
+      setLoadingIndex(index);
+
       socket.emit(SOCKET_EVENTS.DRIVER_ACCEPTED_THE_RIDE, userInfo);
 
           // setRideRequests(prev => prev.filter((_, i) => i !== index));
@@ -173,13 +190,14 @@ export default function Index({userType, userName}) {
       
     </PageContainer>
 
-      {rideRequests.map((req, index) => (
+    {rideRequests.map((req, index) => (
       <AcceptRideModal
         key={req.customerViewDetails?.correlationId || index}
-        open={true} // always show if in array
+        open={true}
         rideData={req}
-        onClose={()=>handleClose(index)}
-        onAccept={()=>handleAccept(index)}
+        onClose={() => handleClose(index)}
+        onAccept={() => handleAccept(index)}
+        loading={loadingIndex === index}   // 👈 pass loading flag
       />
     ))}
     </>

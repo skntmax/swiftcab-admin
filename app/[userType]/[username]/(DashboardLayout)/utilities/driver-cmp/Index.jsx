@@ -45,12 +45,12 @@ export default function Index({userType, userName}) {
     useEffect(() => {
       dispatch(setUserInfo({ userName: userName, userType: userType }));
       // socket connection 
-      socket.on('connect', () => {
-      console.log('✅ Connected to socket server:', socket.id);
-    });
+      // socket.on('connect', () => {
+      // console.log('✅ Connected to socket server:', socket.id);
+      //  });
 
     return ()=>{ 
-       socket.emit(SOCKET_EVENTS.EV_DRIVER_LOGGED_OUT, {...driverLoc ,isLoggedIn:false }  )  // reset the driver location from the redis stack  
+       socket?.emit(SOCKET_EVENTS.EV_DRIVER_LOGGED_OUT, {...driverLoc ,isLoggedIn:false }  )  // reset the driver location from the redis stack  
     }
     }, []);
 

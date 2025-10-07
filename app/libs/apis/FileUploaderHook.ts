@@ -46,7 +46,7 @@ export const useFileUploader = (): UseFileUploaderResult => {
         throw new Error(`Upload failed with status ${putResponse.status}`);
       }
 
-      const encodedKey = encodeURIComponent(config.fileName || "");
+      const encodedKey = encodeURI(config.fileName || "");
       const fileRes = await v1Router.get(`master/get-uploaded-file/${encodedKey}`);
 
       if (fileRes?.data) {

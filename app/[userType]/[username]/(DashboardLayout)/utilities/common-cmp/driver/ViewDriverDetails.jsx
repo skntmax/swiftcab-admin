@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Avatar,
   Box,
@@ -6,13 +6,9 @@ import {
   Link,
   Grid,
   Paper,
-  Backdrop,
-  CircularProgress,
   Card,
   CardContent,
-  CardHeader,
-  Switch,
-  FormControlLabel
+  CardHeader
 } from '@mui/material';
 import {
   AccountCircle,
@@ -24,9 +20,11 @@ import {
   AccountBalance,
   CreditCard
 } from '@mui/icons-material';
-function ViewDriverDetails({data,userDetails}) {
- 
-   const hasData =
+import { DirectionsCar, Person } from "@mui/icons-material";
+
+function ViewDriverDetails({ data, userDetails }) {
+
+  const hasData =
     data &&
     (data.DL || data.RC || data.insurance || data.adhar_card || data.pan_card || data.profile_pic);
 
@@ -65,75 +63,198 @@ function ViewDriverDetails({data,userDetails}) {
     );
   }
 
+  console.log("data?.vehicleDetails?.vehicle_id>>", data?.vhicleDetails.vehicle_id)
+
+  // userDetails.vehicleDetails = {
+  //   vehicle_id: 'VH-9988',
+  //   vehicle_number: 'UP16-AB-1234',
+  //   vehicle_model: 'Honda Amaze',
+  //   vehicle_color: 'White',
+  //   assigned_on: '2025-09-25T15:22:10Z',
+  //   owner_name: 'Amit Sharma',
+  //   owner_contact: '+91-9876001122'
+  // };
+
   return (
-    <Paper elevation={3} sx={{ p: 4, borderRadius: 3, maxWidth: 1000, mx: 'auto' }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 5,
+        borderRadius: 3,
+        maxWidth: 1000,
+        mx: 'auto',
+        mt: 6,
+        textAlign: 'center', // Centralized alignment
+      }}
+    >
+      <Grid
+        container
+        spacing={4}
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+      >
+
+        {/* --- Vehicle Info Section --- */}
+        <Grid item xs={12} sx={{ width: '100%' }}>
+          <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 4,
+          mb: 4,
+        }}
+      >
+        {/* Profile Section */}
+        <Box
+          sx={{
+            
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            flex: 1,
+          }}
+        >
           <Avatar
-            src={data.profile_pic || ''}
+            src={userDetails?.profile_pic || ""}
             alt="Driver Profile"
-            sx={{ width: 130, height: 130, margin: 'auto' }}
+            sx={{ width: 130, height: 130 }}
           />
-          <Typography variant="h6" sx={{ mt: 2, fontWeight: 'bold' }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             <AccountCircle fontSize="small" sx={{ mr: 1 }} />
-            Username: {userDetails?.username || ""}
+            {userDetails?.username || "N/A"}
           </Typography>
+        </Box>
+
+        {/* Vehicle Assigned Info */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            flex: 1,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            <DirectionsCar fontSize="small" sx={{ mr: 1 }} />
+            Vehicle Assigned
+          </Typography>
+          <Typography variant="body1">
+            Vehicle: {data?.vhicleDetails.vehicle_id || "No vehicle assigned"}
+          </Typography>
+          <Typography variant="body1">
+            Plate No: {data?.vhicleDetails.vehicle_number || "N/A"}
+          </Typography>
+          <Typography variant="body1">
+            Color: {data?.vhicleDetails.vh_color || "N/A"}
+          </Typography>
+          <Typography variant="body1">
+            Owner:{" "}
+            <Person fontSize="small" sx={{ mr: 1 }} />
+            { data?.vhicleDetails.username ||  "N/A"}
+          </Typography>
+        </Box>
+      </Box>
         </Grid>
 
-        <Grid item xs={12} md={8}>
-         <InfoCard title="Document Links" icon={<DocumentScanner />}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Field label="Driving License" url={data.DL} />
-              <Field label="RC Document" url={data.RC} />
-              <Field label="Insurance" url={data.insurance} />
+        {/* --- Document Section --- */}
+        <Grid item xs={12} sx={{ width: '100%' }}>
+          <InfoCard title="Document Links" icon={<DocumentScanner />}>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={12} sm={6}>
+                <Field label="Driving License" url={data.DL} />
+                <Field label="RC Document" url={data.RC} />
+                <Field label="Insurance" url={data.insurance} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Field label="PAN Card" url={data.pan_card} />
+                <Field label="Aadhar Card" url={data.adhar_card} />
+                <Field label="Passbook" url={data.passbook} />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Field label="PAN Card" url={data.pan_card} />
-              <Field label="Aadhar Card" url={data.adhar_card} />
-               <Field label="Passbook" url={data.passbook} /> 
-            </Grid>
-          </Grid>
-        </InfoCard>
+          </InfoCard>
+        </Grid>
+
+        {/* --- Account & Verification Section --- */}
+        <Grid item xs={12} sx={{ width: '100%' }}>
           <InfoCard title="Account & Verification Info" icon={<AttachMoney />}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} justifyContent="center">
               <Grid item xs={12} sm={6}>
                 <Info label="Wallet Code" value={data.wallet_code} />
                 <Info label="Wallet Balance" value={`₹${data.wallet_balance}`} />
                 <Info
                   label="Bank Verified"
                   value={data.is_bank_varified ? 'Yes' : 'No'}
-                  icon={data.is_bank_varified ? <CheckCircle color="success" /> : <Cancel color="error" />}
+                  icon={
+                    data.is_bank_varified ? (
+                      <CheckCircle color="success" />
+                    ) : (
+                      <Cancel color="error" />
+                    )
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Info
                   label="Driver Verified"
                   value={data.is_varified ? 'Yes' : 'No'}
-                  icon={data.is_varified ? <CheckCircle color="success" /> : <Cancel color="error" />}
+                  icon={
+                    data.is_varified ? (
+                      <CheckCircle color="success" />
+                    ) : (
+                      <Cancel color="error" />
+                    )
+                  }
                 />
-                <Info label="Created On" value={new Date(data.created_on).toLocaleString()} icon={<CalendarToday />} />
-                <Info label="Updated On" value={new Date(data.updated_on).toLocaleString()} icon={<CalendarToday />} />
+                <Info
+                  label="Created On"
+                  value={new Date(data.created_on).toLocaleString()}
+                  icon={<CalendarToday />}
+                />
+                <Info
+                  label="Updated On"
+                  value={new Date(data.updated_on).toLocaleString()}
+                  icon={<CalendarToday />}
+                />
               </Grid>
             </Grid>
           </InfoCard>
+        </Grid>
 
-         <InfoCard title="Bank Information" icon={<AccountBalance />}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Info label="IFSC Code" value={data.ifsc || 'N/A'} icon={<CreditCard />} />
-              <Info label="Account Number" value={data.bank_account_no || 'N/A'} icon={<CreditCard />} /> {/* ✅ ADDED */}
+        {/* --- Bank Info Section --- */}
+        <Grid item xs={12} sx={{ width: '100%' }}>
+          <InfoCard title="Bank Information" icon={<AccountBalance />}>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={12} sm={6}>
+                <Info
+                  label="IFSC Code"
+                  value={data.ifsc || 'N/A'}
+                  icon={<CreditCard />}
+                />
+                <Info
+                  label="Account Number"
+                  value={data.bank_account_no || 'N/A'}
+                  icon={<CreditCard />}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Info
+                  label="Branch Name"
+                  value={data?.bank_have_branch?.branch_name || 'N/A'}
+                  icon={<CreditCard />}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Info label="Branch Name" value={data?.bank_have_branch?.branch_name || 'N/A'} icon={<CreditCard />} />
-            </Grid>
-          </Grid>
-        </InfoCard>
+          </InfoCard>
         </Grid>
       </Grid>
     </Paper>
-  )
+  );
 }
+
+/* ------------------------- SUPPORT COMPONENTS ------------------------- */
 
 const Field = ({ label, url }) => {
   if (!url) return null;
@@ -141,43 +262,92 @@ const Field = ({ label, url }) => {
   const isPDF = /\.pdf$/i.test(url);
 
   return (
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="body2" sx={{ fontWeight: 600 }}>{label}:</Typography>
+    <Box sx={{ mb: 2, textAlign: 'center' }}>
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+        {label}:
+      </Typography>
       {isImage && (
         <Box sx={{ mt: 1 }}>
-          <img src={url} alt={label} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6 }} />
+          <img
+            src={url}
+            alt={label}
+            style={{
+              width: 80,
+              height: 80,
+              objectFit: 'cover',
+              borderRadius: 6
+            }}
+          />
         </Box>
       )}
       {isPDF && (
         <Box sx={{ mt: 1 }}>
-          <iframe src={url} title={label} width="100%" height="100" style={{ border: '1px solid #ccc', borderRadius: 6 }} />
+          <iframe
+            src={url}
+            title={label}
+            width="100%"
+            height="100"
+            style={{ border: '1px solid #ccc', borderRadius: 6 }}
+          />
         </Box>
       )}
-      <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-        <Link href={url} target="_blank" rel="noopener" underline="hover" color="primary">View</Link>
-        <Link target="_blank" href={url} download underline="hover" color="secondary">Download</Link>
+      <Box sx={{ display: 'flex', gap: 2, mt: 1, justifyContent: 'center' }}>
+        <Link
+          href={url}
+          target="_blank"
+          rel="noopener"
+          underline="hover"
+          color="primary"
+        >
+          View
+        </Link>
+        <Link
+          target="_blank"
+          href={url}
+          download
+          underline="hover"
+          color="secondary"
+        >
+          Download
+        </Link>
       </Box>
     </Box>
   );
 };
 
-
 const InfoCard = ({ title, icon, children }) => (
-  <Card elevation={1} sx={{ mb: 3 }}>
-    <CardHeader title={title} avatar={icon} titleTypographyProps={{ variant: 'h6' }} />
+  <Card elevation={2} sx={{ mb: 3, mx: 'auto', maxWidth: 700 }}>
+    <CardHeader
+      title={title}
+      avatar={icon}
+      titleTypographyProps={{
+        variant: 'h6',
+        fontWeight: 'bold',
+        textAlign: 'center'
+      }}
+    />
     <CardContent>{children}</CardContent>
   </Card>
 );
 
 const Info = ({ label, value, icon }) => (
-  <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+  <Box
+    sx={{
+      mb: 1.5,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center'
+    }}
+  >
     {icon && <Box sx={{ mr: 1 }}>{icon}</Box>}
     <Box>
-      <Typography variant="body2" sx={{ fontWeight: 600 }}>{label}:</Typography>
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+        {label}:
+      </Typography>
       <Typography variant="body2">{value}</Typography>
     </Box>
   </Box>
 );
 
-
-export default ViewDriverDetails
+export default ViewDriverDetails;

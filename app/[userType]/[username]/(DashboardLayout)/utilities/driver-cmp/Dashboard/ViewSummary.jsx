@@ -4,7 +4,7 @@ import React, { useContext } from 'react'
 
 function ViewSummary() {
   const {socket} = useContext(SocketProvider)
-  socket.emit('loaded-driver', { a: "b", c: [] })
+  // socket.emit('loaded-driver', { a: "b", c: [] })
   return (
     <div>ViewSummary</div>
   )

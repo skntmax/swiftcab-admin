@@ -27,6 +27,7 @@ import { SocketProvider } from '@components/Socket/SocketProvider';
 import { SOCKET_EVENTS } from '@constants';
 import { getUserInfo } from '@utils';
 import { useSendLiveLocationMutation } from '@app/libs/apis/socketApi';
+import  DriverProfilePageView from './driverProfilePageView' 
 
 export default function Index({userType, userName}) {
   let params = useSearchParams();
@@ -131,8 +132,7 @@ export default function Index({userType, userName}) {
       setLoadingIndex(index);
 
       socket.emit(SOCKET_EVENTS.DRIVER_ACCEPTED_THE_RIDE, userInfo);
-
-          // setRideRequests(prev => prev.filter((_, i) => i !== index));
+      // setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleClose = (index) => {
@@ -186,7 +186,7 @@ export default function Index({userType, userName}) {
       {tabs === 'driver/earnings/monthly' && <MonthlyEarning />}
       {tabs === 'driver/earnings/history' && <HistoryEarning />}
       {tabs === 'driver/ride-history/all' && <RideHistory />}
-      {tabs === 'driver/profile/view' && <ProfileView />}
+      {tabs === 'driver/profile/view' && <DriverProfilePageView />}
       
     </PageContainer>
 

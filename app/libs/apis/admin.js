@@ -245,33 +245,45 @@ const adminApi = createApi({
               },  
               ), 
 
-                roleHasCaps : 
-                builder.query({
-                  query: (body) => (  {
-                  url:`${urls.get_role_has_capabilities}/${body.userType}`,
-                  method: 'GET',
-                  // body:body,
-                  headers: {
-                  authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
-                    },
-                }),
-                providesTags:['role-has-capabilities'],
-              },  
-              ), 
+                roleHasCaps : builder.mutation({
+                      query: (body) => ({
+                        url: `${urls.get_role_has_capabilities}/${body.userType}`,
+                        method: 'GET',
+                        headers: {
+                          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                        },
+                      }),
+                      // Mutations don't use providesTags, they use invalidatesTags
+                      invalidatesTags: ['role-has-capabilities'],
+                    }),
 
-                capabilityHasPermissions : 
-                builder.query({
-                  query: (body) => (  {
-                  url:`${urls.get_cap_has_permissions}/${body.userType}`,
-                  method: 'GET',
-                  // body:body,
+                  capabilityHasPermissions : builder.mutation({
+                      query: (body) => ({
+                        url: `${urls.get_cap_has_permissions}/${body.userType}`,
+                        method: 'GET',
+                        headers: {
+                          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                        },
+                      }),
+                      invalidatesTags: ['cap-has-permissions'],
+                    }),
+
+              removePermissionsFromCapability: builder.mutation({
+                query: (body) => ({
+                  url: "remove-capability", // or whatever your endpoint is
+                  method: 'POST', // or 'DELETE' depending on your API
+                  body: {
+                    permissionsToRemove: "ok",
+                    // Add any other fields your API needs
+                  },
                   headers: {
-                  authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
-                    },
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
                 }),
-                providesTags:['cap-has-permissions'],
-              },  
-              ), 
+                // Invalidate tags to refetch the data after mutation
+                invalidatesTags: ['cap-has-permissions', 'role-has-capabilities'],
+              }),
+
 
   }),
 
@@ -286,7 +298,8 @@ const adminApi = createApi({
 export const {
  useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
  useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation ,useGetUserByRolesMutation ,useGetKycDriverDetailsByIdMutation 
- ,useApproveDriverKycMutation , useGetMenuPermissionsMutation ,useAddCapabilityMutation , useAddPermissionsToCapabilityMutation , useRoleHasCapsQuery,useCapabilityHasPermissionsQuery
+ ,useApproveDriverKycMutation , useGetMenuPermissionsMutation ,useAddCapabilityMutation , useAddPermissionsToCapabilityMutation , useRoleHasCapsMutation,
+ useCapabilityHasPermissionsMutation ,useRemovePermissionsFromCapabilityMutation,
 } = adminApi;
 
 

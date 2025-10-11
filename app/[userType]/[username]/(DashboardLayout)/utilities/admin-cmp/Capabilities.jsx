@@ -1,15 +1,15 @@
 'use client'
-    import * as React from 'react';
-    import { Box, Typography,Checkbox, FormControlLabel, Button } from "@mui/material";
-    import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
-    import { TreeItem } from '@mui/x-tree-view/TreeItem';
-    import { useForm } from "react-hook-form";
-    import { yupResolver } from "@hookform/resolvers/yup";
-    import { FormInput } from "@components/FormController";
-    import { contextProvider } from "@components/AppProvider";
-    import { useAddCapabilityMutation, useAddPermissionsToCapabilityMutation, useCapabilityHasPermissionsQuery, useRoleHasCapsQuery } from "@app/libs/apis/admin"; // <-- your API hook for capabilities
-    import { useAppSelector } from "@app/libs/store";
-    import {capabilitySchema ,assignPermissionsToCapSchema} from '@components/FormSchema/Capabilities/capability';
+import * as React from 'react';
+import { Box, Typography,Checkbox, FormControlLabel, Button } from "@mui/material";
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { FormInput } from "@components/FormController";
+import { contextProvider } from "@components/AppProvider";
+import { useAddCapabilityMutation, useAddPermissionsToCapabilityMutation, useCapabilityHasPermissionsMutation, useCapabilityHasPermissionsQuery, useRoleHasCapsMutation, useRoleHasCapsQuery } from "@app/libs/apis/admin"; // <-- your API hook for capabilities
+import { useAppSelector } from "@app/libs/store";
+import {capabilitySchema ,assignPermissionsToCapSchema} from '@components/FormSchema/Capabilities/capability';
 
     function Capabilities() {
     // form setup
@@ -205,6 +205,7 @@
         useAddPermissionsToCapabilityMutation();
 
     const userType = useAppSelector((state) => state.usersInfo?.userType);
+     console.log("🔑 userType in parent:", userType); // Add this
 
     const capabilities = useAppSelector((state) => state["capability-list"].list);
     const permissions = useAppSelector((state) => state["navbar-perm-list"].list);
@@ -298,54 +299,98 @@
             </FormInput>
         </Box>
 
-        <TreeView />
+      {userType ? <TreeView userType={userType} /> : <div>Waiting for userType...</div>}
+
+        {/* <TreeView /> */}
         </>
     );
 
     }
 
 
-const TreeView = () => {
-  // ✅ Make sure you are using the correct slice name in your store
-  const userType = useAppSelector((state) => state.usersInfo?.userType);
+const TreeView =  ({userType}) => {
 
-  // ✅ Skip queries until we have a userType
-  const {
-    data: getRoleHasCapsData,
+  
+  // Use mutation hooks instead of query hooks
+  const [getRoleHasCaps, { 
+    data: getRoleHasCapsData, 
     isLoading: getRoleHasCapsLoading,
-  } = useRoleHasCapsQuery({ userType }, { skip: !userType });
+    error: getRoleHasCapsError,
+  }] = useRoleHasCapsMutation();
 
-  const {
-    data: capHasPermissionsData,
+  const [getCapHasPermissions, { 
+    data: capHasPermissionsData, 
     isLoading: capHasPermissionsLoading,
-  } = useCapabilityHasPermissionsQuery({ userType }, { skip: !userType });
+    error: capHasPermissionsError,
+  }] = useCapabilityHasPermissionsMutation();
 
   const [capabilities, setCapabilities] = React.useState([]);
   const [permissions, setPermissions] = React.useState([]);
+
+  // Trigger mutations on mount and when userType changes
+  React.useEffect(() => {
+    if (userType) {
+      getRoleHasCaps({ userType });
+      getCapHasPermissions({ userType });
+    }
+  }, [userType, getRoleHasCaps, getCapHasPermissions]);
+
+  // Handle role capabilities data
+  React.useEffect(() => {
+    if (getRoleHasCapsData) {
+      const roleCaps = getRoleHasCapsData?.data || getRoleHasCapsData;
+      if (Array.isArray(roleCaps)) {
+        setCapabilities(roleCaps);
+      }
+    }
+  }, [getRoleHasCapsData]);
+
+  // Handle permissions data
+  React.useEffect(() => {
+    if (capHasPermissionsData) {
+      const rawPerms = capHasPermissionsData?.data || capHasPermissionsData;
+      if (Array.isArray(rawPerms)) {
+        const perms = rawPerms.map((perm) => ({
+          permission_id: perm.permission_id,
+          permission_name: perm.permission_name,
+          capability_id: perm.capability_id,
+        }));
+        setPermissions(perms);
+      }
+    }
+  }, [capHasPermissionsData]);
+
   const [checkedPermissions, setCheckedPermissions] = React.useState([]);
 
-  // Sync capabilities
   React.useEffect(() => {
-    if (getRoleHasCapsData?.data) {
-      setCapabilities(getRoleHasCapsData.data);
-    }
-  }, [getRoleHasCapsData?.data]);
+    if (getRoleHasCapsData) {
 
-  // Sync permissions
+      const roleCaps = getRoleHasCapsData?.data || getRoleHasCapsData; // handles both shapes
+      if (Array.isArray(roleCaps)) {
+        setCapabilities(roleCaps);
+      }
+    }
+  }, [getRoleHasCapsData]);
+
+  // ✅ Log and update permissions when fetched
   React.useEffect(() => {
-    if (capHasPermissionsData?.data) {
-      const perms = capHasPermissionsData.data.map((perm) => ({
-        permission_id: perm.permission_id,
-        permission_name: perm.permission_name,
-        capability_id: perm.capability_id,
-      }));
-      setPermissions(perms);
-    }
-  }, [capHasPermissionsData?.data]);
+    if (capHasPermissionsData) {
 
-  // Auto check all permissions initially
+      const rawPerms = capHasPermissionsData?.data || capHasPermissionsData;
+      if (Array.isArray(rawPerms)) {
+        const perms = rawPerms.map((perm) => ({
+          permission_id: perm.permission_id,
+          permission_name: perm.permission_name,
+          capability_id: perm.capability_id,
+        }));
+        setPermissions(perms);
+      }
+    }
+  }, [capHasPermissionsData]);
+
   React.useEffect(() => {
     if (permissions.length > 0) {
+      console.log("✅ Auto-checking permissions:", permissions.length);
       setCheckedPermissions(permissions.map((p) => p.permission_id));
     }
   }, [permissions]);
@@ -366,27 +411,18 @@ const TreeView = () => {
         permission_id: p.permission_id,
       }));
 
-    console.log("Unmarked permissions to send API:", unchecked);
-    // await api.removePermissions(unchecked)
+    console.log("🚀 Unchecked permissions:", unchecked);
   };
 
-  // ✅ Show clear messages
-  if (!userType) {
-    return <div>Waiting for user role...</div>;
-  }
-
-  if (getRoleHasCapsLoading || capHasPermissionsLoading) {
+  if (!userType) return <div>Waiting for user role...</div>;
+  if (getRoleHasCapsLoading || capHasPermissionsLoading)
     return <div>Loading capabilities & permissions...</div>;
-  }
 
   return (
     <Box sx={{ minHeight: 352, minWidth: 400 }}>
       <SimpleTreeView
         disableSelection
-        defaultExpandedItems={[
-          "root",
-          ...capabilities.map((cap) => `cap-${cap.id}`),
-        ]}
+        defaultExpandedItems={["root", ...capabilities.map((cap) => `cap-${cap.id}`)]}
       >
         <TreeItem
           itemId="root"
@@ -442,4 +478,4 @@ const TreeView = () => {
   );
 };
 
-    export default Capabilities
+export default Capabilities

@@ -24,7 +24,9 @@ export default {
     "add_capabilities":"v1/admin/add-capabilities",
     "add_capabilities_have_permissions":"v1/admin/add-capabilities-have-permissions",
     "get_role_has_capabilities":"v1/master/get-role-has-capabilities",
-    "get_cap_has_permissions":"v1/master/get-cap-has-permissions", 
+    "get_cap_has_permissions":"v1/master/get-cap-has-permissions",
+    "get_perm_by_cap_id":"v1/master/get-perm-by-cap-id",
+
     // master api
     "get_vhicle_type":"v1/master/get-vhicle-type",
     "add_role_to_users":"v1/admin/add-role-to-users",

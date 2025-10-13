@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormInput } from "@components/FormController";
 import { contextProvider } from "@components/AppProvider";
-import { useAddCapabilityMutation, useAddPermissionsToCapabilityMutation, useCapabilityHasPermissionsMutation, useCapabilityHasPermissionsQuery, usePermByCapabilityMutation, useRoleHasCapsMutation, useRoleHasCapsQuery } from "@app/libs/apis/admin"; // <-- your API hook for capabilities
+import { useAddCapabilityMutation, useAddPermissionsToCapabilityMutation, useCapabilityHasPermissionsMutation, useCapabilityHasPermissionsQuery, useGetMasterNavbarListMutation, usePermByCapabilityMutation, useRoleHasCapsMutation, useRoleHasCapsQuery } from "@app/libs/apis/admin";
 import { useAppSelector } from "@app/libs/store";
 import {capabilitySchema ,assignPermissionsToCapSchema} from '@components/FormSchema/Capabilities/capability';
 import SearchIcon from "@mui/icons-material/Search"
@@ -49,6 +49,13 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
     const [addCapability, { data: addCapabilityData, isLoading: addCapabilityLoading }] =
         useAddCapabilityMutation();
 
+         const [getRoleHasCaps, { 
+    data: getRoleHasCapsData, 
+    isLoading: getRoleHasCapsLoading,
+    error: getRoleHasCapsError,
+  }] = useRoleHasCapsMutation();
+
+
         const userType = useAppSelector((state) => state.usersInfo?.userType);
     
     // capabilityIdentifier
@@ -87,9 +94,11 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
         return errorMessage(addCapabilityData?.message);
 
         if (addCapabilityData?.status === 200 && !addCapabilityData?.error) {
-        successMessage(addCapabilityData?.message);
-        reset(); // clear form after success
+          successMessage(addCapabilityData?.message);
+          reset(); // clear form after success
         }
+        
+        getRoleHasCaps({ userType });
     }, [addCapabilityData]);
 
     React.useEffect(() => {
@@ -222,7 +231,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
     const [getPermByCapId, { data: getPermByCapIdData, isLoading: getPermByCapIdLoading }] = usePermByCapabilityMutation()
 
     const userType = useAppSelector((state) => state.usersInfo?.userType);
-     console.log("🔑 userType in parent:", userType); // Add this
+     console.log("🔑 userType in parent:", userType);
 
     const capabilities = useAppSelector((state) => state["capability-list"].list);
     const permissions = useAppSelector((state) => state["navbar-perm-list"].list);
@@ -257,7 +266,6 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
         if (addPermToCapsData?.status === 200 && !addPermToCapsData?.error) {
         successMessage(addPermToCapsData?.message);
-        // reset();
         }
     }, [addPermToCapsData, userType,  reset, successMessage, errorMessage]);
 
@@ -308,33 +316,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
        } } /> : <div>Waiting for userType...</div>}
 
-          {/* 
-            <FormInput
-            name="permissionId"
-            type="multi-select"
-            control={control}
-            options={permissionOptions}
-            rest={{
-                label: "Select Permissions",
-                error: !!errors.permissionId,
-                helperText: errors.permissionId?.message,
-            }}
-            /> */}
-
-            {/* <FormInput
-            name="submitButton"
-            type="submit"
-            control={control}
-            isLoading={addPermToCapsLoading}
-            rest={{}}
-            >
-            Add Permissions
-            </FormInput> */}
         </Box>
-
-     
-
-        {/* <TreeView /> */}
         </>
     );
 
@@ -356,102 +338,46 @@ const TreeView =  ({userType,permByCapId, updatePermissions}) => {
     error: capHasPermissionsError,
   }] = useCapabilityHasPermissionsMutation();
 
+  const  [ getMasterNavbarList , { data:getMasterNavbarListData , isLoading:getMasterNavbarListLoading}] = useGetMasterNavbarListMutation()
+
   const [capabilities, setCapabilities] = React.useState([]);
   const [permissions, setPermissions] = React.useState(permByCapId || []);
-  const [checkedPermissions, setCheckedPermissions] = React.useState(permByCapId || []);
+  const [checkedPermissions, setCheckedPermissions] = React.useState([]);
   const [initialPermissions, setInitialPermissions] = React.useState([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [saveSuccess, setSaveSuccess] = React.useState(false);
   const [hasChanges, setHasChanges] = React.useState(false);
-  const [filterOption, setFilterOption] = React.useState('all'); // 'all', 'selected', 'unselected'
+  const [filterOption, setFilterOption] = React.useState('all');
   const [showChangesDialog, setShowChangesDialog] = React.useState(false);
+  const [menuItems, setMenuItems] = React.useState([]);
   
-  // All menu items data
-  const menuItems = [
-    { navlabel: true, subheader: "Vhicles", href: "/vhicles//?tabs=null", permission_id: 51 },
-    { id: "1", title: "Add Vhicles", icon: "IconCar", href: "/vhicles//?tabs=add-vhicles ", permission_id: 51 },
-    { id: "2", title: "KYC update", icon: "IconCaravan", href: "/vhicles//?tabs=kyc-update ", permission_id: 55 },
-    { id: "3", title: "Registered Vhicles", icon: "IconReservedLine", href: "/vhicles//?tabs=registered-vhicles ", permission_id: 52 },
-    { id: "4", title: "Add vhicle services", icon: "IconDeviceImacSearch", href: "/vhicles//?tabs=add-vhicles-services ", permission_id: 53 },
-    { id: "5", title: "Vhicles occupied services", icon: "IconDevicesHeart", href: "/vhicles//?tabs=vhicles-services ", permission_id: 54 },
-    { navlabel: true, subheader: "Master", href: "/vhicles//?tabs=null", permission_id: 59 },
-    { id: "6", title: "All Vhicles", icon: "IconHelmet", href: "/vhicles//?tabs=all-vhicles ", permission_id: 59 },
-    { id: "7", title: "Roles", icon: "IconUserPlus", href: "/vhicles//?tabs=roles ", permission_id: 60 },
-    { navlabel: true, subheader: "Settlements", href: "/vhicles//?tabs=null", permission_id: 62 },
-    { id: "8", title: "Any Month", icon: "IconAperture", href: "/vhicles//?tabs=any-month-settlement ", permission_id: 62 },
-    { id: "9", title: "Active Month", icon: "IconMoodHappy", href: "/vhicles//?tabs=active-month-settlement ", permission_id: 61 },
-    { navlabel: true, subheader: "Customers", href: "/vhicles//?tabs=null", permission_id: 63 },
-    { id: "10", title: "Active customers", icon: "IconUser", href: "/vhicles//?tabs=active-customers ", permission_id: 63 },
-    { id: "11", title: "Customer management", icon: "IconUsers", href: "/vhicles//?tabs=customer-management ", permission_id: 64 },
-    { navlabel: true, subheader: "Users", href: "/vhicles//?tabs=null", permission_id: 49 },
-    { id: "12", title: "User Management", icon: "IconCrown", href: "/vhicles//?tabs=user-management ", permission_id: 49 },
-    { navlabel: true, subheader: "Roles", href: "/vhicles//?tabs=null", permission_id: 48 },
-    { id: "13", title: "Assign roles", icon: "IconUserPlus", href: "/vhicles//?tabs=assing-roles ", permission_id: 48 },
-    { id: "14", title: "Role management", icon: "IconUsersGroup", href: "/vhicles//?tabs=role-management ", permission_id: 65 },
-    { navlabel: true, subheader: "Ride History", href: "/vhicles//?tabs=null", permission_id: 76 },
-    { id: "15", title: "All Rides", icon: "IconList", href: "/vhicles//?tabs=driver/ride-history/all ", permission_id: 76 },
-    { id: "16", title: "Filter by Date", icon: "IconFilter", href: "/vhicles//?tabs=driver/ride-history/filter ", permission_id: 77 },
-    { navlabel: true, subheader: "Support", href: "/vhicles//?tabs=null", permission_id: 84 },
-    { id: "17", title: "Contact Support", icon: "IconPhoneCall", href: "/vhicles//?tabs=driver/support/contact ", permission_id: 84 },
-    { id: "18", title: "FAQs", icon: "IconQuestionMark", href: "/vhicles//?tabs=driver/support/faqs ", permission_id: 85 },
-    { navlabel: true, subheader: "Manage Navbar", href: "/vhicles//?tabs=null", permission_id: 40 },
-    { id: "19", title: "Manage Nav Items", icon: "IconNotes", href: "/vhicles//?tabs=nav-items ", permission_id: 40 },
-    { id: "20", title: "Manage SubItem Navigation", icon: "IconListTree", href: "/vhicles//?tabs=sub-nav-items ", permission_id: 42 },
-    { id: "21", title: "Permission management", icon: "IconUserPlus", href: "/vhicles//?tabs=permission-management ", permission_id: 66 },
-    { id: "22", title: "Add Capabilites", icon: "IconAffiliateFilled", href: "/vhicles//?tabs=add-capabilites ", permission_id: 97 },
-    { id: "23", title: "Assing Menu to Roles", icon: "IconUserCheck", href: "/vhicles//?tabs=menu-assigned-to-roles ", permission_id: 43 },
-    { navlabel: true, subheader: "Assign Self Driver", href: "/vhicles//?tabs=", permission_id: 88 },
-    { id: "24", title: "Assign Driver", icon: "IconCarCrash", href: "/vhicles//?tabs=assign-self-driver ", permission_id: 88 },
-    { navlabel: true, subheader: "Requests", href: "/vhicles//?tabs=null", permission_id: 45 },
-    { id: "25", title: "Driver Onboard AMS", icon: "IconAccessibleOffFilled", href: "/vhicles//?tabs=driver-onboard-ams ", permission_id: 45 },
-    { id: "26", title: "Kyc request approvals", icon: "IconUserPlus", href: "/vhicles//?tabs=kyc-request-approval ", permission_id: 67 },
-    { navlabel: true, subheader: "Vehicle Types", href: "/vhicles//?tabs=/vhicle-types", permission_id: 96 },
-    { id: "27", title: "Vhicle types", icon: "IconCamper", href: "/vhicles//?tabs=vhicle-types ", permission_id: 96 },
-    { navlabel: true, subheader: "Drivers", href: "/vhicles//?tabs=null", permission_id: 56 },
-    { id: "28", title: "Occupied Drivers", icon: "IconCaravan", href: "/vhicles//?tabs=occupied-drivers ", permission_id: 56 },
-    { navlabel: true, subheader: "Rides", href: "/vhicles//?tabs=null", permission_id: 57 },
-    { id: "29", title: "Today rides", icon: "IconRoad", href: "/vhicles//?tabs=today-rides ", permission_id: 57 },
-    { id: "30", title: "All Rides", icon: "IconBrandStrava", href: "/vhicles//?tabs=all-rides ", permission_id: 58 },
-    { navlabel: true, subheader: "Dashboard", href: "/vhicles//?tabs=null", permission_id: 68 },
-    { id: "31", title: "View Summary", icon: "IconDashboard", href: "/vhicles//?tabs=driver/dashboard/summary ", permission_id: 68 },
-    { id: "32", title: "Notifications", icon: "IconBell", href: "/vhicles//?tabs=driver/dashboard/notifications ", permission_id: 69 },
-    { navlabel: true, subheader: "My Rides", href: "/vhicles//?tabs=null", permission_id: 70 },
-    { id: "33", title: "Upcoming Rides", icon: "IconCalendarEvent", href: "/vhicles//?tabs=driver/my-rides/upcoming ", permission_id: 70 },
-    { id: "34", title: "Completed Rides", icon: "IconCheck", href: "/vhicles//?tabs=driver/my-rides/completed ", permission_id: 71 },
-    { id: "35", title: "Cancelled Rides", icon: "IconBan", href: "/vhicles//?tabs=driver/my-rides/cancelled ", permission_id: 72 },
-    { navlabel: true, subheader: "Earnings", href: "/vhicles//?tabs=null", permission_id: 73 },
-    { id: "36", title: "Daily Earnings", icon: "IconCurrencyDollar", href: "/vhicles//?tabs=driver/earnings/daily ", permission_id: 73 },
-    { id: "37", title: "Monthly Earnings", icon: "IconCalendarStats", href: "/vhicles//?tabs=driver/earnings/monthly ", permission_id: 74 },
-    { id: "38", title: "Payment History", icon: "IconHistory", href: "/vhicles//?tabs=driver/earnings/history ", permission_id: 75 },
-    { navlabel: true, subheader: "Profile", href: "/vhicles//?tabs=null", permission_id: 78 },
-    { id: "39", title: "View Profile", icon: "IconUser", href: "/vhicles//?tabs=driver/profile/view ", permission_id: 78 },
-    { id: "40", title: "Edit Profile", icon: "IconEdit", href: "/vhicles//?tabs=driver/profile/edit ", permission_id: 79 },
-    { id: "41", title: "Change Password", icon: "IconLock", href: "/vhicles//?tabs=driver/profile/password ", permission_id: 80 },
-    { navlabel: true, subheader: "Documents", href: "/vhicles//?tabs=null", permission_id: 81 },
-    { id: "42", title: "Upload Documents", icon: "IconUpload", href: "/vhicles//?tabs=driver/documents/upload ", permission_id: 81 },
-    { id: "43", title: "View Documents", icon: "IconFileText", href: "/vhicles//?tabs=driver/documents/view ", permission_id: 82 },
-    { id: "44", title: "Document Status", icon: "IconFileSearch", href: "/vhicles//?tabs=driver/documents/status ", permission_id: 83 },
-    { navlabel: true, subheader: "Logout", href: "/vhicles//?tabs=null", permission_id: 86 },
-    { id: "45", title: "Confirm Logout", icon: "IconLogout", href: "/vhicles//?tabs=logout ", permission_id: 86 }
-  ];
-
-  // Trigger mutations on mount and when userType changes
   React.useEffect(() => {
     if (userType) {
       getRoleHasCaps({ userType });
       getCapHasPermissions({ userType });
+      getMasterNavbarList()
     }
   }, [userType, getRoleHasCaps, getCapHasPermissions]);
 
   // Handle role capabilities data
   React.useEffect(() => {
+    // role has capabilities
     if (getRoleHasCapsData) {
       const roleCaps = getRoleHasCapsData?.data || getRoleHasCapsData;
       if (Array.isArray(roleCaps)) {
         setCapabilities(roleCaps);
       }
     }
-  }, [getRoleHasCapsData]);
+
+    // for master navbar list 
+    if(getMasterNavbarListData?.data) {
+        setMenuItems(getMasterNavbarListData?.data || []);
+      }
+
+  }, [getRoleHasCapsData,getMasterNavbarListData?.data]);
+
+
+
 
   // Handle permissions data and auto-check them
   React.useEffect(() => {
@@ -467,20 +393,23 @@ const TreeView =  ({userType,permByCapId, updatePermissions}) => {
         // Auto-check permissions that exist in the response
         const permIds = perms.map((p) => p.permission_id);
         setCheckedPermissions(permIds);
-        setInitialPermissions(permIds); // Track initial state for change detection
+        setInitialPermissions(permIds);
+      } else {
+        // For new capability with no permissions
+        setPermissions([]);
+        setCheckedPermissions([]);
+        setInitialPermissions([]);
       }
     }
   }, [permByCapId]);
 
-  // Detect changes
+  // Detect changes - FIXED: Remove the condition that blocks new capabilities
   React.useEffect(() => {
-    if (initialPermissions.length > 0) {
-      const changed = 
-        checkedPermissions.length !== initialPermissions.length ||
-        !checkedPermissions.every(id => initialPermissions.includes(id)) ||
-        !initialPermissions.every(id => checkedPermissions.includes(id));
-      setHasChanges(changed);
-    }
+    const changed = 
+      checkedPermissions.length !== initialPermissions.length ||
+      !checkedPermissions.every(id => initialPermissions.includes(id)) ||
+      !initialPermissions.every(id => checkedPermissions.includes(id));
+    setHasChanges(changed);
   }, [checkedPermissions, initialPermissions]);
 
   // Group menu items by section (navlabel)
@@ -508,7 +437,7 @@ const TreeView =  ({userType,permByCapId, updatePermissions}) => {
     }
 
     return groups;
-  }, []);
+  }, [menuItems]);
 
   // Filter groups based on search term and filter option
   const filteredGroups = React.useMemo(() => {
@@ -653,9 +582,6 @@ const TreeView =  ({userType,permByCapId, updatePermissions}) => {
     setHasChanges(false);
     
     updatePermissions(newlyAdded.map(p => p.permission_id));
-    
-    // Call your API here to save the changes
-    // Example: updateRolePermissions({ userType, permissions: checked })
   };
 
   const handleReset = () => {

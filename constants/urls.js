@@ -38,6 +38,7 @@ export default {
     "get_driver_list":"v1/master/get-driver-list",
     "update_driver_details":"v1/driver/update-driver-profile2",
     "get_menu_permissions":"v1/master/get-menu-permissions",
+    "get_master_navbar_list":"v1/master/get-navbar-list",
 
     // driver api 
     "assing_menu_roles":"v1/admin/add-menu",

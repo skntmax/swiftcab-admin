@@ -12,7 +12,7 @@ const adminApi = createApi({
   tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,
     'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar","add-menu-roles",
     "get-driver-detail-by-userid","ams-drivers","get-menu-permissions" ,"add-capabilities","add-capabilities-have-permissions",
-    "role-has-capabilities","cap-has-permissions","perm-by-cap-id"
+    "role-has-capabilities","cap-has-permissions","perm-by-cap-id","get-master-navbar-list"
   ],
   baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
@@ -225,6 +225,7 @@ const adminApi = createApi({
                   authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
                     },
                 }),
+                invalidatesTags: ['role-has-capabilities',"perm-by-cap-id"],
                 providesTags:['add-capabilities'],
               },  
               ), 
@@ -297,6 +298,19 @@ const adminApi = createApi({
                 providesTags:['perm-by-cap-id'],
               }),
 
+                getMasterNavbarList: builder.mutation({
+                query: (body) => ({
+                  url: `${urls.get_master_navbar_list}`, // or whatever your endpoint is
+                  method: 'GET', // or 'DELETE' depending on your API
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                // Invalidate tags to refetch the data after mutation
+                providesTags:['get-master-navbar-list'],
+              }),
+
+
 
 
   }),
@@ -313,7 +327,7 @@ export const {
  useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
  useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation ,useGetUserByRolesMutation ,useGetKycDriverDetailsByIdMutation 
  ,useApproveDriverKycMutation , useGetMenuPermissionsMutation ,useAddCapabilityMutation , useAddPermissionsToCapabilityMutation , useRoleHasCapsMutation,
- useCapabilityHasPermissionsMutation ,useRemovePermissionsFromCapabilityMutation, usePermByCapabilityMutation
+ useCapabilityHasPermissionsMutation ,useRemovePermissionsFromCapabilityMutation, usePermByCapabilityMutation , useGetMasterNavbarListMutation
 } = adminApi;
 
 

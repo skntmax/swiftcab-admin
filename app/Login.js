@@ -837,7 +837,7 @@ const App = () => {
             width: 28% !important;
             max-width: 550px;
           }
-        }
+        } 
 
         /* Mobile adjustments */
         @media (max-width: 640px) {

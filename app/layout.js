@@ -9,7 +9,7 @@ export default function RootLayout({ children }) {
     <html lang='en'>
       <body className='relative'>
         <RootPage>
-       <Tsparticle /> 
+       {/* <Tsparticle />  */}
         <UseReduxSelector> {/* centralized redux data selector */}
            <SocketClient>
            {children}

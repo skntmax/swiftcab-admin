@@ -46,7 +46,7 @@ const SidebarItems = ({ toggleMobileSidebar }) => {
 
   const menuWithIcons = (navbar?.navbar || []).map((ele) => ({
     ...ele,
-    icon: all_cons[ele.icon] || all_cons.IconMenu2,
+    icon: all_cons[ele.icon] || all_cons.IconPoint,
   }));
 
   const modifiedMenuItems = transformMenuItems(menuWithIcons);

@@ -160,9 +160,10 @@ const App = () => {
   }, [loginNewUserData?.data, newUserData?.data]);
 
   const userTypesList = [
-    { id: 1, name: 'Driver', icon: Car },
-    { id: 2, name: 'Admin', icon: Shield },
-    { id: 3, name: 'User', icon: CheckCircle2 }
+    { id: 1, name: 'Driver', icon: Car , label:"driver-partner" },
+    { id: 2, name: 'Admin', icon: Shield, label:"admin" },
+    { id: 3, name: 'Super Admin', icon: CheckCircle2, label:"super-admin" },
+    { id: 4, name: 'Owner', icon: CheckCircle2, label:"owner" }
   ];
 
   return (
@@ -182,10 +183,31 @@ const App = () => {
         }}
       />}
 
-      <div style={{ opacity: (newUserDataLoader || loginNewUserLoading || userLoggedIn) ? 0.2 : 1, minHeight: '100vh', display: 'flex' }}>
+      <div 
+       style={{
+    opacity:
+      (newUserDataLoader || loginNewUserLoading || userLoggedIn)
+        ? 0.2
+        : 1,
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+  }}
+      >
         {/* Left Panel - Form */}
-        <div className="left-panel" style={{ width: '100%', display: 'flex', flexDirection: 'column', background: 'white' }}>
-          {/* Header */}
+       <div
+    className="left-panel"
+    style={{
+      width: "40%",
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: "#fff",
+      zIndex: 2,
+      boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
+    }}
+  >
+         {/* Header */}
           <div style={{ padding: '1.5rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f0f0f0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ width: '2.5rem', height: '2.5rem', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -336,7 +358,16 @@ const App = () => {
                     </label>
                     {isLoading ? <ApiLoader height={"20px"} width={"20px"} /> :
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                        {userTypes?.data?.map(type => {
+                        
+                        {userTypes?.data?.filter(ele=>  userTypesList.some(ie =>
+                      String(ie.label)
+                        .toLowerCase()
+                        .replace(/\s+/g, '-')
+                        === String(ele.label)
+                        .toLowerCase()
+                        .replace(/\s+/g, '-')
+                    )
+                      ).map(type => {
                           const IconComponent = userTypesList.find(t => t.name === type.name)?.icon || Car;
                           return (
                             <button
@@ -358,7 +389,7 @@ const App = () => {
                               }}
                             >
                               <IconComponent style={{ width: '1.5rem', height: '1.5rem', marginBottom: '0.25rem' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{type.name}</span>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{type.label}</span>
                             </button>
                           );
                         })}
@@ -512,7 +543,17 @@ const App = () => {
                     </label>
                     {isLoading ? <ApiLoader height={"20px"} width={"20px"} /> :
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                        {userTypes?.data?.map(type => {
+                        {userTypes?.data?.filter(ele =>
+                          userTypesList.some(ie =>
+                            String(ie.label)
+                              .toLowerCase()
+                              .replace(/\s+/g, '-')
+                              === String(ele.label)
+                              .toLowerCase()
+                              .replace(/\s+/g, '-')
+                          )
+                        )
+  .map(type => {
                           const IconComponent = userTypesList.find(t => t.name === type.name)?.icon || Car;
                           return (
                             <button

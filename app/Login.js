@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useGetUserQuery, useLoginUserMutation, useSignupUserMutation } from './libs/apis/user';
 import { generateUsername } from '@utils';
 import ApiLoader from './../components/ApiLoader';
@@ -10,6 +10,131 @@ import { SWC_KEYS } from '@constants';
 import { fetGlobalNavbar } from './libs/slice/navMenuSlice';
 import { useAppDispatch } from './libs/store';
 import { Eye, EyeOff, ArrowRight, Car, Zap, Shield, Clock, CheckCircle2, Menu } from 'lucide-react';
+import { IconSteeringWheel, IconUserExclamation, IconUsersPlus } from '@tabler/icons-react';
+import { IconUserPlus } from '@tabler/icons-react';
+
+// Particle Animation Component
+const ParticleBackground = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const updateCanvasSize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    updateCanvasSize();
+    
+    const particles = [];
+    const particleCount = window.innerWidth < 768 ? 30 : 60;
+    
+    class Particle {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * canvas.height;
+        this.opacity = Math.random() * 0.5 + 0.3;
+      }
+      
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+      }
+      
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+      
+      draw() {
+        ctx.fillStyle = `rgba(14, 165, 233, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Glow effect
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
+        gradient.addColorStop(0, `rgba(14, 165, 233, ${this.opacity * 0.5})`);
+        gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+    
+    let animationId;
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw connection lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 120) {
+            ctx.strokeStyle = `rgba(14, 165, 233, ${0.15 * (1 - distance / 120)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    const handleResize = () => {
+      updateCanvasSize();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+  
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 0
+      }}
+    />
+  );
+};
 
 const App = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -160,10 +285,10 @@ const App = () => {
   }, [loginNewUserData?.data, newUserData?.data]);
 
   const userTypesList = [
-    { id: 1, name: 'Driver', icon: Car , label:"driver-partner" },
-    { id: 2, name: 'Admin', icon: Shield, label:"admin" },
-    { id: 3, name: 'Super Admin', icon: CheckCircle2, label:"super-admin" },
-    { id: 4, name: 'Owner', icon: CheckCircle2, label:"owner" }
+    { id: 1, name: 'Driver', icon: IconSteeringWheel, label: "driver-partner" },
+    { id: 2, name: 'Admin', icon: IconUserPlus , label: "admin" },
+    { id: 3, name: 'Super Admin', icon: IconUsersPlus, label: "super-admin" },
+    { id: 4, name: 'Owner', icon: IconUserExclamation, label: "owner" }
   ];
 
   return (
@@ -183,31 +308,30 @@ const App = () => {
         }}
       />}
 
-      <div 
-       style={{
-    opacity:
-      (newUserDataLoader || loginNewUserLoading || userLoggedIn)
-        ? 0.2
-        : 1,
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-  }}
+      <div
+        style={{
+          opacity: (newUserDataLoader || loginNewUserLoading || userLoggedIn) ? 0.2 : 1,
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          position: "relative"
+        }}
       >
         {/* Left Panel - Form */}
-       <div
-    className="left-panel"
-    style={{
-      width: "40%",
-      display: "flex",
-      flexDirection: "column",
-      backgroundColor: "#fff",
-      zIndex: 2,
-      boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
-    }}
-  >
-         {/* Header */}
+        <div
+          className="left-panel"
+          style={{
+            width: "40%",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#fff",
+            zIndex: 2,
+            boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
+            position: "relative"
+          }}
+        >
+          {/* Header */}
           <div style={{ padding: '1.5rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f0f0f0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ width: '2.5rem', height: '2.5rem', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -357,17 +481,16 @@ const App = () => {
                       User Type
                     </label>
                     {isLoading ? <ApiLoader height={"20px"} width={"20px"} /> :
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                        
-                        {userTypes?.data?.filter(ele=>  userTypesList.some(ie =>
-                      String(ie.label)
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')
-                        === String(ele.label)
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')
-                    )
-                      ).map(type => {
+                      <div className="user-type-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                        {userTypes?.data?.filter(ele => userTypesList.some(ie =>
+                          String(ie.label)
+                            .toLowerCase()
+                            .replace(/\s+/g, '-')
+                            === String(ele.label)
+                            .toLowerCase()
+                            .replace(/\s+/g, '-')
+                        )
+                        ).map(type => {
                           const IconComponent = userTypesList.find(t => t.name === type.name)?.icon || Car;
                           return (
                             <button
@@ -389,7 +512,7 @@ const App = () => {
                               }}
                             >
                               <IconComponent style={{ width: '1.5rem', height: '1.5rem', marginBottom: '0.25rem' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{type.label}</span>
+                              <span className="user-type-label" style={{ fontSize: '0.75rem', fontWeight: 600 }}>{type.label}</span>
                             </button>
                           );
                         })}
@@ -398,7 +521,7 @@ const App = () => {
                     {!loginFd.userType.value && loginFd.userType.required && <span style={{ color: 'red', fontSize: '0.875rem' }}>{loginFd.userType.message}</span>}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                       <input type="checkbox" style={{ marginRight: '0.5rem' }} />
                       <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Remember me</span>
@@ -542,7 +665,7 @@ const App = () => {
                       User Type
                     </label>
                     {isLoading ? <ApiLoader height={"20px"} width={"20px"} /> :
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                      <div className="user-type-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                         {userTypes?.data?.filter(ele =>
                           userTypesList.some(ie =>
                             String(ie.label)
@@ -553,32 +676,32 @@ const App = () => {
                               .replace(/\s+/g, '-')
                           )
                         )
-  .map(type => {
-                          const IconComponent = userTypesList.find(t => t.name === type.name)?.icon || Car;
-                          return (
-                            <button
-                              key={type.id}
-                              type="button"
-                              onClick={() => onChangeHandler({ target: { name: 'userType', value: type.id } })}
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '1rem 0.75rem',
-                                borderRadius: '0.75rem',
-                                border: `2px solid ${userType.value == type.id ? '#0ea5e9' : '#e5e7eb'}`,
-                                background: userType.value == type.id ? '#f0f9ff' : 'white',
-                                color: userType.value == type.id ? '#0369a1' : '#6b7280',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                              }}
-                            >
-                              <IconComponent style={{ width: '1.5rem', height: '1.5rem', marginBottom: '0.25rem' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{type.name}</span>
-                            </button>
-                          );
-                        })}
+                          .map(type => {
+                            const IconComponent = userTypesList.find(t => t.name === type.name)?.icon || Car;
+                            return (
+                              <button
+                                key={type.id}
+                                type="button"
+                                onClick={() => onChangeHandler({ target: { name: 'userType', value: type.id } })}
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  padding: '1rem 0.75rem',
+                                  borderRadius: '0.75rem',
+                                  border: `2px solid ${userType.value == type.id ? '#0ea5e9' : '#e5e7eb'}`,
+                                  background: userType.value == type.id ? '#f0f9ff' : 'white',
+                                  color: userType.value == type.id ? '#0369a1' : '#6b7280',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.3s'
+                                }}
+                              >
+                                <IconComponent style={{ width: '1.5rem', height: '1.5rem', marginBottom: '0.25rem' }} />
+                                <span className="user-type-label" style={{ fontSize: '0.75rem', fontWeight: 600 }}>{type.name}</span>
+                              </button>
+                            );
+                          })}
                       </div>
                     }
                     {!userType.value && userType.required && <span style={{ color: 'red', fontSize: '0.875rem' }}>{userType.message}</span>}
@@ -629,20 +752,51 @@ const App = () => {
           </div>
         </div>
 
-        {/* Right Panel - Hero Image */}
+        {/* Right Panel - Hero with Particles */}
         <div className="hero-panel" style={{
           display: 'none',
           background: 'linear-gradient(135deg, #1f2937, #111827, #1f2937)',
           position: 'relative',
           overflow: 'hidden'
         }}>
-          {/* Background pattern */}
+          {/* Particle Background */}
+          <ParticleBackground />
+
+          {/* Background pattern overlay */}
           <div style={{
             position: 'absolute',
             inset: 0,
-            opacity: 0.1,
+            opacity: 0.05,
             backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px'
+            backgroundSize: '40px 40px',
+            zIndex: 1
+          }}></div>
+
+          {/* Animated gradient orbs */}
+          <div className="gradient-orb-1" style={{
+            position: 'absolute',
+            top: '10%',
+            right: '10%',
+            width: '20rem',
+            height: '20rem',
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, transparent 70%)',
+            borderRadius: '50%',
+            filter: 'blur(60px)',
+            animation: 'float 20s ease-in-out infinite',
+            zIndex: 1
+          }}></div>
+          
+          <div className="gradient-orb-2" style={{
+            position: 'absolute',
+            bottom: '15%',
+            left: '10%',
+            width: '25rem',
+            height: '25rem',
+            background: 'radial-gradient(circle, rgba(147, 51, 234, 0.2) 0%, transparent 70%)',
+            borderRadius: '50%',
+            filter: 'blur(70px)',
+            animation: 'float 25s ease-in-out infinite reverse',
+            zIndex: 1
           }}></div>
 
           {/* Content */}
@@ -662,12 +816,13 @@ const App = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                background: 'rgba(14, 165, 233, 0.2)',
+                background: 'rgba(14, 165, 233, 0.15)',
                 backdropFilter: 'blur(10px)',
                 padding: '0.5rem 1rem',
                 borderRadius: '9999px',
                 border: '1px solid rgba(14, 165, 233, 0.3)',
-                marginBottom: '2rem'
+                marginBottom: '2rem',
+                animation: 'pulse 3s ease-in-out infinite'
               }}>
                 <Zap style={{ width: '1rem', height: '1rem', color: '#0ea5e9' }} />
                 <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0ea5e9' }}>#SwiftCabForWeb</span>
@@ -685,167 +840,111 @@ const App = () => {
                 </p>
               </div>
 
-              {/* Features */}
+              {/* Features Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', maxWidth: '32rem' }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div style={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'rgba(14, 165, 233, 0.2)',
-                    borderRadius: '0.5rem',
+                {[
+                  { icon: Zap, title: 'Quick Booking', subtitle: 'In seconds' },
+                  { icon: Shield, title: 'Safe & Secure', subtitle: 'Verified drivers' },
+                  { icon: Clock, title: '24/7 Available', subtitle: 'Always ready' },
+                  { icon: Car, title: 'AC Cabs', subtitle: 'Comfort ride' }
+                ].map((feature, idx) => (
+                  <div key={idx} className="feature-card" style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
+                    gap: '0.75rem',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    backdropFilter: 'blur(10px)',
+                    borderRadius: '0.75rem',
+                    padding: '1rem',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
                   }}>
-                    <Zap style={{ width: '1.25rem', height: '1.25rem', color: '#0ea5e9' }} />
+                    <div style={{
+                      width: '2.5rem',
+                      height: '2.5rem',
+                      background: 'rgba(14, 165, 233, 0.2)',
+                      borderRadius: '0.5rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <feature.icon style={{ width: '1.25rem', height: '1.25rem', color: '#0ea5e9' }} />
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>{feature.title}</p>
+                      <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>{feature.subtitle}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>Quick Booking</p>
-                    <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>In seconds</p>
-                  </div>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div style={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'rgba(14, 165, 233, 0.2)',
-                    borderRadius: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    <Shield style={{ width: '1.25rem', height: '1.25rem', color: '#0ea5e9' }} />
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>Safe & Secure</p>
-                    <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>Verified drivers</p>
-                  </div>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div style={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'rgba(14, 165, 233, 0.2)',
-                    borderRadius: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    <Clock style={{ width: '1.25rem', height: '1.25rem', color: '#0ea5e9' }} />
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>24/7 Available</p>
-                    <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>Always ready</p>
-                  </div>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div style={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'rgba(14, 165, 233, 0.2)',
-                    borderRadius: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    <Car style={{ width: '1.25rem', height: '1.25rem', color: '#0ea5e9' }} />
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>AC Cabs</p>
-                    <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>Comfort ride</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
             {/* Bottom stats */}
-            <div style={{ display: 'flex', gap: '2rem' }}>
-              <div>
+            <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+              <div className="stat-item">
                 <p style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#0ea5e9', margin: 0 }}>50K+</p>
                 <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>Active Drivers</p>
               </div>
-              <div>
+              <div className="stat-item">
                 <p style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#0ea5e9', margin: 0 }}>1M+</p>
                 <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>Happy Riders</p>
               </div>
-              <div>
+              <div className="stat-item">
                 <p style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#0ea5e9', margin: 0 }}>100+</p>
                 <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>Cities</p>
               </div>
             </div>
           </div>
-
-          {/* Decorative blur elements */}
-          <div style={{
-            position: 'absolute',
-            top: '5rem',
-            right: '5rem',
-            width: '16rem',
-            height: '16rem',
-            background: 'rgba(14, 165, 233, 0.1)',
-            borderRadius: '50%',
-            filter: 'blur(60px)'
-          }}></div>
-          <div style={{
-            position: 'absolute',
-            bottom: '5rem',
-            left: '5rem',
-            width: '20rem',
-            height: '20rem',
-            background: 'rgba(14, 165, 233, 0.1)',
-            borderRadius: '50%',
-            filter: 'blur(60px)'
-          }}></div>
         </div>
       </div>
 
       <style>{`
+        /* Animations */
+        @keyframes float {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -30px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        /* Feature card hover effect */
+        .feature-card:hover {
+          background: rgba(255, 255, 255, 0.12) !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(14, 165, 233, 0.2);
+        }
+
+        /* Stat animation */
+        .stat-item {
+          animation: fadeInUp 0.6s ease-out forwards;
+          opacity: 0;
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stat-item:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         /* Mobile First - Default Styles */
         .left-panel {
           width: 100%;
+          min-height: 100vh;
         }
         
         .hero-panel {
@@ -896,6 +995,32 @@ const App = () => {
           
           .left-panel h2 {
             font-size: 1.5rem !important;
+          }
+
+          .user-type-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+
+          .user-type-label {
+            font-size: 0.65rem !important;
+          }
+        }
+
+        /* Tablet adjustments for user type grid */
+        @media (min-width: 641px) and (max-width: 768px) {
+          .user-type-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+
+        /* Small mobile */
+        @media (max-width: 380px) {
+          .user-type-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .left-panel h1 {
+            font-size: 1.1rem !important;
           }
         }
       `}</style>

@@ -76,10 +76,6 @@ useEffect(()=>{
 
    },[])
 
-
-  
-
-
    
    
 return (

@@ -107,8 +107,6 @@ export default function Index({userType, userName}) {
 
         socket.on(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
 
-
-
       socket.on(SOCKET_EVENTS?.RIDE_INTIATED_BY_DRIVER, (data) => {
       console.log("🚖 RIDE_INTIATED_BY_DRIVER", data);
       setLoadingIndex(null);

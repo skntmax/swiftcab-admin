@@ -21,6 +21,7 @@ import {
   CreditCard
 } from '@mui/icons-material';
 import { DirectionsCar, Person } from "@mui/icons-material";
+import { KYC_STATUS } from '@constants';
 
 function ViewDriverDetails({ data, userDetails }) {
 
@@ -63,17 +64,7 @@ function ViewDriverDetails({ data, userDetails }) {
     );
   }
 
-  console.log("data?.vehicleDetails?.vehicle_id>>", data?.vhicleDetails.vehicle_id)
-
-  // userDetails.vehicleDetails = {
-  //   vehicle_id: 'VH-9988',
-  //   vehicle_number: 'UP16-AB-1234',
-  //   vehicle_model: 'Honda Amaze',
-  //   vehicle_color: 'White',
-  //   assigned_on: '2025-09-25T15:22:10Z',
-  //   owner_name: 'Amit Sharma',
-  //   owner_contact: '+91-9876001122'
-  // };
+  console.log("data?.vehicleDetails?.vehicle_id>>", data?.vhicleDetails?.vehicle_id)
 
   return (
     <Paper
@@ -130,31 +121,56 @@ function ViewDriverDetails({ data, userDetails }) {
 
         {/* Vehicle Assigned Info */}
         <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-            flex: 1,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            <DirectionsCar fontSize="small" sx={{ mr: 1 }} />
-            Vehicle Assigned
-          </Typography>
-          <Typography variant="body1">
-            Vehicle: {data?.vhicleDetails.vehicle_id || "No vehicle assigned"}
-          </Typography>
-          <Typography variant="body1">
-            Plate No: {data?.vhicleDetails.vehicle_number || "N/A"}
-          </Typography>
-          <Typography variant="body1">
-            Color: {data?.vhicleDetails.vh_color || "N/A"}
-          </Typography>
-          <Typography variant="body1">
-            Owner:{" "}
-            <Person fontSize="small" sx={{ mr: 1 }} />
-            { data?.vhicleDetails.username ||  "N/A"}
-          </Typography>
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        p: 2,
+        borderRadius: 2,
+        border: "1px solid #e0e0e0",
+        backgroundColor: "#fafafa",
+      }}
+    >
+      {/* Header */}
+      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+        <DirectionsCar sx={{ mr: 1 }} />
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Vehicle Assigned
+        </Typography>
+      </Box>
+
+  {/* Details */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+              Vehicle:{" "}
+              <Typography component="span" sx={{ fontWeight: 400 }}>
+                {data?.vhicleDetails?.vehicle_id || "No Vhicle Assigned"}{" "}
+                - {data?.vhicleDetails?.vhicle_type? String(data?.vhicleDetails?.vhicle_type)?.toUpperCase() :  "N/A"}
+              </Typography>
+            </Typography>
+
+            <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
+              Plate No:{" "}
+              <Typography component="span" sx={{ fontWeight: 400 }}>
+                {data?.vhicleDetails?.vehicle_number || "N/A"}
+              </Typography>
+            </Typography>
+
+            <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
+              Color:{"  "}
+              <Typography component="span" sx={{ fontWeight: 400 }}>
+                { data?.vhicleDetails?.vh_color ?String(data?.vhicleDetails?.vh_color)?.toUpperCase() : "N/A"}
+              </Typography>
+            </Typography>
+
+            <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
+              Owner:
+              <Person fontSize="small" sx={{ mx: 1 }} />
+              <Typography component="span" sx={{ fontWeight: 400 }}>
+                {data?.vhicleDetails?.username || "N/A"}
+              </Typography>
+            </Typography>
+          </Box>
         </Box>
       </Box>
         </Grid>
@@ -199,15 +215,15 @@ function ViewDriverDetails({ data, userDetails }) {
               <Grid item xs={12} sm={6}>
                 <Info
                   label="Driver Verified"
-                  value={data.is_varified ? 'Yes' : 'No'}
+                  value={ [KYC_STATUS.PENDING,KYC_STATUS.INITIATED].includes(data.is_varified)? 'NO' : 'YES'}
                   icon={
-                    data.is_varified ? (
-                      <CheckCircle color="success" />
-                    ) : (
-                      <Cancel color="error" />
-                    )
-                  }
-                />
+                      [KYC_STATUS.VERIFIED, KYC_STATUS.COMPLETED].includes(data?.is_varified) ? (
+                        <CheckCircle color="success" />
+                      ) : (
+                        <Cancel color="error" />
+                      )
+                    }
+                  />
                 <Info
                   label="Created On"
                   value={new Date(data.created_on).toLocaleString()}

@@ -20,7 +20,7 @@ export function SocketClient({children}){
         token: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
         portal:USER_ROLES["driver-partner"]
         }
-  });
+    });
 
     setSocket(newSocket);
     newSocket.on("connect", () => {

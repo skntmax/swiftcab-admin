@@ -17,7 +17,8 @@ import {
   Cancel,
   DocumentScanner,
   AccountBalance,
-  CreditCard
+  CreditCard,
+  Person
 } from '@mui/icons-material';
 import { FormInput } from '@components/FormController';
 import { KYC_STATUS_ARRAY } from '@constants';
@@ -122,6 +123,40 @@ function AMSViewDriver({ data, formIndex,kycUpdated }) {
             {data?.driver_profile_id?.email || 'N/A'}
           </Typography>
         </Grid>
+
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                          Vehicle:{" "}
+                          <Typography component="span" sx={{ fontWeight: 400 }}>
+                            {data?.vhicleDetails?.vehicle_id || "No Vhicle Assigned"}{" "}
+                            - {data?.vhicleDetails?.vhicle_type? String(data?.vhicleDetails?.vhicle_type)?.toUpperCase() :  "N/A"}
+                          </Typography>
+                        </Typography>
+            
+                        <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
+                          Plate No:{" "}
+                          <Typography component="span" sx={{ fontWeight: 400 }}>
+                            {data?.vhicleDetails?.vehicle_number || "N/A"}
+                          </Typography>
+                        </Typography>
+            
+                        <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
+                          Color:{"  "}
+                          <Typography component="span" sx={{ fontWeight: 400 }}>
+                            { data?.vhicleDetails?.vh_color ?String(data?.vhicleDetails?.vh_color)?.toUpperCase() : "N/A"}
+                          </Typography>
+                        </Typography>
+            
+                        <Typography variant="body1" sx={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
+                          Owner:
+                          <Person fontSize="small" sx={{ mx: 1 }} />
+                          <Typography component="span" sx={{ fontWeight: 400 }}>
+                            {data?.vhicleDetails?.username || "N/A"}
+                          </Typography>
+                        </Typography>
+                      </Box>
+
 
         {/* Right Content */}
         <Grid item xs={12} md={9}>

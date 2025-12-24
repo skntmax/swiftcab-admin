@@ -106,12 +106,12 @@ export const SWC_KEYS = {
   SWC_USER:"SWC_USER"
 }
 
-export const  KYC_STATUS= {
-  INITIATED:"INITIATED",
-  PENDING:'PENDING',
-  VERIFIED:"VERIFIED",
-  COMPLETED:"COMPLETED"
-}
+  export const  KYC_STATUS= {
+    INITIATED:"INITIATED",
+    PENDING:'PENDING',
+    VERIFIED:"VERIFIED",
+    COMPLETED:"COMPLETED"
+  }
 
 export const KYC_STATUS_ARRAY = Object.entries(KYC_STATUS).map(([key,value])=> ({ label:key , value:value }))
 
@@ -152,6 +152,8 @@ export const SOCKET_EVENTS = {
   RIDE_INTIATED_BY_DRIVER:"RIDE_INTIATED_BY_DRIVER",
   // on validatione error
   UNAUTHORIZED:"UNAUTHORIZED",
+  CUSTOMER_CANCELLED_RIDE:"CUSTOMER_CANCELLED_RIDE",
+  PAY_BY_CUSTOMER:"PAY_BY_CUSTOMER",
 
 };
 

@@ -51,7 +51,7 @@ export default function Index({userType, userName}) {
       //  });
 
     return ()=>{ 
-       socket?.emit(SOCKET_EVENTS.EV_DRIVER_LOGGED_OUT, {...driverLoc ,isLoggedIn:false }  )  // reset the driver location from the redis stack  
+       socket?.emit(SOCKET_EVENTS.EV_DRIVER_LOGGED_OUT, {...driverLoc ,isLoggedIn:false , access: "private" }  )  // reset the driver location from the redis stack  
     }
     }, []);
 
@@ -61,7 +61,7 @@ export default function Index({userType, userName}) {
     // sending live location in every 5 seconds to driver pool  kafka topic 
       useEffect(() => {
         if(driverLoc?.lat && driverLoc?.lng) {
-          socket.emit(SOCKET_EVENTS.EV_DRIVER_LIVE_LOCATION, driverLoc  )   
+          socket.emit(SOCKET_EVENTS.EV_DRIVER_LIVE_LOCATION, {...driverLoc , access: "private"}  )   
         }
     }, [driverLoc]);
 
@@ -102,10 +102,10 @@ export default function Index({userType, userName}) {
         if (!socket) return;
 
         const handleRideRequest = (data) => {
-          setRideRequests(prev => [...prev, data]); // append to the queue
+          setRideRequests(prev => [data]); // append to the queue
         };
 
-        socket.on(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
+      socket.on(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
 
       socket.on(SOCKET_EVENTS?.RIDE_INTIATED_BY_DRIVER, (data) => {
       console.log("🚖 RIDE_INTIATED_BY_DRIVER", data);
@@ -114,6 +114,11 @@ export default function Index({userType, userName}) {
       // setShowDriverPopup(true);
       // dispatch(toggleStep({ step: 4 }));
       });
+
+
+        socket.on(SOCKET_EVENTS?.CUSTOMER_CANCELLED_RIDE, (data) => {
+        console.log("🚖 ride cancelled by  customer ", data);
+        });
 
 
         return () => {
@@ -129,7 +134,7 @@ export default function Index({userType, userName}) {
       // mark this ride as loading
       setLoadingIndex(index);
 
-      socket.emit(SOCKET_EVENTS.DRIVER_ACCEPTED_THE_RIDE, userInfo);
+      socket.emit(SOCKET_EVENTS.DRIVER_ACCEPTED_THE_RIDE, {...userInfo , access: "private"});
       // setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 

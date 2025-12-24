@@ -18,7 +18,8 @@ export function SocketClient({children}){
         reconnectionDelayMax: 10000,
         auth: {
         token: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
-        portal:USER_ROLES["driver-partner"]
+        portal:USER_ROLES["driver-partner"],
+        portal:"driver-portal",
         }
     });
 

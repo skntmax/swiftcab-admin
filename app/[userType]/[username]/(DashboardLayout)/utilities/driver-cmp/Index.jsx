@@ -27,6 +27,7 @@ import { SocketProvider } from '@components/Socket/SocketProvider';
 import { SOCKET_EVENTS } from '@constants';
 import { getUserInfo } from '@utils';
 import { useSendLiveLocationMutation } from '@app/libs/apis/socketApi';
+import StartRideOtpModal from './Dashboard/StartRideOtpModal'
 import  DriverProfilePageView from './driverProfilePageView' 
 
 export default function Index({userType, userName}) {
@@ -39,6 +40,8 @@ export default function Index({userType, userName}) {
     const [rideRequests, setRideRequests] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loadingIndex, setLoadingIndex] = useState(null);
+    const [showOtpModal, setShowOtpModal] = useState(false);
+    const [selectedRide, setSelectedRide] = useState(null);
 
     
     
@@ -116,10 +119,37 @@ export default function Index({userType, userName}) {
       });
 
 
+       //  when customer cancels the ride
         socket.on(SOCKET_EVENTS?.CUSTOMER_CANCELLED_RIDE, (data) => {
         console.log("🚖 ride cancelled by  customer ", data);
+        alert("Ride cancelled by customer");
+        if(data) {
+           setShowOtpModal(false);
+          setLoadingIndex(null);
+        }
         });
 
+
+        
+       //  when customer cancels the ride
+        socket.on(SOCKET_EVENTS?.RIDE_ALREADY_TAKEN, (data) => {
+        console.log("🚖 ride already taken by another driver ", data);
+        alert("Ride already taken by another driver");
+        setLoadingIndex(null);
+        });
+
+
+        //
+        socket.on(SOCKET_EVENTS.INVALID_RIDE_OTP, () => {
+          alert("Invalid OTP");
+        });
+        
+
+        
+        //
+        socket.on(SOCKET_EVENTS.RIDE_STARTED, (rideObj) => {
+          alert("Otp varified , ride started" , rideObj);
+        });
 
         return () => {
           socket.off(SOCKET_EVENTS.NEW_RIDE_REQUEST, handleRideRequest);
@@ -130,17 +160,37 @@ export default function Index({userType, userName}) {
     const handleAccept = (index) => {
       const userInfo = rideRequests[index];
       console.log("userInfo", userInfo);
-
       // mark this ride as loading
       setLoadingIndex(index);
+      // save selected ride for OTP verification
+      setSelectedRide(userInfo);
+      // open OTP modal
+      setShowOtpModal(true);
 
       socket.emit(SOCKET_EVENTS.DRIVER_ACCEPTED_THE_RIDE, {...userInfo , access: "private"});
-      // setRideRequests(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleClose = (index) => {
       console.log("handleClose", index)
         setRideRequests(prev => prev.filter((_, i) => i !== index));
+    };
+
+
+    const handleOtpVerify = (otp) => {
+      if (!selectedRide) return;
+
+      socket.emit(SOCKET_EVENTS.OTP_VARIFICATION, {
+         ...{
+          customer: {username: selectedRide?.userDetails?.username  , id:selectedRide?.userDetails?.id   },
+          driver:{username: selectedRide?.driverDetails?.username  , id:selectedRide?.driverDetails?.id }, 
+        },
+        userInputOtp : otp,
+        universalRideId: selectedRide?.universalRideId,
+        access: "private",
+      });
+
+      // setShowOtpModal(false);
+      // setSelectedRide(null);
     };
 
 
@@ -190,6 +240,16 @@ export default function Index({userType, userName}) {
       {tabs === 'driver/earnings/history' && <HistoryEarning />}
       {tabs === 'driver/ride-history/all' && <RideHistory />}
       {tabs === 'driver/profile/view' && <DriverProfilePageView />}
+
+      <StartRideOtpModal
+        open={showOtpModal}
+        onClose={() => {
+          setShowOtpModal(false);
+          setLoadingIndex(null);
+        }}
+        onVerify={handleOtpVerify}
+        loading={false}
+      />
       
     </PageContainer>
 

@@ -42,6 +42,7 @@ export default function Index({userType, userName}) {
     const [loadingIndex, setLoadingIndex] = useState(null);
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
+    const [otpLoading, setOtpLoading] = useState(false);
 
     
     
@@ -124,8 +125,9 @@ export default function Index({userType, userName}) {
         console.log("🚖 ride cancelled by  customer ", data);
         alert("Ride cancelled by customer");
         if(data) {
+           setOtpLoading(false);
            setShowOtpModal(false);
-          setLoadingIndex(null);
+           setLoadingIndex(null);
         }
         });
 
@@ -141,6 +143,7 @@ export default function Index({userType, userName}) {
 
         //
         socket.on(SOCKET_EVENTS.INVALID_RIDE_OTP, () => {
+          setOtpLoading(false);
           alert("Invalid OTP");
         });
         
@@ -148,6 +151,7 @@ export default function Index({userType, userName}) {
         
         //
         socket.on(SOCKET_EVENTS.RIDE_STARTED, (rideObj) => {
+          setOtpLoading(false);
           alert("Otp varified , ride started" , rideObj);
         });
 
@@ -177,14 +181,20 @@ export default function Index({userType, userName}) {
 
 
     const handleOtpVerify = (otp) => {
-      if (!selectedRide) return;
+     if (!selectedRide) return;
+
+      setOtpLoading(true); // start  otp varification loader
 
       socket.emit(SOCKET_EVENTS.OTP_VARIFICATION, {
-         ...{
-          customer: {username: selectedRide?.userDetails?.username  , id:selectedRide?.userDetails?.id   },
-          driver:{username: selectedRide?.driverDetails?.username  , id:selectedRide?.driverDetails?.id }, 
+        customer: {
+          username: selectedRide?.userDetails?.username,
+          id: selectedRide?.userDetails?.id,
         },
-        userInputOtp : otp,
+        driver: {
+          username: selectedRide?.driverDetails?.username,
+          id: selectedRide?.driverDetails?.id,
+        },
+        userInputOtp: otp,
         universalRideId: selectedRide?.universalRideId,
         access: "private",
       });
@@ -248,7 +258,7 @@ export default function Index({userType, userName}) {
           setLoadingIndex(null);
         }}
         onVerify={handleOtpVerify}
-        loading={false}
+         loading={otpLoading}
       />
       
     </PageContainer>

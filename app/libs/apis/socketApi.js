@@ -11,7 +11,7 @@ const socketsApi = createApi({
   tagTypes: ["driver-live-location"],
     baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery({baseUrl:process.env.NEXT_PUBLIC_API_URL}):fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),    
   
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_CLIENT_MEDIUM_URL }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_CLIENT_MEDIUM_URL, path:'/medium/socket.io' }),
   endpoints: (builder) => ({ 
      sendLiveLocation: builder.mutation({ 
         query: (body) => (  {

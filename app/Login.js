@@ -322,7 +322,6 @@ const App = () => {
         <div
           className="left-panel"
           style={{
-            width: "40%",
             display: "flex",
             flexDirection: "column",
             backgroundColor: "#fff",
@@ -841,7 +840,7 @@ const App = () => {
               </div>
 
               {/* Features Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', maxWidth: '32rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', maxWidth: '32rem' }}>
                 {[
                   { icon: Zap, title: 'Quick Booking', subtitle: 'In seconds' },
                   { icon: Shield, title: 'Safe & Secure', subtitle: 'Verified drivers' },
@@ -998,7 +997,7 @@ const App = () => {
           }
 
           .user-type-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
+            grid-template-columns: repeat(3, 1fr) !important;
           }
 
           .user-type-label {
@@ -1009,7 +1008,7 @@ const App = () => {
         /* Tablet adjustments for user type grid */
         @media (min-width: 641px) and (max-width: 768px) {
           .user-type-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
+            grid-template-columns: repeat(3, 1fr) !important;
           }
         }
 

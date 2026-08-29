@@ -1,6 +1,7 @@
 'use client'
 import { SWC_KEYS, USER_ROLES } from "@constants";
 import { getCookie } from "@node_modules/cookies-next/lib";
+import path from "path";
 import React, { createContext, useEffect } from "react";
 import { io } from "socket.io-client";
 export let  SocketProvider =  createContext()
@@ -10,12 +11,13 @@ export function SocketClient({children}){
    const [ socket , setSocket ] = React.useState(null)
 
    useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_CLIENT_MEDIUM_URL, {
-        transports: ["websocket"], // avoid long polling
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL, {
+        transports: ["websocket",'polling'], // avoid long polling
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 5000, // wait 5s before trying to reconnect
         reconnectionDelayMax: 10000,
+        path: '/medium/socket.io',
         auth: {
         token: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
         portal:USER_ROLES["driver-partner"],

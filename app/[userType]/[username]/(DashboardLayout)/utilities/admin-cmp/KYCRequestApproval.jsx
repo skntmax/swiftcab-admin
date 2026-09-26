@@ -1,234 +1,148 @@
 'use client'
-import React, { useEffect, useState } from "react";
+
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import {
-  Autocomplete,
+  Alert,
+  Box,
   Chip,
-  TextField,
+  Collapse,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Skeleton,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Paper,
-  IconButton,
   TablePagination,
+  TableRow,
+  TextField,
   Typography,
-  CircularProgress,
-  Box,
-} from "@mui/material";
-import { Edit, Block, Delete, ExpandMore } from "@mui/icons-material";
-import { useGetAllUsersMutation, useGetVhicleDetailsMutation } from "@app/libs/apis/admin";
-import { useAppSelector } from "@app/libs/store";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import KycFormStatus from "../admin-cmp/KycFormStatus";
+} from '@mui/material'
+import { DirectionsCar, ExpandMore, FactCheckOutlined, Search, VerifiedOutlined } from '@mui/icons-material'
+import { useListVehicleKycQuery } from '@app/libs/apis/admin'
+import KycFormStatus from './KycFormStatus'
 
-import Alert from '@mui/material/Alert';
+function useDebouncedValue(value, delay = 400) {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebounced(value), delay)
+    return () => window.clearTimeout(timer)
+  }, [value, delay])
+  return debounced
+}
 
-const KycRequest = () => {
-  const [expandedRow, setExpandedRow] = useState(null);
-  const [usernameOrEmail , setusernameOrEmail] =  useState()
-    const [debouncedUsernameOrEmail, setDebouncedUsernameOrEmail] = useState("");
-    const [debounceLoader , setDebounceLoader] = useState(false);
-  const userRoles =  useAppSelector((ele)=> ele['userRoles'])
-  const [selectedRoles, setSelectedRoles] = useState([]);
-  const [meta , setMeta] = useState({
-    "page":1,
-    "rowPerPage":10,
-     rowsPerPageOption:[21],
-     total:0
-   })
-  
-  const [ getUser , { data:getUserData , isLoading:getUserDataLoading }   ] = useGetAllUsersMutation()
-
-  const [getVhicleDetails , {data:getVhicleDetailsData  , isLoading:getVhicleDetailsLoader }] = useGetVhicleDetailsMutation()
-
-  const handleExpandClick = (userId  , vhicleIds) => {
-    setExpandedRow(expandedRow === userId ? null : userId);
-
-    if(!vhicleIds || !Array.isArray(vhicleIds) || vhicleIds.length==0  )
-       return 
-
-    getVhicleDetails({vhicleIds:vhicleIds ,ownerId:userId})
-
-  };
-
-  useEffect(()=>{
-    if(userRoles?.list.length>0) // default owner role 
-        setSelectedRoles(userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.name))
-    if(userRoles?.list.length>0) {
-      getUser({
-        "roles":userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.id),
-        "page":meta.page,
-        "limit":meta.rowPerPage,
-         searchByManual:true
-      })
-    }
-  },[userRoles?.list])
-
-   // for debouncing purpose
-    useEffect(() => {
-    setDebounceLoader(true)
-    const handler = setTimeout(() => {
-      setDebouncedUsernameOrEmail(usernameOrEmail);
-    }, 1000); // 500ms delay
-  
-    return () => {
-      clearTimeout(handler); // Clear the previous timeout on every keypress
-    };
-  }, [usernameOrEmail]);
-  
-
-  useEffect(()=>{    
-    try{
-    if(debouncedUsernameOrEmail) {
-      getUser(
-         { 
-         usernameOrEmail:debouncedUsernameOrEmail ,
-        "page":meta.page,
-        "limit":meta.rowPerPage
-         }
-      )
-      return 
-    }
-    getUser({
-      "roles":userRoles?.list?.filter(_=> _.name=="owner").map(_=> _.id),
-      "page":meta.page,
-      "limit":meta.rowPerPage,
-       searchByManual:true
-    })
-    }catch(err) {
-    console.log(err)
-    }finally{
-    setDebounceLoader(false)
-    }
-   
-  },[debouncedUsernameOrEmail , meta.page , meta.rowPerPage])
-
-  useEffect(()=>{
-     if(getUserData?.data?.metadata) {
-      const { total}  =getUserData?.data?.metadata
-      setMeta(prev => ({ ...prev, total }));
-     }
-  },[getUserData?.data])
-  
-
-  console.log("getVhicleDetailsData?.data>>", getVhicleDetailsData?.data)
+function StatCard({ icon, label, value, colour }) {
   return (
-    <div style={{ padding: 20 }}>
-      <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
-        KYC Approvals
-      </Typography>
-      <Typography variant="subtitle1" style={{ marginBottom: 20, color: "#555" }}>
-        Search and manage KYC approvals efficiently.
-      </Typography>
-      
-      {userRoles?.list && userRoles?.list.length>0 && 
-      <Autocomplete
-        disabled
-        multiple
-        options={userRoles?.list.map(ele=>ele.name)}
-        getOptionLabel={(option) => option}
-        value={selectedRoles}
-        onChange={(event, newValue) => setSelectedRoles(newValue)}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} color="primary" />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField {...params} label="Filter by Role" variant="outlined" fullWidth />
-        )}
-        style={{ marginBottom: 20 }}
-      />}
-     
-      <TextField
-        sx={{marginBottom:"10px"}}
-        fullWidth
-        label="Search By Username or Email"
-        variant="standard"
-        onChange={(e)=> setusernameOrEmail(e.target.value) }
-      />
-     
-      {(getUserDataLoading || debounceLoader) && <Box style={{display:"flex", justifyContent:'center', height:"80vh", alignItems:"center"}}>
-          <CircularProgress style={{width:"20px", height:"20px"}} />
-      </Box>}
+    <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, minWidth: 180, flex: 1 }}>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <Box sx={{ p: 1, borderRadius: 2, bgcolor: `${colour}14`, color: colour, display: 'flex' }}>{icon}</Box>
+        <Box>
+          <Typography variant="h5" fontWeight={800}>{value ?? '—'}</Typography>
+          <Typography variant="body2" color="text.secondary">{label}</Typography>
+        </Box>
+      </Stack>
+    </Paper>
+  )
+}
 
-      {!getUserDataLoading && <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow style={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell><b>Username</b></TableCell>
-              <TableCell><b>Email</b></TableCell>
-              <TableCell><b>Role ID</b></TableCell>
-              <TableCell><b>Role</b></TableCell>
-              <TableCell><b>Owns Vehicles</b></TableCell>
-              <TableCell><b>View Details</b></TableCell>
-            </TableRow>
-          </TableHead>
+export default function KycRequest() {
+  const [query, setQuery] = useState('')
+  const [status, setStatus] = useState('all')
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [expanded, setExpanded] = useState(null)
+  const debouncedQuery = useDebouncedValue(query)
+  const params = useMemo(() => ({ q: debouncedQuery, page, limit, status }), [debouncedQuery, page, limit, status])
+  const { data, error, isFetching, refetch } = useListVehicleKycQuery(params)
+  const payload = data?.data || {}
+  const vehicles = Array.isArray(payload.items) ? payload.items : []
+  const summary = payload.summary || {}
+  const total = payload.metadata?.total || 0
+
+  useEffect(() => setPage(1), [debouncedQuery, status, limit])
+
+  return (
+    <Box sx={{ p: { xs: 1.5, md: 3 }, maxWidth: 1500, mx: 'auto' }}>
+      <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" gap={2} mb={3}>
+        <Box>
+          <Typography variant="h4" fontWeight={850}>Vehicle KYC review</Typography>
+          <Typography color="text.secondary">Review owner vehicles and their supporting documents from one queue.</Typography>
+        </Box>
+        <Chip icon={<FactCheckOutlined />} label={`${summary.pending || 0} need attention`} color="warning" variant="outlined" />
+      </Stack>
+
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} mb={2.5}>
+        <StatCard icon={<DirectionsCar />} label="Matching vehicles" value={summary.total} colour="#2563eb" />
+        <StatCard icon={<FactCheckOutlined />} label="Pending review" value={summary.pending} colour="#d97706" />
+        <StatCard icon={<VerifiedOutlined />} label="Verified" value={summary.verified} colour="#059669" />
+      </Stack>
+
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, mb: 2 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+          <TextField
+            fullWidth
+            size="small"
+            label="Search owner, email, plate or vehicle"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }}
+          />
+          <TextField select size="small" label="KYC status" value={status} onChange={(event) => setStatus(event.target.value)} sx={{ minWidth: 190 }}>
+            <MenuItem value="all">All statuses</MenuItem>
+            {['INITIATED', 'PENDING', 'VERIFIED', 'COMPLETED'].map((item) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
+          </TextField>
+        </Stack>
+      </Paper>
+
+      {error && <Alert severity="error" sx={{ mb: 2 }}>Unable to load vehicle KYC cases. Please retry.</Alert>}
+
+      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3 }}>
+        <Table sx={{ minWidth: 850 }} aria-label="Vehicle KYC review queue">
+          <TableHead><TableRow sx={{ bgcolor: '#f8fafc' }}>
+            <TableCell>Owner</TableCell><TableCell>Vehicle</TableCell><TableCell>Plate</TableCell><TableCell>Status</TableCell><TableCell>Last updated</TableCell><TableCell align="right">Review</TableCell>
+          </TableRow></TableHead>
           <TableBody>
-            {getUserData?.data?.users?.map((user,index) => (
-              <>
-                <TableRow key={user.id}>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role_id}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user?.vhicles?.length || 0}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleExpandClick(user.id , user?.vhicles.map(_=> _.vhicle_id) ) }>
-                      <ExpandMore />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-                
-
-                {getVhicleDetailsLoader &&   expandedRow === user.id && <Box style={{display:"flex", justifyContent:'center'}}> <CircularProgress style={{width:"20px", height:"20px"}} /> </Box> }
-               
-                {!getVhicleDetailsLoader &&  expandedRow === user.id && (
-                  <TableRow>
-                    <TableCell colSpan={6}>
-                      <Accordion expanded>
-                        <AccordionSummary>
-                          <Typography>Additional Details</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-
-                       {  (getVhicleDetailsData?.data  && getVhicleDetailsData?.data?.length>0) ?  
-                        <KycFormStatus 
-                        fd={getVhicleDetailsData?.data || []} 
-                        formIndex={index} 
-                        //  onRaiseKyc={handleKycSubmission}
-                         /> :
-                          <Alert variant="outlined" severity="error">
-                            Owner havn't raised for any Vhicle KYC yet 
-                          </Alert>
-                       }
-
-                        </AccordionDetails>
-                      </Accordion>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </>
+            {isFetching && !vehicles.length && Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>{Array.from({ length: 6 }).map((__, cell) => <TableCell key={cell}><Skeleton /></TableCell>)}</TableRow>
             ))}
+            {!isFetching && !vehicles.length && (
+              <TableRow><TableCell colSpan={6} align="center" sx={{ py: 8 }}><Typography fontWeight={700}>No KYC cases found</Typography><Typography variant="body2" color="text.secondary">Try changing the search or status filter.</Typography></TableCell></TableRow>
+            )}
+            {vehicles.map((vehicle) => {
+              const isOpen = expanded === vehicle.id
+              const ownerName = [vehicle.vh_owner?.first_name, vehicle.vh_owner?.last_name].filter(Boolean).join(' ') || vehicle.vh_owner?.username || 'Unknown owner'
+              return (
+                <Fragment key={vehicle.id}>
+                  <TableRow hover selected={isOpen}>
+                    <TableCell><Typography fontWeight={700}>{ownerName}</Typography><Typography variant="caption" color="text.secondary">{vehicle.vh_owner?.email}</Typography></TableCell>
+                    <TableCell><Typography fontWeight={650}>{vehicle.name || vehicle.v_type?.disc}</Typography><Typography variant="caption" color="text.secondary">{vehicle.manufacturer} {vehicle.model}</Typography></TableCell>
+                    <TableCell>{vehicle.license_plate || '—'}</TableCell>
+                    <TableCell><Chip size="small" label={vehicle.kyc_varification} color={vehicle.is_kyc ? 'success' : 'warning'} variant={vehicle.is_kyc ? 'filled' : 'outlined'} /></TableCell>
+                    <TableCell>{vehicle.updated_on ? new Date(vehicle.updated_on).toLocaleDateString() : '—'}</TableCell>
+                    <TableCell align="right"><IconButton aria-label={`${isOpen ? 'Close' : 'Review'} ${vehicle.license_plate || 'vehicle'}`} aria-expanded={isOpen} onClick={() => setExpanded(isOpen ? null : vehicle.id)}><ExpandMore sx={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 180ms' }} /></IconButton></TableCell>
+                  </TableRow>
+                  <TableRow><TableCell colSpan={6} sx={{ py: 0, borderBottom: isOpen ? undefined : 0 }}>
+                    <Collapse in={isOpen} timeout="auto" unmountOnExit><Box sx={{ py: 3 }}><KycFormStatus fd={[vehicle]} onUpdated={refetch} /></Box></Collapse>
+                  </TableCell></TableRow>
+                </Fragment>
+              )
+            })}
           </TableBody>
         </Table>
-      </TableContainer>}
-
+      </TableContainer>
       <TablePagination
-        rowsPerPageOptions={meta.rowsPerPageOption}
         component="div"
-        count={meta.total}
-        rowsPerPage={meta.rowPerPage}
-        page={meta.page-1}
-        onPageChange={(event, newPage) => setMeta(p => ({ ...p, page: newPage + 1 }))}
-        onRowsPerPageChange={(event) => setMeta(p => ({ ...p, rowPerPage: parseInt(event.target.value, 10), page: 1 }))}
+        count={total}
+        page={page - 1}
+        rowsPerPage={limit}
+        rowsPerPageOptions={[5, 10, 25, 50]}
+        onPageChange={(_, next) => setPage(next + 1)}
+        onRowsPerPageChange={(event) => setLimit(Number(event.target.value))}
       />
-    </div>
-  );
-};
-
-export default KycRequest;
+    </Box>
+  )
+}

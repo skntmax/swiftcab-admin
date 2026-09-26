@@ -1,147 +1,130 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Autocomplete, TextField, Box, Button, CircularProgress, Alert } from "@mui/material";
-import { useGetVehiclesTypeListQuery, useGetVehiclesServiceListQuery, useAddVehicleServiceMutation } from "@app/libs/apis/owner";
-import { contextProvider } from "@components/AppProvider";
-import VhicleOccupiedServies from "./VhicleOccupiedServies";
-import Chip from '@mui/material/Chip';
+'use client'
+import React, { useState, useEffect, useContext } from 'react';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Alert,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
+import {
+  useGetVehiclesTypeListQuery,
+  useGetVehiclesServiceListQuery,
+  useAddVehicleServiceMutation,
+} from '@app/libs/apis/owner';
+import { contextProvider } from '@components/AppProvider';
+import VhicleOccupiedServies from './VhicleOccupiedServies';
 
 function VhicleServices() {
-  const { data: vehicleData, isLoading: vehicleLoading, error: vehicleError } = useGetVehiclesTypeListQuery(); 
+  const { data: vehicleData, isLoading: vehicleLoading, error: vehicleError } = useGetVehiclesTypeListQuery();
   const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useGetVehiclesServiceListQuery();
-  const [addVehicleService, { data:addVehicleServiceData,  isLoading: isSubmitting }] = useAddVehicleServiceMutation(); // Mutation hook
+  const [addVehicleService, { isLoading: isSubmitting }] = useAddVehicleServiceMutation();
 
-  const [selectedVehicles, setSelectedVehicles] = useState([]);
-  const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedVehicles, setSelectedVehicles] = useState(null);
+  const [selectedServices, setSelectedServices] = useState(null);
   const [vehicleOptions, setVehicleOptions] = useState([]);
   const [serviceOptions, setServiceOptions] = useState([]);
-  const { successMessage, errorMessage ,  } = useContext(contextProvider);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { successMessage, errorMessage } = useContext(contextProvider);
 
-  // Populate vehicle options
   useEffect(() => {
     if (vehicleData?.data) {
-      const formattedVehicles = vehicleData.data.map((item) => ({
-        labelJsx: <Chip label={`${item.name}-${item.vhicle_username}`} color="success" variant="filled" />  , // Display vehicle name
-        label:`${item.name}-${item.vhicle_username}`  , // Display vehicle name
-        value: item.id,   // Unique ID
-      }));
-      setVehicleOptions(formattedVehicles);
+      setVehicleOptions(vehicleData.data.map((item) => ({
+        label: `${item.name} · ${item.vhicle_username}`,
+        value: item.id,
+      })));
     }
   }, [vehicleData]);
 
-  // Populate service options
   useEffect(() => {
     if (serviceData?.data) {
-      const formattedServices = serviceData.data.map((item) => ({
-        label: item.service_name, // Display service name
-        value: item.id,           // Unique ID
-      }));
-      setServiceOptions(formattedServices);
+      setServiceOptions(serviceData.data.map((item) => ({
+        label: item.service_name,
+        value: item.id,
+      })));
     }
   }, [serviceData]);
 
-
-   
-
   const handleSubmit = async () => {
     if (!selectedVehicles?.value || !selectedServices?.value) {
-      errorMessage("Please select both vehicle and service.");
+      errorMessage('Please select both a vehicle and a service.');
       return;
     }
-    
-    const payload = {
-      vhicleId: selectedVehicles.value, // Get vehicle ID
-      serviceId: selectedServices.value, // Get service ID
-    };
-  
+
     try {
-      const response = await addVehicleService(payload).unwrap();
-      if(!response.error){
+      const response = await addVehicleService({
+        vhicleId: selectedVehicles.value,
+        serviceId: selectedServices.value,
+      }).unwrap();
+      if (!response.error) {
         successMessage(response.message);
-      }else{
+        setSelectedServices(null);
+        setRefreshKey((value) => value + 1);
+      } else {
         errorMessage(response.data);
       }
-      console.log("Success:", response);
     } catch (error) {
       errorMessage(error.message);
     }
   };
-  
 
   return (
     <>
+      <Typography variant="h5" sx={{ mb: 1 }}>
+        Add vehicle services
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+        Attach a service plan to one of your active vehicles.
+      </Typography>
 
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-        width: "100%",
-        // minHeight: "100vh",
-        padding: 2,
-        overflow: "auto"
-      }}
-    >
-      <Box sx={{ width: "100%" }}>
-        {vehicleLoading || serviceLoading ? <CircularProgress /> : null}
-        {vehicleError && <Alert severity="error">Failed to fetch vehicle data.</Alert>}
-        {serviceError && <Alert severity="error">Failed to fetch service data.</Alert>}
-
-        {!vehicleLoading && !serviceLoading && (
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3, maxWidth: 1100, width: '100%', mb: 4 }}>
+        {vehicleLoading || serviceLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+            <CircularProgress size={28} />
+          </Box>
+        ) : (
           <>
-            {/* Vehicle Selection */}
+            {vehicleError && <Alert severity="error" sx={{ mb: 2 }}>Failed to fetch vehicles.</Alert>}
+            {serviceError && <Alert severity="error" sx={{ mb: 2 }}>Failed to fetch services.</Alert>}
+
             <Autocomplete
-              multiple={false}
               options={vehicleOptions}
-              getOptionLabel={(option) => option.label }
+              getOptionLabel={(option) => option.label || ''}
               isOptionEqualToValue={(option, value) => option.value === value.value}
-              onChange={(event, valueObj) =>  setSelectedVehicles(valueObj)}
-              renderOption={(props, option) => ( 
-                  <li {...props}>
-                    {option.labelJsx}  {/* Display JSX in dropdown */}
-                  </li>
-                )}
-
-              renderInput={(params) => {
-                return <TextField {...params} label="Type of Vehicles" variant="outlined" />  
-              } }
+              value={selectedVehicles}
+              onChange={(_, valueObj) => setSelectedVehicles(valueObj)}
+              renderInput={(params) => <TextField {...params} label="Vehicle" variant="outlined" />}
               fullWidth
             />
             <Box sx={{ height: 16 }} />
-
-            {/* Service Selection */}
             <Autocomplete
-              multiple={false}
               options={serviceOptions}
-              getOptionLabel={(option) => option.label}
+              getOptionLabel={(option) => option.label || ''}
               isOptionEqualToValue={(option, value) => option.value === value.value}
-              onChange={(event, value) => setSelectedServices(value)}
-              renderInput={(params) => <TextField  {...params}  label="Service" variant="outlined"
-  
-               />}
+              value={selectedServices}
+              onChange={(_, value) => setSelectedServices(value)}
+              renderInput={(params) => <TextField {...params} label="Service" variant="outlined" />}
               fullWidth
             />
-            <Box sx={{ height: 16 }} />
-
-            <Button 
-              variant="outlined" 
-              color="primary" 
-              fullWidth 
-              onClick={handleSubmit} 
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={handleSubmit}
               disabled={isSubmitting}
-              sx={{ mt: 2 }}
+              sx={{ mt: 3 }}
             >
-              {isSubmitting ? "Submitting..." : "Submit"}
+              {isSubmitting ? 'Saving…' : 'Add service'}
             </Button>
           </>
         )}
-      </Box>
-    </Box>
-     
-     <VhicleOccupiedServies />
-     
-     </>
+      </Paper>
 
+      <VhicleOccupiedServies key={refreshKey} embedded />
+    </>
   );
 }
 

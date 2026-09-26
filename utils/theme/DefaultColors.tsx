@@ -7,11 +7,13 @@ const baselightTheme = createTheme({
       main: "#5D87FF",
       light: "#ECF2FF",
       dark: "#4570EA",
+      contrastText: "#ffffff",
     },
     secondary: {
       main: "#49BEFF",
       light: "#E8F7FF",
       dark: "#23afdb",
+      contrastText: "#2A3547",
     },
     success: {
       main: "#13DEB9",
@@ -110,6 +112,34 @@ const baselightTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: "7px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          color: "#ffffff",
+          backgroundColor: "#5D87FF",
+          "&:hover": { backgroundColor: "#4570EA" },
+          "&.Mui-disabled": {
+            color: "#5A6A85",
+            backgroundColor: "#EAEFF4",
+          },
+          "& .MuiTypography-root": { color: "inherit" },
+        },
+        outlined: {
+          color: "#2A3547",
+          borderColor: "#5A6A85",
+          backgroundColor: "#ffffff",
+          "&:hover": {
+            backgroundColor: "#F2F6FA",
+            borderColor: "#2A3547",
+          },
+          "& .MuiTypography-root": { color: "inherit" },
+        },
+        text: {
+          color: "#2A3547",
+          "& .MuiTypography-root": { color: "inherit" },
         },
       },
     },

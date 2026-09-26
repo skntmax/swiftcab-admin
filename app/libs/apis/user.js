@@ -41,7 +41,31 @@ const usersApi = createApi({
         }),
         providesTags:['login-user']
       },  
-    )   
+    ),
+
+    verifyOtp: builder.mutation({
+      query: (body) => ({
+        url: 'v1/auth/verify-otp',
+        method: 'post',
+        body,
+      }),
+    }),
+
+    resendVerification: builder.mutation({
+      query: (body) => ({
+        url: 'v1/auth/resend-verification',
+        method: 'post',
+        body,
+      }),
+    }),
+
+    exchangeSession: builder.mutation({
+      query: (body) => ({
+        url: 'v1/auth/exchange-session',
+        method: 'post',
+        body,
+      }),
+    }), 
 
   }),
 
@@ -54,7 +78,8 @@ const usersApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
-  useGetUserQuery, useSignupUserMutation , useLoginUserMutation
+  useGetUserQuery, useSignupUserMutation , useLoginUserMutation,
+  useVerifyOtpMutation, useResendVerificationMutation, useExchangeSessionMutation
 } = usersApi;
 
 

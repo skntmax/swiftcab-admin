@@ -56,8 +56,16 @@ const subNavbmenuSchema = yup.object({
 
 const assigningRoleMenuSchema = yup.object({
   role: yup
-    .number()
-    .required("Role is required"),
+    .array()
+    .of(
+      yup.object({
+        id: yup.number().required(),
+        label: yup.string(),
+        name: yup.string(),
+      }),
+    )
+    .min(1, 'Select at least one role')
+    .required('Role is required'),
 
   nav_menu: yup
     .number()

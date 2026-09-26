@@ -1,22 +1,25 @@
-import { Upgrade } from "./Updrade";
+import { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import { CircularProgress, Box, Drawer, useMediaQuery } from "@mui/material";
 
-// Dynamic import with a loader
 const SidebarItems = dynamic(() => import("./SidebarItems"), {
   loading: () => (
-    <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <CircularProgress size={40} />
+    <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#0b0b0b" }}>
+      <CircularProgress size={32} sx={{ color: "#c4f82a" }} />
     </Box>
   ),
-  ssr: false, // Optional: if you want to avoid SSR issues (recommended for sidebars)
+  ssr: false,
 });
 
-// interface ItemType {
-//   isMobileSidebarOpen: boolean;
-//   onSidebarClose: (event: React.MouseEvent<HTMLElement>) => void;
-//   isSidebarOpen: boolean;
-// }
+const scrollbarStyles = {
+  "&::-webkit-scrollbar": {
+    width: "7px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "rgba(196,248,42,0.28)",
+    borderRadius: "15px",
+  },
+};
 
 const MSidebar = ({
   isMobileSidebarOpen,
@@ -24,31 +27,20 @@ const MSidebar = ({
   isSidebarOpen,
 }) => {
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
-
-  const sidebarWidth = "270px";
-
-  // Custom CSS for short scrollbar
-  const scrollbarStyles = {
-    '&::-webkit-scrollbar': {
-      width: '7px',
-
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#eff2f7',
-      borderRadius: '15px',
-    },
-  };
-
+  const [navWidth, setNavWidth] = useState(270);
+  const handleWidthChange = useCallback((nextWidth) => {
+    setNavWidth(nextWidth);
+  }, []);
 
   if (lgUp) {
     return (
       <Box
         sx={{
-          width: sidebarWidth,
+          width: navWidth,
           flexShrink: 0,
+          transition: "width 0.25s ease",
         }}
       >
-      
         <Drawer
           anchor="left"
           open={isSidebarOpen}
@@ -56,12 +48,19 @@ const MSidebar = ({
           PaperProps={{
             sx: {
               boxSizing: "border-box",
+              width: navWidth,
+              height: "100vh",
+              maxHeight: "100vh",
+              overflow: "hidden",
+              backgroundColor: "#0b0b0b",
+              borderRight: "1px solid rgba(255,255,255,0.08)",
+              transition: "width 0.25s ease",
               ...scrollbarStyles,
             },
           }}
         >
-       <Box sx={{ height: "100%" }}>
-            <SidebarItems />
+          <Box sx={{ height: "100vh", maxHeight: "100vh", overflow: "hidden", display: "flex" }}>
+            <SidebarItems onWidthChange={handleWidthChange} />
           </Box>
         </Drawer>
       </Box>
@@ -69,7 +68,6 @@ const MSidebar = ({
   }
 
   return (
-    
     <Drawer
       anchor="left"
       open={isMobileSidebarOpen}
@@ -77,48 +75,21 @@ const MSidebar = ({
       variant="temporary"
       PaperProps={{
         sx: {
+          width: 280,
+          height: "100vh",
+          maxHeight: "100vh",
+          overflow: "hidden",
+          backgroundColor: "#0b0b0b",
           boxShadow: (theme) => theme.shadows[8],
           ...scrollbarStyles,
         },
       }}
     >
-      {/* ------------------------------------------- */}
-      {/* Sidebar Box */}
-      {/* ------------------------------------------- */}
-      <Box px={2}>
-      <SidebarItems />
-            <Upgrade />
-        {/* <Sidebar
-          width={'270px'}
-          collapsewidth="80px"
-          isCollapse={false}
-          mode="light"
-          direction="ltr"
-          themeColor="#5d87ff"
-          themeSecondaryColor="#49beff"
-          showProfile={false}
-          items={[]}
-        >
-       
-          <Logo img="/images/logos/dark-logo.svg" />
-        
-          <SidebarItems />
-          <Upgrade />
-        </Sidebar>
-
-         */}
+      <Box sx={{ height: "100vh", maxHeight: "100vh", overflow: "hidden", display: "flex" }}>
+        <SidebarItems toggleMobileSidebar={onSidebarClose} onWidthChange={handleWidthChange} />
       </Box>
-      {/* ------------------------------------------- */}
-      {/* Sidebar For Mobile */}
-      {/* ------------------------------------------- */}
-
     </Drawer>
   );
 };
 
 export default MSidebar;
-
-
-
-
-

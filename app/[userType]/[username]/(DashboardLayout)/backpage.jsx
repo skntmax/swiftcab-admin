@@ -27,10 +27,11 @@ const VhicleOccupiedServies = dynamic(() => import('./utilities/owner-cmp/Vhicle
 const VarifyKyc = dynamic(() => import('./utilities/owner-cmp/VarifyKyc'),{  ssr: false, loading: () => <CenteredLoader />,});
 const OccupiedDrivers = dynamic(() => import('./utilities/owner-cmp/OccupiedDrivers'),{  ssr: false, loading: () => <CenteredLoader />,});
 const AssingDrivers = dynamic(() => import('./utilities/owner-cmp/AssingDrivers'),{  ssr: false, loading: () => <CenteredLoader />,});
+const OwnerRides = dynamic(() => import('./utilities/owner-cmp/OwnerRides'),{  ssr: false, loading: () => <CenteredLoader />,});
  
 function UsersDashboard({ userType, userName }) {
   const params = useSearchParams();
-  const tabs = params.get('tabs');
+  const tabs = params.get('tabs')?.trim() || null;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -73,8 +74,8 @@ function UsersDashboard({ userType, userName }) {
       {tabs === 'add-vhicles-services' && <VhicleServices />}
       {tabs === 'vhicles-services' && <VhicleOccupiedServies />}
       {tabs === 'kyc-update' && <VarifyKyc />}
-      {tabs === 'today-rides' && <SamplePage />}
-      {tabs === 'all-rides' && <SamplePage />}
+      {tabs === 'today-rides' && <OwnerRides todayOnly />}
+      {tabs === 'all-rides' && <OwnerRides />}
       {tabs === 'all-vhicles' && <SamplePage />}
       {tabs === 'roles' && <SamplePage />}
       {tabs === 'active-month-settlement' && <SamplePage />}

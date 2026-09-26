@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import Link from "next/link";
 import {
-  Avatar,
   Box,
   Menu,
   Button,
@@ -13,10 +11,9 @@ import {
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
-import { SWC_KEYS } from "@constants";
-import { deleteCookie } from "@node_modules/cookies-next/lib";
-import { usePathname, useRouter } from "next/navigation";
+import { ListChecks, Mail, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { clearAuthSession } from "@utils/authSession";
 import { useAppSelector } from "@app/libs/store";
 
 type userProfile ={ 
@@ -25,7 +22,6 @@ type userProfile ={
 const Profile = ({username}:userProfile) => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const router = useRouter()
-  const pathname = usePathname()
     const  profile: any =  useAppSelector((ele:any)=> ele.profile)
   
   const handleClick2 = (event: any) => {
@@ -35,9 +31,10 @@ const Profile = ({username}:userProfile) => {
     setAnchorEl2(null);
   };
 
-  const handleLogout = () => {
-    deleteCookie(SWC_KEYS.SWC_USER);
-    deleteCookie(SWC_KEYS.SWC_TOKEN);
+  const handleLogout = async () => {
+    handleClose2();
+    await clearAuthSession();
+    window.location.href = "/";
   };
 
   const  switchToMyProfile=()=>{
@@ -57,8 +54,9 @@ const Profile = ({username}:userProfile) => {
         aria-controls="msgs-menu"
         aria-haspopup="true"
         sx={{
-          ...(typeof anchorEl2 === "object" && {
-            color: "primary.main",
+          color: "inherit",
+          ...(Boolean(anchorEl2) && {
+            color: "#c4f82a",
           }),
         }}
         onClick={handleClick2}
@@ -90,28 +88,26 @@ const Profile = ({username}:userProfile) => {
       >
         <MenuItem>
           <ListItemIcon>
-            <IconUser width={20} />
+            <User size={20} />
           </ListItemIcon>
           <ListItemText   onClick={()=>switchToMyProfile()}>My Profile</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
-            <IconMail width={20} />
+            <Mail size={20} />
           </ListItemIcon>
           <ListItemText onClick={()=> switchToMyAccound() } >My Account</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
-            <IconListCheck width={20} />
+            <ListChecks size={20} />
           </ListItemIcon>
           <ListItemText>My Tasks</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
-            href="/authentication/login"
             variant="outlined"
             color="primary"
-            component={Link}
             fullWidth
             onClick={handleLogout}
           >

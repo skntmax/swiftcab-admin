@@ -1,227 +1,323 @@
-import React, { useContext, useEffect, useState } from 'react';
+'use client'
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Box, Grid, Paper, Typography } from '@mui/material';
-import { FormInput } from '@components/FormController';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import {
+  Button,
+  Chip,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { yupResolver } from "@hookform/resolvers/yup";
-import {driverAssignmentSchema} from "@components/FormSchema/AssingDriverSchema/driverAssign"
-import { DevTool } from "@hookform/devtools";
-import driversApi, { useGetBankBranchMutation, useGetBanksMutation, useGetDriverListMutation } from '@app/libs/apis/driver';
-import { useAppDispatch } from '@app/libs/store';
-import { useAssignDriverToVhicleMutation, useGetActiveOwnerVehiclesTypeListMutation } from '@app/libs/apis/owner';
+import { FormInput } from '@components/FormController';
+import { driverAssignmentSchema } from "@components/FormSchema/AssingDriverSchema/driverAssign"
+import { useGetDriverListMutation } from '@app/libs/apis/driver';
+import {
+  useAssignDriverToVhicleMutation,
+  useGetActiveOwnerVehiclesTypeListMutation,
+  useOwnerAllVhiclesMutation,
+  useOwnerDriverAssignmentsMutation,
+  useUnassignDriverFromVhicleMutation,
+} from '@app/libs/apis/owner';
 import { contextProvider } from '@components/AppProvider';
 import { getUserInfo } from '@utils';
+
+const vehicleLabel = (vehicle) => {
+  const plate = vehicle?.license_plate ? ` · ${vehicle.license_plate}` : '';
+  const type = vehicle?.name ? ` (${vehicle.name})` : '';
+  return `${vehicle?.vhicle_username || vehicle?.id}${type}${plate}`;
+};
+
 const AssingDrivers = () => {
+  const users = getUserInfo();
+  const ownerUsername = users?.username || '';
+
   const {
     control,
     handleSubmit,
-    register,
     watch,
     setValue,
     reset,
-    formState: { errors,  },
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      self : true,
-      owner: null,
-      driver: null,
-      vhicle: null
+      self: false,
+      owner: ownerUsername,
+      driver: '',
+      vhicle: null,
     },
     resolver: yupResolver(driverAssignmentSchema),
   });
 
- const dispatch  = useAppDispatch()
- let users = getUserInfo()
-  const [loader ,setLoader] = useState(false)
-  const [userOptions ,setUserOptions] = useState([])
-   // root states
-      const { successMessage, errorMessage } = useContext(contextProvider);
+  const { successMessage, errorMessage } = useContext(contextProvider);
+  const assignSelf = watch('self');
+  const [vehicleOptions, setVehicleOptions] = useState([]);
 
-      
+  const [getDriverList, { data: getDriverListData }] = useGetDriverListMutation();
+  const [getAvailableVehicles, { data: vehiclesData }] = useGetActiveOwnerVehiclesTypeListMutation();
+  const [getAllVehicles, { data: allVehiclesData, isLoading: allVehiclesLoading }] = useOwnerAllVhiclesMutation();
+  const [assignDriverToVhicle, { data: assignData, isLoading: assignLoading }] = useAssignDriverToVhicleMutation();
+  const [getAssignments, { data: assignmentsData }] = useOwnerDriverAssignmentsMutation();
+  const [unassignDriver, { data: unassignData, isLoading: unassignLoading }] = useUnassignDriverFromVhicleMutation();
 
-  // api calling 
+  const ownerOptions = useMemo(
+    () => (ownerUsername ? [{ username: ownerUsername }] : []),
+    [ownerUsername]
+  );
 
-  const [ getBanks , {data:getBankData , isLoading:getBankDataLoading}] = useGetBanksMutation()
-  const [ getDriverList , {data:getDriverListData , isLoading:getDriverListLoading}] = useGetDriverListMutation()
-  const [activeOwnerVhicle , {data:activeOwnerVhicleData , isLoading:activeOwnerVhicleLoading } ] = useGetActiveOwnerVehiclesTypeListMutation()
-  const [assingDriverToVhicle ,{data:assingDriverToVhicleData , isLoading:assingDriverToVhicleLoading }] = useAssignDriverToVhicleMutation()
-  
+  const driverOptions = useMemo(() => {
+    const payload = getDriverListData?.data;
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.items)) return payload.items;
+    return [];
+  }, [getDriverListData]);
 
-  const onSubmit= async  (data)=>{
-        let payload = {
-          "owner":data?.owner,
-          "driver":data?.self==true?data?.owner:Number(data?.driver) ,
-          "vhicle_assigned":data?.vhicle,
-           self: data?.self
-        }
-        assingDriverToVhicle(payload)
-  }
+  const refreshLists = () => {
+    getAvailableVehicles();
+    getAllVehicles();
+    getAssignments();
+    getDriverList({ page: 1, limit: 50 });
+  };
 
+  const onSubmit = (data) => {
+    assignDriverToVhicle({
+      owner: ownerUsername,
+      driver: data.self === true ? undefined : Number(data.driver),
+      vhicle_assigned: Number(data.vhicle),
+      self: Boolean(data.self),
+    });
+  };
 
+  useEffect(() => {
+    setValue('owner', ownerUsername, { shouldDirty: false, shouldTouch: false });
+    refreshLists();
+  }, [ownerUsername]);
 
-  const setUser = ()=>{
-    setUserOptions([{name:users.username, value:users.username}])
-  }
-  
-
-  
-  useEffect(()=>{
-    if(watch("self")==true) {
-        // Reset this specific endpoint's mutation state
-        setValue("owner",users?.username,{shouldDirty:true, shouldTouch:true})
-
-        setValue("driver",users?.username,{shouldDirty:true, shouldTouch:true})
-    }else{
-         setValue("owner","",{shouldDirty:false, shouldTouch:false})
-
-        setValue("driver","",{shouldDirty:false, shouldTouch:false})
+  useEffect(() => {
+    if (assignSelf) {
+      setValue('driver', '', { shouldDirty: false });
     }
-    
-  }, [watch("self")])
+  }, [assignSelf, setValue]);
 
+  useEffect(() => {
+    if (vehiclesData?.status === 200 && Array.isArray(vehiclesData?.data)) {
+      setVehicleOptions(vehiclesData.data.map((vehicle) => ({
+        ...vehicle,
+        label: vehicleLabel(vehicle),
+      })));
+    }
+  }, [vehiclesData]);
 
-  useEffect(()=>{
-        setValue("owner",users?.username,{shouldDirty:true, shouldTouch:true})
-        setValue("driver",users?.username,{shouldDirty:true, shouldTouch:true})
-  }, [])
+  useEffect(() => {
+    if (assignData?.status === 500 && assignData?.error) return errorMessage(assignData?.message);
+    if (assignData?.status === 200 && !assignData?.error) {
+      successMessage(assignData?.message);
+      reset({ self: false, owner: ownerUsername, driver: '', vhicle: null });
+      refreshLists();
+    }
+  }, [assignData]);
 
+  useEffect(() => {
+    if (unassignData?.status === 500 && unassignData?.error) return errorMessage(unassignData?.message);
+    if (unassignData?.status === 200 && !unassignData?.error) {
+      successMessage(unassignData?.message);
+      refreshLists();
+    }
+  }, [unassignData]);
 
-   // when api is called 
-    useEffect(()=>{
-      if(assingDriverToVhicleData?.status==500 && assingDriverToVhicleData?.error) return errorMessage(assingDriverToVhicleData?.message)
-      if(assingDriverToVhicleData?.status==200 && !assingDriverToVhicleData?.error ) {
-         successMessage(assingDriverToVhicleData?.message) 
-         reset(); // reset all the states 
-        }
-       // 🚀 Reset the fetched vehicle list after successful assignment
-       (async function(){ await activeOwnerVhicle().unwrap()})() 
-      }
-      
-    ,[assingDriverToVhicleData?.data])
+  const assignments = useMemo(() => {
+    const payload = assignmentsData?.data;
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.items)) return payload.items;
+    return [];
+  }, [assignmentsData]);
 
-  
+  const ownerVehicles = useMemo(
+    () => (Array.isArray(allVehiclesData?.data) ? allVehiclesData.data : []),
+    [allVehiclesData]
+  );
+
   return (
     <>
-    <Typography variant="h5" sx={{ mb: 3, 
-    // textAlign: 'center'
-     }}>
-    Assing driver  
-    </Typography>
+      <Typography variant="h5" sx={{ mb: 1 }}>
+        Assign driver to Owner
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+        An owner can have multiple vehicles. A driver can be attached to only one vehicle at a time.
+        You can assign a driver to a free vehicle, or mark this owner as the driver.
+      </Typography>
 
-    <Paper elevation={3} sx={{ p: 4, borderRadius: 3, maxWidth: 1000, 
-    // mx: 'auto'
-     }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={4}>
-
-        {/* Profile Preview */}
-        {watch("profile_pic")?.[0] && (
-            <Box
-            component="img"
-            src={URL.createObjectURL(watch("profile_pic")[0])}
-            alt="Profile Preview"
-            sx={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", border: "2px solid #ccc" }}
-            />
-        )}
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3, maxWidth: 1100, width: '100%' }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <FormInput
+                name="self"
+                type="checkbox"
+                control={control}
+                rest={{ label: "Assign this owner as the driver", fullWidth: true }}
+                errors={errors}
+              />
+            </Grid>
 
             <Grid item xs={12}>
-              <Grid item xs={12} >
-              <FormInput 
-               name="self"
-               type="checkbox" 
-               control={control}
-               rest={{ label: "Assing self as driver",fullWidth: true }} 
-               errors={errors}
-               />
-              </Grid>
-          </Grid>
+              <FormInput
+                name="owner"
+                type="on_demand_dropdown"
+                control={control}
+                rest={{ label: "Select Owner", fullWidth: true, disabled: true }}
+                onCustomFuntionCaller={() => {}}
+                customOptionKeys={{ labelKey: "username", labelValue: "username" }}
+                customOptions={ownerOptions}
+                errors={errors}
+              />
+            </Grid>
 
+            <Grid item xs={12}>
+              <FormInput
+                name="driver"
+                type="on_demand_dropdown"
+                control={control}
+                rest={{ label: "Select Driver", fullWidth: true, disabled: Boolean(assignSelf) }}
+                onCustomFuntionCaller={() => getDriverList({ page: 1, limit: 50 })}
+                customOptionKeys={{ labelKey: "driver_username", labelValue: "driver_id" }}
+                customOptions={driverOptions}
+                errors={errors}
+              />
+            </Grid>
 
+            <Grid item xs={12}>
+              <FormInput
+                name="vhicle"
+                type="on_demand_dropdown"
+                control={control}
+                rest={{ label: "Select a free vehicle of this owner", fullWidth: true }}
+                onCustomFuntionCaller={getAvailableVehicles}
+                customOptionKeys={{ labelKey: "label", labelValue: "id" }}
+                customOptions={vehicleOptions}
+                errors={errors}
+              />
+            </Grid>
 
-           <Grid item xs={12}>
-              <Grid item xs={12} >
-              <FormInput 
-               name="owner"
-               type="on_demand_dropdown" 
-               control={control}
-               rest={{ label: "Select Owner",fullWidth: true ,disabled:watch("self")?true:false }} 
-               onCustomFuntionCaller={setUser}
-               customOptionKeys={{labelKey:"name", labelValue:"value"}}
-               customOptions={userOptions}
-               errors={errors}
-               />
-              </Grid>
-          </Grid>
-
-
-         <Grid item xs={12}>
-              <Grid item xs={12}>
-              <FormInput 
-               name="driver"
-               type="on_demand_dropdown" 
-               control={control}
-               rest={{ label: "Select Driver",fullWidth: true , disabled:watch("self")?true:false }} 
-               onCustomFuntionCaller={getDriverList}
-               customOptionKeys={{labelKey:"driver_username", labelValue:"driver_id"}}
-               customOptions={getDriverListData?.data}
-               errors={errors}
-               />
+            <Grid item xs={12}>
+              <FormInput
+                name="submit"
+                type="submit"
+                control={control}
+                rest={{ fullWidth: true, disabled: assignLoading }}
+              >
+                Assign driver
+              </FormInput>
             </Grid>
           </Grid>
+        </form>
+      </Paper>
 
-             <Grid item xs={12}>
-              <Grid item xs={12}>
-              <FormInput 
-               name="vhicle"
-               type="on_demand_dropdown" 
-               control={control}
-               rest={{ label: "Select Any One vhicle",fullWidth: true }} 
-               onCustomFuntionCaller={activeOwnerVhicle}
-               customOptionKeys={{labelKey:"vhicle_username", labelValue:"id"}}
-               customOptions={activeOwnerVhicleData?.data}
-               errors={errors}
-               />
-            </Grid>
-          </Grid>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 3, maxWidth: 1100, width: '100%', mt: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Vehicles attached to {ownerUsername || 'owner'}
+        </Typography>
+        {allVehiclesLoading ? (
+          <Typography>Loading vehicles…</Typography>
+        ) : ownerVehicles.length === 0 ? (
+          <Typography>No vehicles attached to this owner.</Typography>
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Vehicle</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Plate</TableCell>
+                <TableCell>Model</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>KYC</TableCell>
+                <TableCell>Assigned driver</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {ownerVehicles.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.vhicle_username || row.id}</TableCell>
+                  <TableCell>{row.vhicle_type || '—'}</TableCell>
+                  <TableCell>{row.license_plate || '—'}</TableCell>
+                  <TableCell>{row.model || '—'}</TableCell>
+                  <TableCell>
+                    <Chip
+                      size="small"
+                      label={row.is_active ? 'Active' : 'Inactive'}
+                      color={row.is_active ? 'success' : 'default'}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      size="small"
+                      label={row.is_kyc ? 'Verified' : (row.kyc_varification || 'Pending')}
+                      color={row.is_kyc ? 'success' : 'warning'}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {row.driver_username
+                      ? `${row.driver_username}${row.assignment_self ? ' (self)' : ''}`
+                      : '—'}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </Paper>
 
-
-
-          {/* Bank Details */}
-          <Grid item xs={12}>
-            <Grid container >
-              <Grid item xs={12} sm={12}>
-              {/* <FormInput 
-               name="bank_account_branch"
-               isLoading={getBankBranchDataLoading}
-               type="on_demand_dropdown" 
-               control={control}
-               rest={{ label: "Bank Account Branch",fullWidth: true }} 
-               onCustomFuntionCaller={()=>getBankBranch(`bankId=${watch("bank_account")}`)}
-               customOptionKeys={{labelKey:"branch_name", labelValue:"id"}}
-               customOptions={getBankBranchData?.data}
-               errors={errors}
-               /> */}
-              </Grid>
-            </Grid>
-          </Grid>
-
-          {/* Submit Button */}
-          <Grid item xs={12}>
-            <FormInput
-              name="submit"
-              type="submit"
-              control={control}
-              rest={{ fullWidth: true,disabled:assingDriverToVhicleLoading  }}
-            >
-              Assing driver 
-            </FormInput>
-          </Grid>
-        </Grid>
-      </form>
-    </Paper>
-      <DevTool control={control} />
-</>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 3, maxWidth: 1100, width: '100%', mt: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Current assignments {ownerUsername ? `for ${ownerUsername}` : ''}
+        </Typography>
+        {assignments.length === 0 ? (
+          <Typography>No active driver-to-vehicle assignments.</Typography>
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Owner</TableCell>
+                <TableCell>Driver</TableCell>
+                <TableCell>Vehicle</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Self</TableCell>
+                <TableCell align="right">Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {assignments.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.owner_username || ownerUsername}</TableCell>
+                  <TableCell>{row.driver_username}</TableCell>
+                  <TableCell>
+                    {row.vhicle_username || '—'}
+                    {row.license_plate ? ` (${row.license_plate})` : ''}
+                  </TableCell>
+                  <TableCell>{row.vhicle_type || row.model || '—'}</TableCell>
+                  <TableCell>{row.self ? 'Yes' : 'No'}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      color="warning"
+                      disabled={unassignLoading}
+                      onClick={() => unassignDriver({ assignmentId: row.id })}
+                    >
+                      Unassign
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </Paper>
+    </>
   );
 };
 

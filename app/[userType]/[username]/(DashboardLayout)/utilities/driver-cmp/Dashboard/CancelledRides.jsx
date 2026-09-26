@@ -1,9 +1,8 @@
-import React from 'react'
+'use client'
+import DriverRides from './DriverRides'
 
 function CancelledRides() {
-  return (
-    <div>CancelledRides</div>
-  )
+  return <DriverRides scope="cancelled" />
 }
 
 export default CancelledRides

@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {
+  Autocomplete,
   Box,
   Checkbox,
   CircularProgress,
@@ -18,9 +19,9 @@ import {
   styled,
   Typography,
 } from "@mui/material";
-import * as all_icons from "@tabler/icons-react";
 import ApiLoader from "@components/ApiLoader";
-import Image from "@node_modules/next/image";
+import AppIcon from "@components/AppIcon";
+import DocumentPreview, { isHttpUrl } from "@components/DocumentPreview";
 
 let defaultOption = [
   { value: "chocolate", label: "Chocolate" },
@@ -60,6 +61,12 @@ function FormInput({
   customOptions = [],
   customOptionKeys = { label: "label", value: "value" },
   onCustomFuntionCaller,
+  onSearch,
+  onLoadMore,
+  hasMore = false,
+  getOptionDisabled,
+  renderOption,
+  filterLocal = false,
 
   // for file uploads only
   errors,
@@ -67,6 +74,18 @@ function FormInput({
   const [files, setFiles] = useState();
   const [previewUrls, setPreviewUrls] = useState([]);
   const [open, setOpen] = useState(false);
+  const [pickedOption, setPickedOption] = useState(null);
+  const loadMoreLockRef = useRef(false);
+  const { label: restLabel, fullWidth, sx: restSx, ...buttonRest } = rest || {};
+
+  const uploadButtonSx = {
+    bgcolor: "#0F172A",
+    color: "#FFFFFF",
+    "&:hover": { bgcolor: "#1E293B" },
+    "&.Mui-disabled": { color: "#64748B", bgcolor: "#E2E8F0" },
+    "& .MuiButton-startIcon, & .MuiTypography-root": { color: "inherit" },
+    ...(restSx || {}),
+  };
 
   useEffect(() => {
     // Generate preview URLs
@@ -98,7 +117,15 @@ function FormInput({
         name={name}
         control={control}
         render={({ field }) => (
-          <Button variant="contained" type="button" {...rest} {...field}>
+          <Button
+            type="button"
+            fullWidth={fullWidth}
+            {...buttonRest}
+            {...field}
+            variant="contained"
+            color="primary"
+            sx={uploadButtonSx}
+          >
             {children}
           </Button>
         )}
@@ -106,15 +133,16 @@ function FormInput({
     );
 
   if (type === "submit") {
-    // in case of loading an api
-    if (isLoading)
-      <Button {...rest} disabled={isLoading}>
-        {" "}
-        <ApiLoader />{" "}
-      </Button>;
-
     return (
-      <Button type="submit" variant="contained" disabled={isLoading} {...rest}>
+      <Button
+        type="submit"
+        disabled={isLoading}
+        fullWidth={fullWidth}
+        {...buttonRest}
+        variant="contained"
+        color="primary"
+        sx={uploadButtonSx}
+      >
         {isLoading ? <ApiLoader /> : children}
       </Button>
     );
@@ -127,95 +155,120 @@ function FormInput({
           <Controller
             name={name}
             control={control}
-            render={({ field }) => (
+            render={({ field }) => {
+              const storedUrl = isHttpUrl(field.value) ? field.value : null;
+              return (
               <>
                 <Button
                   component="label"
                   role={undefined}
-                  variant="contained"
                   tabIndex={-1}
-                  {...rest}
+                  fullWidth={fullWidth}
                   startIcon={startIcon}
+                  {...buttonRest}
+                  variant="contained"
+                  color="primary"
+                  sx={uploadButtonSx}
                 >
                   {children}
-                  {rest.label && (
-                    <Typography variant="body2">{rest.label}</Typography>
+                  {restLabel && (
+                    <Typography variant="body2" sx={{ color: "inherit", ml: children ? 0.5 : 0 }}>
+                      {restLabel}
+                    </Typography>
                   )}
                   <VisuallyHiddenInput
                     type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
                     onChange={(event) => {
                       setFiles(event.target.files);
-                      field.onChange(event.target.files); // Update RHF state
-                      // setValue(name, event.target.files);
+                      field.onChange(event.target.files);
                     }}
                     multiple={multiple}
                   />
                 </Button>
 
-                {/* Validation Error */}
                 {errors?.[name] && (
                   <Typography variant="caption" color="error">
                     {errors?.[name]?.message}
                   </Typography>
                 )}
+
+                {storedUrl && (
+                  <Box mt={1} width="100%">
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                      Stored file
+                    </Typography>
+                    {preview !== false && <DocumentPreview url={storedUrl} alt={restLabel || name} />}
+                  </Box>
+                )}
+
+                {!storedUrl && (
+                  <Box mt={1}>
+                    {files &&
+                      Array.from(files).map((file, index) => (
+                        <Box
+                          key={index}
+                          display="flex"
+                          alignItems="center"
+                          gap={1}
+                          mb={0.5}
+                        >
+                          {isLoading && <CircularProgress size={15} />}
+                          {!isLoading && file.name && (
+                            <Typography variant="body2">{file.name}</Typography>
+                          )}
+                        </Box>
+                      ))}
+                  </Box>
+                )}
+
+                {preview && !storedUrl && previewUrls.length > 0 && (
+                  <Box mt={2} display="flex" gap={2} flexWrap="wrap">
+                    {previewUrls.map(
+                      (url, index) =>
+                        url && (
+                          <Box
+                            key={index}
+                            component="img"
+                            src={url}
+                            alt={`preview-${index}`}
+                            sx={{
+                              width: 220,
+                              height: 120,
+                              objectFit: "cover",
+                              borderRadius: 1.5,
+                              border: "1px solid",
+                              borderColor: "divider",
+                            }}
+                          />
+                        )
+                    )}
+                  </Box>
+                )}
               </>
-            )}
+              );
+            }}
           />
-
-          {/* File Name List */}
-          <Box mt={1}>
-            {files &&
-              Array.from(files).map((file, index) => (
-                <Box
-                  key={index}
-                  display="flex"
-                  alignItems="center"
-                  gap={1} // spacing between spinner and text
-                  mb={0.5} // optional spacing between each row
-                >
-                  {isLoading && <CircularProgress size={15} />}
-                  {!isLoading && file.name && (
-                    <Typography variant="body2">{file.name}</Typography>
-                  )}
-                </Box>
-              ))}
-          </Box>
-
-          {/* Image Preview */}
-          {preview && (
-            <Box mt={2} display="flex" gap={2} flexWrap="wrap">
-              {previewUrls.map(
-                (url, index) =>
-                  url && (
-                    <Image
-                      key={index}
-                      src={url}
-                      width={400}
-                      height={100}
-                      alt={`preview-${index}`}
-                    />
-                  )
-              )}
-            </Box>
-          )}
         </Box>
       </>
     );
 
   if (type === "checkbox") {
+    const { label, fullWidth, ...checkboxRest } = rest || {};
     return (
       <Controller
         name={name}
         control={control}
         render={({ field }) => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", width: fullWidth ? "100%" : "auto" }}>
             <Checkbox
               {...field}
-              checked={!!field.value} // Convert to boolean to prevent React warnings
-              {...rest}
+              checked={!!field.value}
+              sx={{ pl: 0 }}
+              {...checkboxRest}
             />
-            {rest.label && (
-              <Typography variant="body2">{rest.label}</Typography>
+            {label && (
+              <Typography variant="body2">{label}</Typography>
             )}
           </Box>
         )}
@@ -231,12 +284,11 @@ function FormInput({
         render={({ field }) => (
           <TextField {...field} select fullWidth {...rest}>
             {options.map((option) => {
-              const IconComponent = all_icons[option.icon] ?? null;
               return (
                 <MenuItem key={option.value} value={option.value}>
-                  {IconComponent && (
+                  {option.icon && options.length <= 40 && (
                     <ListItemIcon>
-                      <IconComponent stroke={1.5} size="1.3rem" />
+                      <AppIcon name={option.icon} stroke={1.5} size="1.3rem" />
                     </ListItemIcon>
                   )}
                   {option.label}
@@ -245,6 +297,87 @@ function FormInput({
             })}
           </TextField>
         )}
+      />
+    );
+  }
+
+  if (type === "searchable_dropdown") {
+    const labelKey = customOptionKeys.labelKey || customOptionKeys.label || "label";
+    const valueKey = customOptionKeys.labelValue || customOptionKeys.value || "value";
+    const mergedOptions = pickedOption && !customOptions.some((opt) => String(opt?.[valueKey]) === String(pickedOption?.[valueKey]))
+      ? [pickedOption, ...customOptions]
+      : customOptions;
+
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => {
+          const selected = mergedOptions.find((opt) => String(opt?.[valueKey]) === String(field.value)) || null;
+          return (
+            <Autocomplete
+              options={mergedOptions}
+              loading={isLoading}
+              disabled={Boolean(rest?.disabled)}
+              value={selected}
+              onChange={(_event, option) => {
+                field.onChange(option ? option[valueKey] : null);
+                setPickedOption(option);
+              }}
+              onOpen={() => {
+                setOpen(true);
+                onCustomFuntionCaller?.();
+              }}
+              onClose={() => setOpen(false)}
+              open={open}
+              filterOptions={filterLocal ? undefined : (opts) => opts}
+              getOptionLabel={(option) => String(option?.[labelKey] ?? "")}
+              isOptionEqualToValue={(a, b) => String(a?.[valueKey]) === String(b?.[valueKey])}
+              getOptionDisabled={getOptionDisabled}
+              onInputChange={(_event, value, reason) => {
+                if (reason === "input") {
+                  onSearch?.(value);
+                }
+              }}
+              ListboxProps={{
+                style: { maxHeight: 320, overflow: "auto" },
+                onScroll: (event) => {
+                  if (!hasMore || isLoading || loadMoreLockRef.current) return;
+                  const list = event.currentTarget;
+                  if (list.scrollTop + list.clientHeight >= list.scrollHeight - 48) {
+                    loadMoreLockRef.current = true;
+                    onLoadMore?.();
+                    window.setTimeout(() => {
+                      loadMoreLockRef.current = false;
+                    }, 400);
+                  }
+                },
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={String(option?.[valueKey])}>
+                  {renderOption ? renderOption(option) : option?.[labelKey]}
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={rest?.label || "Select an option"}
+                  error={Boolean(errors?.[name])}
+                  helperText={errors?.[name]?.message}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {isLoading ? <CircularProgress color="inherit" size={16} /> : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          );
+        }}
       />
     );
   }
@@ -344,15 +477,14 @@ if (type === "multi-select") {
 
               {/* Normal Options */}
               {options.map((option) => {
-                const IconComponent = all_icons[option.icon] ?? null;
                 return (
                   <MenuItem key={option.value} value={option.value}>
                     <Checkbox
                       checked={field.value?.includes(option.value) || false}
                     />
-                    {IconComponent && (
+                    {option.icon && options.length <= 40 && (
                       <ListItemIcon>
-                        <IconComponent stroke={1.5} size="1.3rem" />
+                        <AppIcon name={option.icon} stroke={1.5} size="1.3rem" />
                       </ListItemIcon>
                     )}
                     {option.label}

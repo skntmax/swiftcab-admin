@@ -1,9 +1,8 @@
-import React from 'react'
+'use client'
+import DriverRides from './DriverRides'
 
 function CompletedRides() {
-  return (
-    <div>CompletedRides</div>
-  )
+  return <DriverRides scope="completed" />
 }
 
 export default CompletedRides

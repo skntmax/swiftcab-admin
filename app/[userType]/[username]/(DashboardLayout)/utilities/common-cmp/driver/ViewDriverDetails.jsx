@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import { DirectionsCar, Person } from "@mui/icons-material";
 import { KYC_STATUS } from '@constants';
+import { vehicleTypeImageSrc, vehicleTypeLabel } from '@utils/vehicleTypeIcon';
 
 function ViewDriverDetails({ data, userDetails }) {
 
@@ -133,7 +134,16 @@ function ViewDriverDetails({ data, userDetails }) {
     >
       {/* Header */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-        <DirectionsCar sx={{ mr: 1 }} />
+        {vehicleTypeImageSrc(data?.vhicleDetails) ? (
+          <Box
+            component="img"
+            src={vehicleTypeImageSrc(data?.vhicleDetails)}
+            alt=""
+            sx={{ width: 32, height: 32, objectFit: 'contain', mr: 1 }}
+          />
+        ) : (
+          <DirectionsCar sx={{ mr: 1 }} />
+        )}
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           Vehicle Assigned
         </Typography>
@@ -145,7 +155,7 @@ function ViewDriverDetails({ data, userDetails }) {
               Vehicle:{" "}
               <Typography component="span" sx={{ fontWeight: 400 }}>
                 {data?.vhicleDetails?.vehicle_id || "No Vhicle Assigned"}{" "}
-                - {data?.vhicleDetails?.vhicle_type? String(data?.vhicleDetails?.vhicle_type)?.toUpperCase() :  "N/A"}
+                - {data?.vhicleDetails?.vhicle_type ? vehicleTypeLabel(data?.vhicleDetails?.vhicle_type) :  "N/A"}
               </Typography>
             </Typography>
 

@@ -1,212 +1,152 @@
-"use client";
-import React, { useContext, useState } from "react";
-import { TextField, Select, MenuItem, Button, FormControl, InputLabel, Box, Grid, Typography,Link, CircularProgress } from "@mui/material";
-import { useOwnerKycRequestMutation } from "@app/libs/apis/owner";
-import { KYC_STATUS } from "@constants";
-import { useUpdateKycStatusMutation } from "@app/libs/apis/admin";
-import { contextProvider } from "@components/AppProvider";
+'use client'
 
+import React, { useContext, useEffect, useState } from 'react'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  FormControl,
+  Grid,
+  InputLabel,
+  Link,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Typography,
+} from '@mui/material'
+import { Launch, VerifiedOutlined } from '@mui/icons-material'
+import { useUpdateKycStatusMutation } from '@app/libs/apis/admin'
+import { contextProvider } from '@components/AppProvider'
 
-const statusOptions = ["INITIATED", "PENDING", "VERIFIED", "COMPLETED"];
+const STATUS_OPTIONS = ['INITIATED', 'PENDING', 'VERIFIED', 'COMPLETED']
 
-const colors = {
-  vin: "primary.main",
-  license_plate: "secondary.main",
-  manufacturer: "success.main",
-  model: "warning.main",
-  year: "error.main",
-  color: "info.main",
-  engine_number: "primary.dark",
-  chassis_number: "secondary.dark",
-  fuel_type: "success.dark",
-  transmission: "warning.dark",
-  ss_one: "text.primary",
-  ss_two: "text.primary",
-  rc_doc: "text.primary",
-};
+const DETAIL_FIELDS = [
+  ['license_plate', 'License plate'],
+  ['manufacturer', 'Manufacturer'],
+  ['model', 'Model'],
+  ['year', 'Year'],
+  ['color', 'Colour'],
+  ['engine_number', 'Engine number'],
+  ['chassis_number', 'Chassis number'],
+  ['fuel_type', 'Fuel type'],
+  ['transmission', 'Transmission'],
+]
 
-function KycFormStatus({ fd, formIndex, onRaiseKyc }) {
-
-  const [updateKyc, { isLoading:updateKycLoader, data, error }] = useUpdateKycStatusMutation();
-  const { successMessage , errorMessage ,setCookie  } = useContext(contextProvider)
- 
-  const [formData, setFormData] = useState(
-    fd.map(ele=>(
-      {
-        vin: { name: "vin", value: ele.username, error: false, message: "Email is required" },
-        license_plate: { name: "license_plate", value: ele.license_plate, error: false, message: "License plate is required" },
-        manufacturer: { name: "manufacturer", value: ele.manufacturer, error: false, message: "Manufacturer is required" },
-        model: { name: "model", value: ele.model, error: false, message: "Model is required" },
-        year: { name: "year", value: new Date(ele.year).toDateString(), error: false, message: "Year is required" },
-        color: { name: "color", value: ele.color, error: false, message: "Color is required" },
-        engine_number: { name: "engine_number", value: ele.engine_number, error: false, message: "Engine number is required" },
-        chassis_number: { name: "chassis_number", value: ele.chassis_number, error: false, message: "Chassis number is required" },
-        fuel_type: { name: "fuel_type", value: ele.chassis_number, error: false, message: "Fuel type is required" },
-        transmission: { name: "transmission", value: ele.transmission, error: false, message: "Transmission is required" },
-        ss_one: { name: "ss_one", value: ele.ss_one, error: false, message: "screenshot is required" },
-        ss_two: { name: "ss_two", value: ele.ss_two, error: false, message: "screenshot is required" },
-        rc_doc: { name: "rc_doc", value: ele.rc_doc, error: false, message: "RC doc is required" },
-        kyc_status: { name: "kyc_status", value: ele.kyc_varification, error: false, message: "KYC status is required" },
-      }
-    ))
- );
-
- const handleStatusChange = (e , index)=>{
- const { name , value}  = e.target
-
-setFormData(p=>{
-   return p.map((ele, i)=>{
-    if(i==index) {
-      return {...ele , [name]:{ ...p[index][name] , value:value   } }
-    }
-      return ele 
-     })
-    })
-
- }
-
-
-
-  const submitKycResponse = async (payload ,kycStatus ) => {
- 
-    console.log(payload)
-    const { vhicle_owner_id:ownerId , id:vhicleId }  = payload
-    const  updateKycPaylod = {  vhicleId ,  ownerId , kycStatus }
-
-    
-    if(!vhicleId ||   !ownerId ||  !kycStatus) {
-      errorMessage(`please provide ,${vhicleId} ${ownerId} ${kycStatus} `)
-    }
-    updateKyc(updateKycPaylod)
-
-  };
-
-  return (
-
-    <>
-
- {Array.isArray(formData) && formData.length>0 &&  formData.map((item,index)=>(
-                <Box
-                    sx={{
-                      maxWidth: "100%",
-                      mx: "auto",
-                      p: 3,
-                      backgroundColor: "background.paper",
-                      borderRadius: 2,
-                      boxShadow: 2,
-                    }}
-                  >
-                    <Grid container spacing={2}>
-                      {[
-                        { label: "VIN", name: "vin" },
-                        { label: "License Plate", name: "license_plate" },
-                        { label: "Manufacturer", name: "manufacturer" },
-                        { label: "Model", name: "model" },
-                        { label: "Year", name: "year" },
-                        { label: "Color", name: "color" },
-                        { label: "Engine Number", name: "engine_number" },
-                        { label: "Chassis Number", name: "chassis_number" },
-                        { label: "Fuel Type", name: "fuel_type" },
-                        { label: "Transmission", name: "transmission" },
-                      ].map(({ label, name }) => (
-                        <Grid item xs={12} sm={6} key={name}>
-                          <Typography variant="subtitle2" color="textSecondary">
-                            {label}
-                          </Typography>
-                          <Typography variant="body1" sx={{ fontWeight: "bold", color: colors[name] }}>
-                            {formData[index][name].value || "N/A"}
-                          </Typography>
-                        </Grid>
-                      ))}
-
-                      {/* Screenshot One */}
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Screenshot One
-                        </Typography>
-                        <Box
-                          component="img"
-                          src={formData[index].ss_one.value }
-                          alt="Screenshot One"
-                          sx={{ width: "50%", maxHeight: 200, borderRadius: 1, objectFit: "cover" }}
-                        />
-                      </Grid>
-
-                      {/* Screenshot Two */}
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Screenshot Two
-                        </Typography>
-                        <Box
-                          component="img"
-                          src={formData[index].ss_two.value  }
-                          alt="Screenshot Two"
-                          sx={{ width: "50%", maxHeight: 200, borderRadius: 1, objectFit: "cover" }}
-                        />
-                      </Grid>
-
-                  
-                      {/* RC Document */}
-                      <Grid item xs={12}>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          RC Document
-                        </Typography>
-                        <Link href={formData[index].rc_doc.value || "#"  } target="_blank" rel="noopener" sx={{ fontWeight: "bold" }}>
-                          View / Download RC Document
-                        </Link>
-                      </Grid>
-
-                      {/* Status Dropdown */}
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel>Status</InputLabel>
-                          <Select name={formData[index].kyc_status.name} value={formData[index].kyc_status.value || "N/A"} onChange={(e)=>handleStatusChange(e , index)}>
-                            {Object.keys(KYC_STATUS).map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-
-
-
-                  {updateKycLoader ? (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              paddingTop: "10px",
-                            }}
-                          >
-                            <CircularProgress />
-                          </Box>
-                        ) : (
-                          <Button
-                            onClick={()=> submitKycResponse(fd[index] , formData[index].kyc_status.value )}
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{ mt: 3, mb: 2 }}
-                            className="text-gray-500 hover:text-white"
-                          >
-                            Update 
-                          </Button>
-                        )}
-                                           
-                            
-                      </Grid>
-                    </Grid>
-                  </Box>
-            ))}
-   
-    </>
-  );
+function readableValue(name, value) {
+  if (!value) return 'Not provided'
+  if (name === 'year') {
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? String(value) : String(date.getFullYear())
+  }
+  return String(value)
 }
 
-export default KycFormStatus;
+function DocumentPreview({ label, url, image }) {
+  if (!url) {
+    return <Alert severity="warning" variant="outlined">{label} has not been uploaded.</Alert>
+  }
+  return (
+    <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2.5, height: '100%' }}>
+      <Typography variant="caption" color="text.secondary" fontWeight={700}>{label}</Typography>
+      {image && (
+        <Box
+          component="img"
+          src={url}
+          alt={label}
+          sx={{ mt: 1, width: '100%', height: 180, objectFit: 'cover', borderRadius: 2, bgcolor: '#f8fafc' }}
+        />
+      )}
+      <Link href={url} target="_blank" rel="noopener noreferrer" sx={{ mt: 1, display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+        Open document <Launch fontSize="inherit" />
+      </Link>
+    </Paper>
+  )
+}
 
+function VehicleReview({ vehicle, onUpdated }) {
+  const [status, setStatus] = useState(vehicle.kyc_varification || 'PENDING')
+  const [updateKyc, { isLoading }] = useUpdateKycStatusMutation()
+  const { successMessage, errorMessage } = useContext(contextProvider)
 
+  useEffect(() => setStatus(vehicle.kyc_varification || 'PENDING'), [vehicle.kyc_varification])
 
+  async function saveStatus() {
+    try {
+      const response = await updateKyc({
+        vhicleId: vehicle.id,
+        ownerId: vehicle.vhicle_owner_id,
+        kycStatus: status,
+      }).unwrap()
+      if (response?.error) throw new Error(response.message || 'Unable to update KYC')
+      successMessage('Vehicle KYC status updated')
+      onUpdated?.()
+    } catch (error) {
+      errorMessage(error?.data?.message || error?.message || 'Unable to update KYC')
+    }
+  }
+
+  return (
+    <Stack spacing={2.5}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={1}>
+        <Box>
+          <Typography variant="h6" fontWeight={800}>{vehicle.name || vehicle.username}</Typography>
+          <Typography variant="body2" color="text.secondary">Vehicle ID #{vehicle.id}</Typography>
+        </Box>
+        <Chip label={vehicle.kyc_varification} color={vehicle.is_kyc ? 'success' : 'warning'} />
+      </Stack>
+
+      <Grid container spacing={1.5}>
+        {DETAIL_FIELDS.map(([name, label]) => (
+          <Grid item xs={12} sm={6} md={4} key={name}>
+            <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2.5, height: '100%' }}>
+              <Typography variant="caption" color="text.secondary">{label}</Typography>
+              <Typography fontWeight={700} sx={{ wordBreak: 'break-word' }}>{readableValue(name, vehicle[name])}</Typography>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Grid container spacing={1.5}>
+        <Grid item xs={12} md={4}><DocumentPreview label="Vehicle front" url={vehicle.ss_one} image /></Grid>
+        <Grid item xs={12} md={4}><DocumentPreview label="Vehicle rear" url={vehicle.ss_two} image /></Grid>
+        <Grid item xs={12} md={4}><DocumentPreview label="Registration certificate" url={vehicle.rc_doc} /></Grid>
+      </Grid>
+
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: '#f8fafc' }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems={{ sm: 'center' }}>
+          <FormControl fullWidth size="small">
+            <InputLabel id={`kyc-status-${vehicle.id}`}>Review decision</InputLabel>
+            <Select
+              labelId={`kyc-status-${vehicle.id}`}
+              value={status}
+              label="Review decision"
+              onChange={(event) => setStatus(event.target.value)}
+            >
+              {STATUS_OPTIONS.map((option) => <MenuItem key={option} value={option}>{option.replace('_', ' ')}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={<VerifiedOutlined />}
+            onClick={saveStatus}
+            disabled={isLoading || status === vehicle.kyc_varification}
+            sx={{ minWidth: 180, minHeight: 44 }}
+          >
+            {isLoading ? 'Saving…' : 'Save decision'}
+          </Button>
+        </Stack>
+      </Paper>
+    </Stack>
+  )
+}
+
+export default function KycFormStatus({ fd, onUpdated }) {
+  const vehicles = Array.isArray(fd) ? fd : fd ? [fd] : []
+  return (
+    <Stack spacing={3}>
+      {vehicles.map((vehicle) => <VehicleReview key={vehicle.id} vehicle={vehicle} onUpdated={onUpdated} />)}
+    </Stack>
+  )
+}

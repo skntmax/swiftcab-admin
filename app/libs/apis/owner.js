@@ -17,6 +17,7 @@ const ownerApi = createApi({
     "vhicle_services_list",
     "owner-vhicle-active-services",
     "owner-kyc-request",
+    "owner-rides",
   ],
 
   baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),    
@@ -55,6 +56,17 @@ const ownerApi = createApi({
      getActiveOwnerVehiclesTypeList: builder.mutation({
       query: () => ({
         url: urls.owner_varified_vhicles,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+      }),
+      providesTags: ["owner_active_vhicle_list"],
+    }),
+
+    ownerAllVhicles: builder.mutation({
+      query: () => ({
+        url: urls.owner_all_vhicles,
         method: "GET",
         headers: {
           authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
@@ -146,6 +158,40 @@ const ownerApi = createApi({
       providesTags: ["owner-kyc-request"],
     }),
 
+    ownerDriverAssignments: builder.mutation({
+      query: (body) => ({
+        url: urls.owner_driver_assignments,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+        body: body,
+      }),
+    }),
+
+    unassignDriverFromVhicle: builder.mutation({
+      query: (body) => ({
+        url: urls.unassign_driver_from_vhicle,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+        body: body,
+      }),
+    }),
+
+    ownerRides: builder.mutation({
+      query: (scope) => ({
+        url: urls.owner_rides,
+        method: "GET",
+        params: scope ? { scope } : undefined,
+        headers: {
+          authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+        },
+      }),
+      providesTags: ["owner-rides"],
+    }),
+
 
     transformResponse: (response) => response.data,
     transformErrorResponse: (response) => response.data,
@@ -163,7 +209,11 @@ export const {
   useOwnerVhicleServiceListQuery,
   useOwnerKycRequestMutation,
   useGetActiveOwnerVehiclesTypeListMutation,
-  useAssignDriverToVhicleMutation
+  useOwnerAllVhiclesMutation,
+  useAssignDriverToVhicleMutation,
+  useOwnerDriverAssignmentsMutation,
+  useUnassignDriverFromVhicleMutation,
+  useOwnerRidesMutation
 } = ownerApi;
 
 export default ownerApi;

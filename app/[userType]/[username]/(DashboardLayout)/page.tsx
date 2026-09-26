@@ -1,14 +1,15 @@
 import React from 'react'
-import UsersDashboard from './backpage'
-import AdminBackPage from './AdminBackpage'
-import CustomerBackPage from './CustomerBackpage'
-import  DriverPage from './utilities/driver-cmp/Index'
+import dynamic from 'next/dynamic'
 import { USER_ROLES } from '@constants'
 
+const UsersDashboard = dynamic(() => import('./backpage'))
+const AdminBackPage = dynamic(() => import('./AdminBackpage'))
+const CustomerBackPage = dynamic(() => import('./CustomerBackpage'))
+const DriverPage = dynamic(() => import('./utilities/driver-cmp/Index'))
 
 function page(props:any) {
-  const { params:{ userType  , username }} = props
-  return (
+    const { params:{ userType  , username }} = props
+    return (
      <>
       
        {/* OWNER */}

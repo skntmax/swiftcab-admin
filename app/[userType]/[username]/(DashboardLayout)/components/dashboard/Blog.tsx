@@ -14,7 +14,7 @@ import {
 // import img3 from "public/images/products/s7.jpg";
 // import img4 from "public/images/products/s11.jpg";
 import { Stack } from "@mui/system";
-import { IconBasket } from "@tabler/icons-react";
+import { ShoppingBasket } from "lucide-react";
 import BlankCard from "./../shared/BlankCard";
 import Image from "next/image";
 
@@ -22,7 +22,7 @@ const ecoCard = [
   {
     title: "Boat Headphone",
     subheader: "September 14, 2023",
-    photo: '/images/products/s4.jpg',
+    photo: '/logo.svg',
     salesPrice: 375,
     price: 285,
     rating: 4,
@@ -30,7 +30,7 @@ const ecoCard = [
   {
     title: "MacBook Air Pro",
     subheader: "September 14, 2023",
-    photo: '/images/products/s5.jpg',
+    photo: '/logo.svg',
     salesPrice: 650,
     price: 900,
     rating: 5,
@@ -38,7 +38,7 @@ const ecoCard = [
   {
     title: "Red Valvet Dress",
     subheader: "September 14, 2023",
-    photo: '/images/products/s7.jpg',
+    photo: '/logo.svg',
     salesPrice: 150,
     price: 200,
     rating: 3,
@@ -46,7 +46,7 @@ const ecoCard = [
   {
     title: "Cute Soft Teddybear",
     subheader: "September 14, 2023",
-    photo: '/images/products/s11.jpg',
+    photo: '/logo.svg',
     salesPrice: 285,
     price: 345,
     rating: 2,
@@ -75,7 +75,7 @@ const Blog = () => {
                 color="primary"
                 sx={{ bottom: "75px", right: "15px", position: "absolute" }}
               >
-                <IconBasket size="16" />
+                <ShoppingBasket size={16} />
               </Fab>
             </Tooltip>
             <CardContent sx={{ p: 3, pt: 2 }}>

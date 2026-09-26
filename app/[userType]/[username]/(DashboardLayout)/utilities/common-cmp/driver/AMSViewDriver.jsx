@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { getStatusProps } from '@utils';
 import { useApproveDriverKycMutation } from '@app/libs/apis/admin';
 import { contextProvider } from '@components/AppProvider';
+import { vehicleTypeImageSrc, vehicleTypeLabel } from '@utils/vehicleTypeIcon';
 
 
 
@@ -39,17 +40,19 @@ function AMSViewDriver({ data, formIndex,kycUpdated }) {
   } = useForm({
     defaultValues: {
       approval_status: "",
+      comment: "",
+      reason_code: "",
     },
   });
   
   const onSubmit = (fs) => {
-    // handle submission
-    const { approval_status}  =  fs 
+    const { approval_status, comment, reason_code }  =  fs 
      if(approval_status) {
        getDriverDetails({
          "driverId":data?.driver ,
-         "comment":"sample comment", 
-         "status": approval_status
+         "comment": comment || reason_code || "review update",
+         "status": approval_status,
+         "reasonCode": reason_code
         })
       }
   };
@@ -126,11 +129,19 @@ function AMSViewDriver({ data, formIndex,kycUpdated }) {
 
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body1" sx={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {vehicleTypeImageSrc(data?.vhicleDetails) ? (
+                            <Box
+                              component="img"
+                              src={vehicleTypeImageSrc(data?.vhicleDetails)}
+                              alt=""
+                              sx={{ width: 28, height: 28, objectFit: 'contain' }}
+                            />
+                          ) : null}
                           Vehicle:{" "}
                           <Typography component="span" sx={{ fontWeight: 400 }}>
                             {data?.vhicleDetails?.vehicle_id || "No Vhicle Assigned"}{" "}
-                            - {data?.vhicleDetails?.vhicle_type? String(data?.vhicleDetails?.vhicle_type)?.toUpperCase() :  "N/A"}
+                            - {data?.vhicleDetails?.vhicle_type ? vehicleTypeLabel(data?.vhicleDetails?.vhicle_type) :  "N/A"}
                           </Typography>
                         </Typography>
             
@@ -194,6 +205,34 @@ function AMSViewDriver({ data, formIndex,kycUpdated }) {
                 rest={{ label: "KYC Status", fullWidth: true }}
                 customOptionKeys={{ labelKey: "label", labelValue: "value" }}
                 customOptions={KYC_STATUS_ARRAY}
+                errors={errors}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormInput
+                name="reason_code"
+                type="on_demand_dropdown"
+                control={control}
+                rest={{ label: "Reason code (required on reject)", fullWidth: true }}
+                customOptionKeys={{ labelKey: "label", labelValue: "value" }}
+                customOptions={[
+                  { label: "DOCUMENT_UNCLEAR", value: "DOCUMENT_UNCLEAR" },
+                  { label: "DOCUMENT_EXPIRED", value: "DOCUMENT_EXPIRED" },
+                  { label: "DOCUMENT_MISMATCH", value: "DOCUMENT_MISMATCH" },
+                  { label: "VEHICLE_NOT_ELIGIBLE", value: "VEHICLE_NOT_ELIGIBLE" },
+                  { label: "IDENTITY_REVIEW_REQUIRED", value: "IDENTITY_REVIEW_REQUIRED" },
+                  { label: "TRAINING_INCOMPLETE", value: "TRAINING_INCOMPLETE" },
+                  { label: "DUPLICATE_ACCOUNT", value: "DUPLICATE_ACCOUNT" },
+                ]}
+                errors={errors}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormInput
+                name="comment"
+                type="text"
+                control={control}
+                rest={{ label: "Review comment", fullWidth: true }}
                 errors={errors}
               />
             </Grid>

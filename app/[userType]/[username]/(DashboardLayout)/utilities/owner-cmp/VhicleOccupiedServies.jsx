@@ -1,75 +1,75 @@
 'use client'
-
-import React, { useEffect } from "react";
-import { Box, Typography, Grid, Chip, Paper } from "@mui/material";
-import {  useOwnerVhicleServiceListQuery } from "@app/libs/apis/owner";
-import Alert from '@mui/material/Alert';
-import CheckIcon from '@mui/icons-material/Check';
+import React from 'react';
+import { Alert, Box, Chip, Grid, Paper, Stack, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-const data = [
-  { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Tourist plan" },
-  { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Full Day Book" },
-  { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Commercial" },
-  { vhicle_username: "random20", vhicle_type: "Motorcycle", service_name: "Commercial/cross-site/outer city" },
-  { vhicle_username: "random83", vhicle_type: "Bus", service_name: "Commercial" },
-  { vhicle_username: "random83", vhicle_type: "Bus", service_name: "Full Day Book" },
-  { vhicle_username: "random83", vhicle_type: "Bus", service_name: "Tourist plan" },
-  { vhicle_username: "random83", vhicle_type: "Bus", service_name: "Emergency/Night" },
-  { vhicle_username: "random83", vhicle_type: "Bus", service_name: "Commercial/cross-site/outer city" }
-];
+import { useOwnerVhicleServiceListQuery } from '@app/libs/apis/owner';
 
-const groupedData = data.reduce((acc, item) => {
-  if (!acc[item.vhicle_type]) {
-    acc[item.vhicle_type] = [];
-  }
-  acc[item.vhicle_type].push(item.service_name);
-  return acc;
-}, {});
+function VhicleOccupiedServies({ embedded = false }) {
+  const { data: getVhicleServieListData, isLoading } = useOwnerVhicleServiceListQuery();
+  const rows = Array.isArray(getVhicleServieListData?.data) ? getVhicleServieListData.data : [];
 
+  const grouped = rows.reduce((acc, item) => {
+    const key = item.vhicle_username || item.vhicle_type || 'vehicle';
+    if (!acc[key]) {
+      acc[key] = {
+        vhicle_username: item.vhicle_username,
+        vhicle_type: item.vhicle_type,
+        license_plate: item.license_plate,
+        services: [],
+      };
+    }
+    acc[key].services.push(item.service_name);
+    return acc;
+  }, {});
 
-function VhicleOccupiedServies() {
+  return (
+    <Box sx={{ width: '100%' }}>
+      {!embedded && (
+        <>
+          <Typography variant="h5" sx={{ mb: 1 }}>
+            Vehicle services
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+            Services currently attached to each of your vehicles.
+          </Typography>
+        </>
+      )}
+      {embedded && (
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Current vehicle services
+        </Typography>
+      )}
 
-  const {data:getVhicleServieListData , isLoading: getVhicleServieListLoading }  = useOwnerVhicleServiceListQuery()
- 
- 
-  return (  
-   <>
-    <Box sx={{ p: 3, width: "100%" }}>
-      <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
-        Vehicle Services
-      </Typography>
-       
-         {getVhicleServieListData?.data && getVhicleServieListData?.data.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No any service provided by Any vhicle   </Alert> }
-      <Grid container spacing={3}>
-        {getVhicleServieListData && Array.isArray(getVhicleServieListData?.data) && getVhicleServieListData.data.length>0 &&
-        
-          Object.entries(getVhicleServieListData?.data.reduce((acc, ele )=>{
-                    if (!acc[ele.vhicle_type]) {
-                        acc[ele.vhicle_type] = { service_name: [] };
-                    }
-                    acc[ele.vhicle_type]['service_name'].push(ele.service_name);
-                    return acc;
-               },{})).map(([vhicle_type ,  services]) => (
-          <Grid item xs={12} sm={6} md={4} key={vhicle_type}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, bgcolor: "rgba(255, 255, 255, 0.1)", backdropFilter: "blur(10px)" }}>
-              <Typography variant="h6" fontWeight={600} color="primary.dark">
-                {vhicle_type}
+      {!isLoading && rows.length === 0 && (
+        <Alert icon={<InfoIcon fontSize="inherit" />} severity="info">
+          No services attached to any vehicle yet.
+        </Alert>
+      )}
+
+      <Grid container spacing={2.5}>
+        {Object.entries(grouped).map(([key, vehicle]) => (
+          <Grid item xs={12} sm={6} md={4} key={key}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, height: '100%' }}>
+              <Typography variant="h6">{vehicle.vhicle_type || 'Vehicle'}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                {vehicle.vhicle_username}
               </Typography>
-              <Grid container spacing={1} sx={{ mt: 1 }}>
-                {services.service_name.map((service, index) => (
-                  <Grid item key={index}>
-                    <Chip label={service} />
-                  </Grid>
+              {vehicle.license_plate && (
+                <Typography variant="body2" sx={{ mb: 1.5 }}>
+                  Plate: {vehicle.license_plate}
+                </Typography>
+              )}
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+                {vehicle.services.map((service, index) => (
+                  <Chip key={`${key}-${index}`} label={service} size="small" />
                 ))}
-
-              </Grid>
+              </Stack>
             </Paper>
           </Grid>
         ))}
       </Grid>
     </Box>
-   </>
-  )
+  );
 }
 
-export default VhicleOccupiedServies
+export default VhicleOccupiedServies;

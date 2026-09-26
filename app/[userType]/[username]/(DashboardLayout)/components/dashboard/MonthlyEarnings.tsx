@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { useTheme } from '@mui/material/styles';
 import { Stack, Typography, Avatar, Fab } from '@mui/material';
-import { IconArrowDownRight, IconCurrencyDollar } from '@tabler/icons-react';
+import { ArrowDownRight, DollarSign } from 'lucide-react';
 import DashboardCard from './../../components/shared/DashboardCard';
 
 const MonthlyEarnings = () => {
@@ -57,7 +57,7 @@ const MonthlyEarnings = () => {
       title="Monthly Earnings"
       action={
         <Fab color="secondary" size="medium" sx={{color: '#ffffff'}}>
-          <IconCurrencyDollar width={24} />
+          <DollarSign width={24} />
         </Fab>
       }
       footer={
@@ -70,7 +70,7 @@ const MonthlyEarnings = () => {
         </Typography>
         <Stack direction="row" spacing={1} my={1} alignItems="center">
           <Avatar sx={{ bgcolor: errorlight, width: 27, height: 27 }}>
-            <IconArrowDownRight width={20} color="#FA896B" />
+            <ArrowDownRight width={20} color="#FA896B" />
           </Avatar>
           <Typography variant="subtitle2" fontWeight="600">
             +9%

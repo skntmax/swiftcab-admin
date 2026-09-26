@@ -6,27 +6,20 @@ export const driverAssignmentSchema = yup.object({
   owner: yup
     .string()
     .nullable()
-    .when("self", {
-      is: false,
-      then: (schema) => schema.required("Owner is required when self is false"),
-      otherwise: (schema) => schema.nullable(),
-    }),
+    .required("Owner is required"),
 
   driver: yup
-    .string()
+    .mixed()
     .nullable()
     .when("self", {
       is: false,
-      then: (schema) => schema.required("Driver is required when self is false"),
+      then: (schema) => schema.required("Driver is required when not assigning the owner as driver"),
       otherwise: (schema) => schema.nullable(),
     }),
 
   vhicle: yup
     .number()
+    .transform((value, original) => (original === "" || original == null ? null : Number(original)))
     .nullable()
-    .when("self", {
-      is: true,
-      then: (schema) => schema.required("Vehicle is required when self is false"),
-      otherwise: (schema) => schema.nullable(),
-    }),
+    .required("Vehicle is required"),
 });

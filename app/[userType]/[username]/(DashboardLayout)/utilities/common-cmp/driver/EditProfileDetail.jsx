@@ -1,7 +1,7 @@
 'use client'
 import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Box, Grid, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Grid, Paper, Typography, Alert } from "@mui/material";
 import { FormInput } from "@components/FormController";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -56,16 +56,19 @@ const EditProfileDetail = ({data , userDetails}) => {
   const [  updatDriverDetails, { data: updatDriverDetailsData, isLoading: updatDriverDetailsLoading }, ] = useUpdateDriverDetailsMutation();
 
   const onSubmit =async (data) => {
+    const asUrl = (value) =>
+      typeof value === "string" && /^https?:\/\//i.test(value) ? value : "";
+
     if(data){
       const payload ={
          docs:{
-          dl:data?.DL , 
-          rc:data?.RC , 
-          adhaar_card:data?.adhar_card , 
-          insurance:data?.insurance,  
-          pan_card:data?.pan_card,
-          passbook:data?.passbook,
-          profile_pic:data?.profile_pic
+          dl: asUrl(data?.DL),
+          rc: asUrl(data?.RC),
+          adhaar_card: asUrl(data?.adhar_card),
+          insurance: asUrl(data?.insurance),
+          pan_card: asUrl(data?.pan_card),
+          passbook: asUrl(data?.passbook),
+          profile_pic: asUrl(data?.profile_pic)
           },
         bank_account:data?.bank_account,
         bank_account_branch:data?.bank_account_branch,
@@ -97,18 +100,17 @@ const EditProfileDetail = ({data , userDetails}) => {
 
     if (files && Array.from(files).length) {
       const file = files[0];
-      const ext = file.name.split(".").pop();
-      const fileName = file.name + getUniqueString() + "." + ext;
+      const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+      const fileName = `${fieldName}-${getUniqueString()}.${ext}`;
 
       uploadFile({
         file,
         fileName,
         contentType: file.type,
       }).then((uploadedUrl) => {
-        console.log(`${fieldName} Uploaded URL:`, uploadedUrl);
-        setValue(fieldName ,uploadedUrl,{shouldTouch:true , shouldDirty:true} )
-        // Optionally, update form state with uploadedUrl
-        // setValue(fieldName, uploadedUrl);
+        if (uploadedUrl) {
+          setValue(fieldName, uploadedUrl, { shouldTouch: true, shouldDirty: true });
+        }
       });
     }
   };
@@ -156,8 +158,7 @@ const EditProfileDetail = ({data , userDetails}) => {
       adhar_card: data.adhar_card || "",
       passbook: data.passbook || "",
       bank_account:Number(data.bank_account)  || "",
-      bank_account_no: Number(data.bank_account_no) || "", 
-      profile_pic: data.profile_pic || "",
+      bank_account_no: Number(data.bank_account_no) || "",
       ifsc: data.ifsc || "",
       bank_account_branch: Number(data.bank_account_branch)  || "",
     });
@@ -169,8 +170,7 @@ const EditProfileDetail = ({data , userDetails}) => {
   useEffect(()=>{
     if(updatDriverDetailsData?.status==500 && updatDriverDetailsData?.error) return errorMessage(updatDriverDetailsData?.message)
     if(updatDriverDetailsData?.status==200 && !updatDriverDetailsData?.error ) {
-        successMessage(updatDriverDetailsData?.message) 
-        reset(); // reset all the states 
+        successMessage(updatDriverDetailsData?.message)
       }
     //  setDriverEdit(false); // Reset edit mode after successful update
     }
@@ -185,9 +185,14 @@ const EditProfileDetail = ({data , userDetails}) => {
         sx={{ p: 4, borderRadius: 3, maxWidth: 1000, mx: "auto" }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Grid container spacing={4}>
             {/* Profile Preview */}
-            {watch("profile_pic") && (
+            {typeof watch("profile_pic") === "string" && /^https?:\/\//i.test(watch("profile_pic")) && (
               <Box
                 component="img"
                 src={watch("profile_pic")}
@@ -198,6 +203,8 @@ const EditProfileDetail = ({data , userDetails}) => {
                   borderRadius: "50%",
                   objectFit: "cover",
                   border: "2px solid #ccc",
+                  ml: 2,
+                  mt: 1,
                 }}
               />
             )}
@@ -218,6 +225,7 @@ const EditProfileDetail = ({data , userDetails}) => {
                 type="upload"
                 control={control}
                 startIcon={<AccountCircleIcon />}
+                preview={true}
                 rest={{ label: "Upload Profile Picture" }}
                 errors={errors}
                 isLoading={loading}

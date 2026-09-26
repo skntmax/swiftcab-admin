@@ -33,7 +33,7 @@ const navbarSlice = createSlice({
       })
       .addCase(fetGlobalNavbar.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.navbar = action.payload;
+        state.navbar = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetGlobalNavbar.rejected, (state, action) => {
         state.status = 'failed';

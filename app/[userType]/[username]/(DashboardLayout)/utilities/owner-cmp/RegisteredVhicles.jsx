@@ -1,110 +1,100 @@
-import React, { useEffect, useState } from "react";
-
-import { Card, CardContent, Avatar, Typography, Box } from '@mui/material';
-import { styled } from '@mui/system';
-import { useGetOwnerVhiclesListMutation } from "@app/libs/apis/owner";
-import VhicleOccupiedServies from "./VhicleOccupiedServies";
+'use client'
+import React, { useEffect } from 'react';
+import {
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
+import DirectionsCarFilledOutlinedIcon from '@mui/icons-material/DirectionsCarFilledOutlined';
 import InfoIcon from '@mui/icons-material/Info';
-import Alert from '@mui/material/Alert';
-import { getUserInfo } from "@utils";
+import { useGetOwnerVhiclesListMutation } from '@app/libs/apis/owner';
+import { vehicleTypeImageSrc, vehicleTypeLabel } from '@utils/vehicleTypeIcon';
 
-  const UserProfile = () => {
+const kycColor = (status, isKyc) => {
+  if (isKyc || status === 'VERIFIED' || status === 'COMPLETED') return 'success';
+  if (status === 'INITIATED') return 'info';
+  return 'warning';
+};
 
-     const { firstName , lastName , username}  =getUserInfo()
-    
-    return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        position="absolute"
-        top="50%"
-        left="50%"
-        sx={{ transform: 'translate(-50%, -50%)' }}
-      >
-        <Avatar alt="User Profile" src="/path/to/user/profile/image.jpg" sx={{ width: 80, height: 80 }} />
-        <Typography variant="h5" ml={2}>
-          {username}
-        </Typography>
-      </Box>
-    );
-  };
-  
-  const VehicleCard = ({ vehicle, angle, distance }) => {
-    const angleRad = (angle * Math.PI) / 180;
-    const x = distance * Math.cos(angleRad);
-    const y = distance * Math.sin(angleRad);
-  
-    return (
-      <Box
-        sx={{
-          position: 'absolute',
-          left: `calc(50% + ${x}px)`,
-          top: `calc(50% + ${y}px)`,
-          transform: 'translate(-50%, -50%)',
-        }}
-      >
-        <Card sx={{ width: 200 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              {vehicle.vhicle}  - {vehicle.vhicle_username}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {vehicle.disc}
-            </Typography>
-          </CardContent>
-        </Card>
-        {/* <DottedLine
-          style={{
-            width: `${distance}px`,
-            transform: `rotate(${angle}deg)`,
-          }}
-        /> */}
-      </Box>
-    );
-  };
-function RegisteredVhicles() {
-  
-  const [getVehicles, { data, isLoading, error }] = useGetOwnerVhiclesListMutation(); 
+function RegisteredVhicles({ embedded = false }) {
+  const [getVehicles, { data, isLoading }] = useGetOwnerVhiclesListMutation();
 
   useEffect(() => {
-    getVehicles(); 
-
+    getVehicles();
   }, []);
 
-  const vehicles = data?.data || [];
-  
-  const radius = 300;
-  const angleIncrement = 360 / vehicles.length; 
+  const vehicles = Array.isArray(data?.data) ? data.data : [];
 
-  
-  
   return (
-    <>    
-    {vehicles && vehicles?.length==0  && <Alert icon={<InfoIcon fontSize="inherit"  />} severity="error"> No Registered Vhicle found</Alert> }
-  
-   <Box
-      sx={{
-        position: 'relative',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
-      >
-      {vehicles && vehicles.length>0 &&<UserProfile /> } 
-      { vehicles && Array.isArray(vehicles) && vehicles.length>0 &&   vehicles.map((vehicle, index) => (
-        <VehicleCard
-          key={index}
-          vehicle={vehicle}
-          angle={angleIncrement * index}
-          distance={radius}
-        />
-      ))}
+    <Box sx={{ width: '100%' }}>
+      {!embedded && (
+        <>
+          <Typography variant="h5" sx={{ mb: 1 }}>
+            Registered vehicles
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+            Every active vehicle attached to this owner, with KYC status at a glance.
+          </Typography>
+        </>
+      )}
+
+      {isLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+          <CircularProgress size={28} />
+        </Box>
+      )}
+
+      {!isLoading && vehicles.length === 0 && (
+        <Alert icon={<InfoIcon fontSize="inherit" />} severity="info">
+          No registered vehicles yet. Add a vehicle type to get started.
+        </Alert>
+      )}
+
+      <Grid container spacing={2.5}>
+        {vehicles.map((vehicle) => (
+          <Grid item xs={12} sm={6} md={4} key={vehicle.vhicle_id || vehicle.vhicle_username}>
+            <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
+              <CardContent>
+                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1.5 }}>
+                  {vehicleTypeImageSrc(vehicle) ? (
+                    <Box
+                      component="img"
+                      src={vehicleTypeImageSrc(vehicle)}
+                      alt={vehicleTypeLabel(vehicle.vhicle)}
+                      sx={{ width: 40, height: 40, objectFit: 'contain' }}
+                    />
+                  ) : (
+                    <DirectionsCarFilledOutlinedIcon color="primary" />
+                  )}
+                  <Typography variant="h6">{vehicleTypeLabel(vehicle.vhicle) || 'Vehicle'}</Typography>
+                </Stack>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  {vehicle.vhicle_username || vehicle.username}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  Plate: {vehicle.license_plate || '—'}
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  <Chip
+                    size="small"
+                    label={vehicle.is_kyc ? 'KYC verified' : (vehicle.kyc_varification || 'Pending')}
+                    color={kycColor(vehicle.kyc_varification, vehicle.is_kyc)}
+                  />
+                  {vehicle.model && <Chip size="small" label={vehicle.model} variant="outlined" />}
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     </Box>
-    </>
-  )
+  );
 }
 
-export default RegisteredVhicles
+export default RegisteredVhicles;

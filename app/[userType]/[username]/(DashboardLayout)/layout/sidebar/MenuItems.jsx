@@ -1,20 +1,14 @@
 import {
-  IconAperture,
-  IconCopy,
-  IconLayoutDashboard,
-  IconLogin,
-  IconMoodHappy,
-  IconTypography,
-  IconUserPlus,
-  IconCar,
-  IconReservedLine,
-  IconDeviceImacSearch,
-  IconDevicesHeart,
-  IconCaravan,
-  IconRoad,
-  IconBrandStrava,
-  IconHelmet
-} from "@tabler/icons-react";
+  Car,
+  ClipboardList,
+  Gauge,
+  HardHat,
+  Heart,
+  Route,
+  Search,
+  Smile,
+  UserPlus,
+} from "lucide-react";
 
 import { uniqueId } from "lodash";
 
@@ -28,35 +22,35 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Add Vhicles",
-    icon: IconCar,
+    icon: Car,
     href: "/add-vhicles",
   },
 
   {
     id: uniqueId(),
     title: "Registered Vhicles",
-    icon: IconReservedLine,
+    icon: ClipboardList,
     href: "/registered-vhicles",
   },
 
   {
     id: uniqueId(),
     title: "Add vhicle services",
-    icon: IconDeviceImacSearch,
+    icon: Search,
     href: "/add-vhicles-services",
   },
 
   {
     id: uniqueId(),
     title: "Vhicles occupied services",
-    icon: IconDevicesHeart,
+    icon: Heart,
     href: "/vhicles-services",
   },
 
   {
     id: uniqueId(),
     title: "KYC update",
-    icon: IconCaravan,
+    icon: Car,
     href: "/kyc-update",
   },
 
@@ -68,14 +62,14 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Today rides",
-    icon: IconRoad,
+    icon: Route,
     href: "/today-rides",
   },
   
   {
     id: uniqueId(),
     title: "All Rides",
-    icon: IconBrandStrava,
+    icon: Route,
     href: "/all-rides",
   },
 
@@ -86,14 +80,14 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "All Vhicles",
-    icon: IconHelmet,
+    icon: HardHat,
     href: "/all-vhicles",
   },
 
   {
     id: uniqueId(),
     title: "Roles",
-    icon: IconUserPlus,
+    icon: UserPlus,
     href: "/roles",
   },
 
@@ -104,13 +98,13 @@ const Menuitems = [
   {
     id: uniqueId(), 
     title: "Active Month",
-    icon: IconMoodHappy,
+    icon: Smile,
     href: "/active-month-settlement",
   },
   {
     id: uniqueId(),
     title: "Any Month",
-    icon: IconAperture,
+    icon: Gauge,
     href: "/any-month-settlement",
   },
 ];

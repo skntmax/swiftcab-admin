@@ -12,10 +12,82 @@ const adminApi = createApi({
   tagTypes: ['all-users' ,'register-user' , 'vhicle-detail' , 'update-kyc-details' ,
     'remove-user-by-username','updateRoles',"navbar-list","add-subnavbar","add-menu-roles",
     "get-driver-detail-by-userid","ams-drivers","get-menu-permissions" ,"add-capabilities","add-capabilities-have-permissions",
-    "role-has-capabilities","cap-has-permissions","perm-by-cap-id","get-master-navbar-list"
+    "role-has-capabilities","cap-has-permissions","perm-by-cap-id","get-master-navbar-list",
+    "assign-driver-to-owner","owner-driver-assignments","driver-onboarding-queue","vehicle-kyc","vehicle-types","getUserByRoles","userPermissions","userPermissionsMatrix","userPermissionHierarchy","adminDashboard"
   ],
   baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
   endpoints: (builder) => ({ 
+      getDashboardOverview: builder.query({
+        query: ({ fromDate, toDate } = {}) => ({
+          url: urls.admin_dashboard_overview,
+          method: 'GET',
+          params: { fromDate, toDate },
+          headers: {
+            authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+          },
+        }),
+        providesTags: ['adminDashboard'],
+      }),
+
+     listUsers: builder.query({
+       query: ({ q = '', page = 1, limit = 10, roles = [], status = 'all', verification = 'all' } = {}) => ({
+         url: urls.admin_users,
+         method: 'GET',
+         params: {
+           q,
+           page,
+           limit,
+           roles: Array.isArray(roles) ? roles.join(',') : roles,
+           status,
+           verification,
+         },
+         headers: {
+           authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+         },
+       }),
+       providesTags: ['all-users'],
+     }),
+
+     listVehicleKyc: builder.query({
+       query: ({ q = '', page = 1, limit = 10, status = 'all' } = {}) => ({
+         url: urls.admin_vehicle_kyc,
+         method: 'GET',
+         params: { q, page, limit, status },
+         headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+       }),
+       providesTags: ['vehicle-kyc'],
+     }),
+
+     listVehicleTypes: builder.query({
+       query: ({ q = '', page = 1, limit = 12, status = 'all' } = {}) => ({
+         url: urls.admin_vehicle_types,
+         method: 'GET',
+         params: { q, page, limit, status },
+         headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+       }),
+       providesTags: ['vehicle-types'],
+     }),
+
+     createVehicleType: builder.mutation({
+       query: (body) => ({
+         url: urls.admin_vehicle_types,
+         method: 'POST',
+         body,
+         headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+       }),
+       invalidatesTags: ['vehicle-types'],
+     }),
+
+     updateVehicleType: builder.mutation({
+       query: ({ id, ...body }) => ({
+         url: `${urls.admin_vehicle_types}/${id}`,
+         method: 'PATCH',
+         body,
+         headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+       }),
+       invalidatesTags: ['vehicle-types'],
+     }),
+
      getAllUsers: builder.mutation({
             query: (body) => (  {
                url: urls.get_active_users,
@@ -52,7 +124,7 @@ const adminApi = createApi({
           authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
         },
         }),
-        providesTags:['update-kyc-details']
+        invalidatesTags:['update-kyc-details', 'vehicle-kyc']
       },  
       ),
 
@@ -65,7 +137,6 @@ const adminApi = createApi({
             authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
           },
           }),
-          providesTags:['remove-user-by-username'],
           invalidatesTags: ['all-users']
         },  
         ),
@@ -80,7 +151,7 @@ const adminApi = createApi({
               authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
             },
             }),
-            providesTags:['block-unblock-user'],
+            invalidatesTags: ['all-users'],
           },  
           ),
   
@@ -107,9 +178,49 @@ const adminApi = createApi({
               authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
             },
             }),
-            providesTags:['updateRoles'],
+            invalidatesTags: ['getUserByRoles'],
           },  
           ),
+
+        getUserPermissions: builder.mutation({
+          query: (body) => ({
+            url: urls.get_user_permissions,
+            method: 'POST',
+            body,
+            headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+          }),
+          providesTags: ['userPermissions'],
+        }),
+
+        setUserPermissions: builder.mutation({
+          query: (body) => ({
+            url: urls.set_user_permissions,
+            method: 'POST',
+            body,
+            headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+          }),
+          invalidatesTags: ['userPermissions', 'userPermissionsMatrix', 'userPermissionHierarchy', 'getUserByRoles'],
+        }),
+
+        getUserPermissionsMatrix: builder.mutation({
+          query: (body) => ({
+            url: urls.get_user_permissions_matrix,
+            method: 'POST',
+            body,
+            headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+          }),
+          providesTags: ['userPermissionsMatrix'],
+        }),
+
+        getUserPermissionHierarchy: builder.mutation({
+          query: (body) => ({
+            url: urls.get_user_permission_hierarchy,
+            method: 'POST',
+            body,
+            headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+          }),
+          providesTags: ['userPermissionHierarchy'],
+        }),
 
       addNavbar: builder.mutation({
         query: (body) => (  {
@@ -310,6 +421,111 @@ const adminApi = createApi({
                 providesTags:['get-master-navbar-list'],
               }),
 
+              listOwnersForDriverAssign: builder.mutation({
+                query: (body = {}) => ({
+                  url: urls.admin_list_owners_for_driver_assign,
+                  method: 'POST',
+                  body,
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                providesTags:['assign-driver-to-owner'],
+              }),
+
+              ownerAvailableVhicles: builder.mutation({
+                query: (body) => ({
+                  url: urls.admin_owner_available_vhicles,
+                  method: 'POST',
+                  body,
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                providesTags:['assign-driver-to-owner'],
+              }),
+
+              ownerAllVhicles: builder.mutation({
+                query: (body) => ({
+                  url: urls.admin_owner_all_vhicles,
+                  method: 'POST',
+                  body,
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                providesTags:['assign-driver-to-owner'],
+              }),
+
+              assignDriverToOwner: builder.mutation({
+                query: (body) => ({
+                  url: urls.admin_assign_driver_to_owner,
+                  method: 'POST',
+                  body,
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                invalidatesTags:['assign-driver-to-owner','owner-driver-assignments'],
+              }),
+
+              ownerDriverAssignments: builder.mutation({
+                query: (body) => ({
+                  url: urls.admin_owner_driver_assignments,
+                  method: 'POST',
+                  body,
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                providesTags:['owner-driver-assignments'],
+              }),
+
+              unassignDriverFromOwner: builder.mutation({
+                query: (body) => ({
+                  url: urls.admin_unassign_driver_from_owner,
+                  method: 'POST',
+                  body,
+                  headers: {
+                    authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}`,
+                  },
+                }),
+                invalidatesTags:['assign-driver-to-owner','owner-driver-assignments'],
+              }),
+
+          getOnboardingQueue: builder.mutation({
+            query: () => ({
+              url: urls.admin_onboarding_queue,
+              method: 'GET',
+              headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+            }),
+            providesTags:['driver-onboarding-queue'],
+          }),
+          onboardingQueue: builder.query({
+            query: ({ q = '', page = 1, limit = 10, status = 'all' } = {}) => ({
+              url: urls.admin_onboarding_queue,
+              method: 'GET',
+              params: { q, page, limit, status },
+              headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+            }),
+            providesTags:['driver-onboarding-queue'],
+          }),
+          getOnboardingCase: builder.mutation({
+            query: (driverId) => ({
+              url: urls.admin_onboarding_case(driverId),
+              method: 'GET',
+              headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+            }),
+          }),
+          decideOnboardingCase: builder.mutation({
+            query: ({ driverId, ...body }) => ({
+              url: urls.admin_onboarding_decision(driverId),
+              method: 'POST',
+              body,
+              headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
+            }),
+            invalidatesTags:['driver-onboarding-queue','ams-drivers','get-driver-detail-by-userid'],
+          }),
 
 
 
@@ -324,10 +540,12 @@ const adminApi = createApi({
 
 // Export hooks for usage in functional components
 export const {
- useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
- useUpdateRolesMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation ,useGetUserByRolesMutation ,useGetKycDriverDetailsByIdMutation 
+ useGetDashboardOverviewQuery, useListUsersQuery, useListVehicleKycQuery, useListVehicleTypesQuery, useCreateVehicleTypeMutation, useUpdateVehicleTypeMutation, useGetAllUsersMutation , useGetVhicleDetailsMutation , useUpdateKycStatusMutation  , useRemoveUserMutation , useBlockUnblockUserMutation , useGetUserByRoleMutation ,
+ useUpdateRolesMutation, useGetUserPermissionsMutation, useSetUserPermissionsMutation, useGetUserPermissionsMatrixMutation, useGetUserPermissionHierarchyMutation, useAddNavbarMutation , useGetNavbarListMutation , useAddSubnavBarMutation , useAddMenuToRolesMutation ,useGetUserByRolesMutation ,useGetKycDriverDetailsByIdMutation 
  ,useApproveDriverKycMutation , useGetMenuPermissionsMutation ,useAddCapabilityMutation , useAddPermissionsToCapabilityMutation , useRoleHasCapsMutation,
- useCapabilityHasPermissionsMutation ,useRemovePermissionsFromCapabilityMutation, usePermByCapabilityMutation , useGetMasterNavbarListMutation
+ useCapabilityHasPermissionsMutation ,useRemovePermissionsFromCapabilityMutation, usePermByCapabilityMutation , useGetMasterNavbarListMutation,
+ useListOwnersForDriverAssignMutation, useOwnerAvailableVhiclesMutation, useOwnerAllVhiclesMutation, useAssignDriverToOwnerMutation, useOwnerDriverAssignmentsMutation, useUnassignDriverFromOwnerMutation,
+ useGetOnboardingQueueMutation, useOnboardingQueueQuery, useGetOnboardingCaseMutation, useDecideOnboardingCaseMutation
 } = adminApi;
 
 

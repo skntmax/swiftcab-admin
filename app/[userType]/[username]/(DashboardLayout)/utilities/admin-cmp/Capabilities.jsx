@@ -24,6 +24,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ListItemText  from '@mui/material/ListItemText';
 import WarningIcon from '@mui/icons-material/Warning';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import { Puzzle } from 'lucide-react';
+import AdminMatrixShell from './AdminMatrixShell';
 
     function Capabilities() {
     // form setup
@@ -120,6 +122,13 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 
     return <>
+        <AdminMatrixShell
+          icon={Puzzle}
+          title="Capabilities & permissions"
+          subtitle="Gate 2: create a capability for a role, then attach one or more tab permissions. Only permissions in the role’s capabilities can appear in that role’s sidebar."
+          step={4}
+          totalSteps={5}
+        >
             <Box
         component="form"
         sx={{
@@ -127,14 +136,11 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
             flexDirection: "column",
             gap: 2,
             width: "100%",
-            margin: "0 auto",
-            p: 2,
-            boxShadow: 2,
         }}
         onSubmit={handleSubmit(onSubmit)}
         >
-        <Typography variant="h6" mb={2}>
-            Add Capability
+        <Typography variant="subtitle1" fontWeight={700}>
+            Create capability
         </Typography>
 
         {/* Capability Name */}
@@ -188,21 +194,10 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
         </FormInput>
         </Box>
 
-        <Box
-        sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            width: "100%",
-            margin: "0 auto",
-            p: 2,
-            boxShadow: 2,
-        }}
-        >
-
+        <Box sx={{ mt: 4 }}>
         <AssignPermissionsToCapability />
-        
         </Box>
+        </AdminMatrixShell>
         </>
     }
 
@@ -284,13 +279,10 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
             flexDirection: "column",
             gap: 2,
             width: "100%",
-            margin: "0 auto",
-            p: 2,
-            boxShadow: 2,
             }}
         >
-            <Typography variant="h6" mb={2}>
-            Assign Permissions to Capability
+            <Typography variant="subtitle1" fontWeight={700} mb={1}>
+            Assign permissions to capability
             </Typography>
 
             <FormInput

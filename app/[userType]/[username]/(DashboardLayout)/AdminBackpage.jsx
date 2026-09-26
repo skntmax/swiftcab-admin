@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Grid, Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
 import { useAppDispatch } from '@app/libs/store';
 import { setUserInfo } from '@app/libs/slice/usersSlice';
@@ -28,22 +28,7 @@ const PageContainer = dynamic(() => import('./components/container/PageContainer
   loading: () => <CenteredLoader />,
 });
 
-const SalesOverview = dynamic(() => import('./components/dashboard/SalesOverview'), {
-  loading: () => <CenteredLoader />,
-});
-const YearlyBreakup = dynamic(() => import('./components/dashboard/YearlyBreakup'), {
-  loading: () => <CenteredLoader />,
-});
-const RecentTransactions = dynamic(() => import('./components/dashboard/RecentTransactions'), {
-  loading: () => <CenteredLoader />,
-});
-const ProductPerformance = dynamic(() => import('./components/dashboard/ProductPerformance'), {
-  loading: () => <CenteredLoader />,
-});
-const Blog = dynamic(() => import('./components/dashboard/Blog'), {
-  loading: () => <CenteredLoader />,
-});
-const MonthlyEarnings = dynamic(() => import('./components/dashboard/MonthlyEarnings'), {
+const AdminOperationsDashboard = dynamic(() => import('./components/dashboard/AdminOperationsDashboard'), {
   loading: () => <CenteredLoader />,
 });
 
@@ -86,12 +71,20 @@ const DriverOnboardAms = dynamic(() => import('./utilities/admin-cmp/DriverOnboa
 
 const Capabilities = dynamic(() => import('./utilities/admin-cmp/Capabilities'), {
   loading: () => <CenteredLoader />,
+});
+
+const UserPermissionMatrix = dynamic(() => import('./utilities/admin-cmp/UserPermissionMatrix'), {
+  loading: () => <CenteredLoader />,
+});
+
+const AssignDriverToOwner = dynamic(() => import('./utilities/admin-cmp/AssignDriverToOwner'), {
+  loading: () => <CenteredLoader />,
 }); 
 
 
 function AdminBackpage({ userType, userName }) {
   const params = useSearchParams();
-  const tabs = params.get('tabs');
+  const tabs = params.get('tabs')?.trim() || null;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -101,34 +94,7 @@ function AdminBackpage({ userType, userName }) {
   
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
-      {tabs === null ? (
-        <Box>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={8}>
-              <SalesOverview />
-            </Grid>
-            <Grid item xs={12} lg={4}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <YearlyBreakup />
-                </Grid>
-                <Grid item xs={12}>
-                  <MonthlyEarnings />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} lg={4}>
-              <RecentTransactions />
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <ProductPerformance />
-            </Grid>
-            <Grid item xs={12}>
-              <Blog />
-            </Grid>
-          </Grid>
-        </Box>
-      ) : null}
+      {tabs === null ? <AdminOperationsDashboard /> : null}
 
       {tabs === 'user-management' && <UserMgmt />}
       {tabs === 'role-management' && <RoleMgmt />}
@@ -136,11 +102,13 @@ function AdminBackpage({ userType, userName }) {
       {tabs === 'kyc-request-approval' && <KycRequestApproval />}
       {tabs === 'vhicle-types' && <VhicleTypes />}
       {tabs === 'assing-roles' && <AssingRoles />}
+      {tabs === 'user-permission-matrix' && <UserPermissionMatrix />}
       {tabs === 'nav-items' && <NavItems />}
       {tabs === 'sub-nav-items' && <SubNavForm />}
       {tabs === 'menu-assigned-to-roles' && <MenuAssignToRoles />}
       {tabs === 'driver-onboard-ams' && <DriverOnboardAms />}
       {tabs === 'add-capabilites' && <Capabilities />}
+      {tabs === 'assign-driver-to-owner' && <AssignDriverToOwner />}
       
       
     </PageContainer>

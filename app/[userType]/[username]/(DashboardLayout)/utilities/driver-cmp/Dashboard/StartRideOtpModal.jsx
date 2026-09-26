@@ -51,28 +51,20 @@ export default function StartRideOtpModal({
       <Modal
         open={open}
         onClose={onClose}
-        hideBackdrop={minimized}
-        BackdropProps={{ invisible: minimized }}
+        hideBackdrop
       >
         <Box
           sx={{
             position: "fixed",
-
-            // 📱 Mobile = bottom sheet
-            bottom: isMobile ? 0 : "auto",
-            top: isMobile ? "auto" : "50%",
-            left: "50%",
-            transform: isMobile
-              ? "translateX(-50%)"
-              : "translate(-50%, -50%)",
-
-            width: isMobile ? "100%" : 380,
-            maxHeight: isMobile ? "85vh" : "auto",
-
+            bottom: isMobile ? 0 : 24,
+            left: isMobile ? "50%" : 24,
+            transform: isMobile ? "translateX(-50%)" : "none",
+            width: isMobile ? "100%" : 360,
             bgcolor: "background.paper",
             borderRadius: isMobile ? "16px 16px 0 0" : 3,
             boxShadow: 24,
             overflow: "hidden",
+            outline: "none",
           }}
         >
           {/* HEADER */}

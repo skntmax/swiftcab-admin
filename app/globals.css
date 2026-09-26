@@ -510,5 +510,14 @@ form .btn input[type="submit"]{
   z-index: 2;
 }
 
+.sidebarNav {
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.mainwrapper {
+  overflow-x: hidden;
+}
+
 
 

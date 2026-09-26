@@ -1,185 +1,135 @@
-import React, {  useEffect, useState } from "react";
+'use client';
+
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Autocomplete,
-  TextField,
+  Alert,
+  Chip,
+  CircularProgress,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Paper,
-  IconButton,
   TablePagination,
+  TableRow,
+  TextField,
   Typography,
-  Button,
-} from "@mui/material";
-import { Edit, Block, Delete } from "@mui/icons-material";
-import { ReduxProvider } from "@app/libs/slice/useReduxSelector";
-import ExtraComponent from "../common-cmp/ExtraComponent";
-import { extraPathsUrls } from "@constants/urls";
-import { useGetMenuPermissionsMutation } from "@app/libs/apis/admin";
-import CreatePermission from "./ExtraPathComponents/CreatePermission";
-import EditPermissions from "./ExtraPathComponents/EditPermissions";
+} from '@mui/material';
+import { KeyRound } from 'lucide-react';
+import { useGetMenuPermissionsMutation } from '@app/libs/apis/admin';
+import AdminMatrixShell from './AdminMatrixShell';
+
 const PermissionManagement = () => {
-  const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [ permissionsData , setPermissionsData ] = useState([])
-  const [ count , setCount ] = useState()
-  const [ getPermissionList, {data:permissionData ,isLoading:permissionIsLoading} ] = useGetMenuPermissionsMutation()
-  const [ activeExtraPath, setActiveExtraPath ] = useState("")
-  
-  const filteredData =
-    selectedPermissions.length > 0
-      ? permissionsData.filter((permission) => selectedPermissions.includes(permission.permission_name))
-      : permissionsData;
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [permissionsData, setPermissionsData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [getPermissionList, { data: permissionData, isLoading: permissionIsLoading }] = useGetMenuPermissionsMutation();
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  useEffect(()=>{
+  useEffect(() => {
     getPermissionList({
-        page:page+1,
-       rowsPerPage 
-    })
-  },[page, rowsPerPage])
+      page: page + 1,
+      rowsPerPage,
+    });
+  }, [page, rowsPerPage, getPermissionList]);
 
-   useEffect(() => {
-      if (permissionData?.data) {
-        setPermissionsData(permissionData?.data?.permissions);
-        setCount(permissionData?.data?.totalCount || 0);
-
-      }
-    }, [permissionData?.data]);
-  
-
-    // for adding extra paths 
-    const handleBack = ()=> ( setActiveExtraPath("") )
-   switch (activeExtraPath) {
-    case extraPathsUrls.create_permission:
-      return renderWithBackButton(<CreatePermission {...{selectedPermissions ,filteredData}} />, handleBack);
-    case extraPathsUrls.edit_permission:
-      return renderWithBackButton(<EditPermissions {...{selectedPermissions,filteredData}} />,handleBack);
-    default:
-      break;
+  useEffect(() => {
+    if (permissionData?.data) {
+      setPermissionsData(permissionData.data.permissions || []);
+      setCount(Number(permissionData.data.totalCount) || 0);
     }
-    // for adding extra paths
+  }, [permissionData?.data]);
+
+  const filteredData = useMemo(() => {
+    const query = searchText.trim().toLowerCase();
+    if (!query) return permissionsData;
+    return permissionsData.filter(
+      (permission) =>
+        String(permission.permission_name || '').toLowerCase().includes(query) ||
+        String(permission.permission_identifer || '').toLowerCase().includes(query) ||
+        String(permission.id || '').includes(query),
+    );
+  }, [permissionsData, searchText]);
 
   return (
-  <div style={{ padding: 20 }}>
-  {/* Title + Create Button in one row */}
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <Typography
-      variant="h4"
-      gutterBottom
-      style={{ fontWeight: "bold", color: "#3f51b5" }}
+    <AdminMatrixShell
+      icon={KeyRound}
+      title="Permission catalog"
+      subtitle="Permissions are auto-created when you add sub-navigation tabs. Capabilities bundle these permissions; optional user overrides further narrow the sidebar."
+      step={2}
+      totalSteps={5}
     >
-      Permission Management
-    </Typography>
+      <Stack spacing={2}>
+        <Alert severity="info" variant="outlined">
+          You usually do not create permissions manually. They are generated from sub-nav hrefs and then attached to capabilities in the next step.
+        </Alert>
 
-      <Button
-        variant="outlined"
-        color="primary"
-        size="small"
-        onClick={() => setActiveExtraPath(extraPathsUrls.create_permission)}
-        style={{ marginBottom: "10px" }}
-      >
-        Create Permissions
-      </Button>
-  </div>
+        <TextField
+          fullWidth
+          label="Search permissions"
+          placeholder="Name, identifier, or ID"
+          value={searchText}
+          onChange={(event) => setSearchText(event.target.value)}
+        />
 
-  <Typography
-    variant="subtitle1"
-    style={{ marginBottom: 20, color: "#555" }}
-  >
-    Search and manage permissions efficiently.
-  </Typography>
+        {permissionIsLoading ? (
+          <Stack alignItems="center" py={6}>
+            <CircularProgress size={28} />
+          </Stack>
+        ) : (
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow sx={{ bgcolor: 'action.hover' }}>
+                  <TableCell><b>ID</b></TableCell>
+                  <TableCell><b>Permission name</b></TableCell>
+                  <TableCell><b>Identifier</b></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredData.length > 0 ? (
+                  filteredData.map((permission) => (
+                    <TableRow key={permission.id} hover>
+                      <TableCell>{permission.id}</TableCell>
+                      <TableCell>{permission.permission_name}</TableCell>
+                      <TableCell>
+                        <Chip size="small" variant="outlined" label={permission.permission_identifer || '—'} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center" sx={{ py: 5, color: 'text.secondary' }}>
+                      No permissions found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
-  {/* Typeahead Search */}
-  <Autocomplete
-    multiple
-    options={permissionsData.map((p) => p.permission_name)}
-    getOptionLabel={(option) => option}
-    value={selectedPermissions}
-    onChange={(event, newValue) => setSelectedPermissions(newValue)}
-    renderInput={(params) => (
-      <TextField {...params} label="Filter by Permission" variant="outlined" fullWidth />
-    )}
-    style={{ marginBottom: 20 }}
-  />
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={count}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(_event, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
+        />
 
-  {/* Permissions Table */}
-  {filteredData && Array.isArray(filteredData) && filteredData.length>0 && <TableContainer component={Paper}>
-    <Table>
-      <TableHead>
-        <TableRow style={{ backgroundColor: "#f5f5f5" }}>
-          <TableCell><b>ID</b></TableCell>
-          <TableCell><b>Permission</b></TableCell>
-          <TableCell><b>Actions</b></TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        { filteredData.map((permission) => (
-            <TableRow key={permission?.id || 0}>
-              <TableCell>{permission?.id || ""}</TableCell>
-              <TableCell>{permission?.permission_name || ""}</TableCell>
-              <TableCell>
-                <IconButton color="primary" onClick={(e) => {
-                  setSelectedPermissions(permission?.permission_name)
-                  setActiveExtraPath(extraPathsUrls.edit_permission)
-                  }
-                 } ><Edit /></IconButton>
-                <IconButton color="warning"><Block /></IconButton>
-                <IconButton color="error"><Delete /></IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
-  </TableContainer> }
-
-  {/* Pagination */}
-  <TablePagination
-    rowsPerPageOptions={[5, 10, 15]}
-    component="div"
-    count={count}
-    rowsPerPage={rowsPerPage}
-    page={page}
-    onPageChange={handleChangePage}
-    onRowsPerPageChange={handleChangeRowsPerPage}
-  />
-</div>
-
+        <Typography variant="caption" color="text.secondary">
+          Showing {filteredData.length} on this page · {count} total in database
+        </Typography>
+      </Stack>
+    </AdminMatrixShell>
   );
 };
-
- const renderWithBackButton = (child,handleBack) => (
-    <div>
-      <Button 
-        variant="outlined" 
-        color="primary" 
-        size="small" 
-        onClick={handleBack} 
-        style={{ marginBottom: "10px" }}
-      >
-        Back
-      </Button>
-      {child}
-    </div>
-  );
-
-
-
-
-
-
-
 
 export default PermissionManagement;

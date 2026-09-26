@@ -8,7 +8,7 @@ import { encryptedBaseQuery } from './encryptedBaseQuery';
 
 // Define the base API
 const masterApi = createApi({
-  reducerPath: 'adminApi',
+  reducerPath: 'masterApi',
   tagTypes: ['vhicle-types' ,],
   baseQuery:process.env.NEXT_PUBLIC_API_ENCRYPT==="true"?encryptedBaseQuery():fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),  
   endpoints: (builder) => ({ 

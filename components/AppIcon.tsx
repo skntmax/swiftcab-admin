@@ -1,0 +1,315 @@
+'use client'
+
+import type { TablerIconsProps } from '@tabler/icons-react'
+import {
+  IconBell,
+  IconCar,
+  IconCash,
+  IconCircle,
+  IconCircleX,
+  IconClipboard,
+  IconCreditCard,
+  IconDashboard,
+  IconDiscount2,
+  IconFileText,
+  IconHelpCircle,
+  IconHistory,
+  IconId,
+  IconLock,
+  IconLogout,
+  IconMap2,
+  IconMapPin,
+  IconMenu2,
+  IconSettings,
+  IconShieldCheck,
+  IconSteeringWheel,
+  IconUser,
+  IconUserCheck,
+  IconUsers,
+  IconUsersGroup,
+  IconWallet,
+  IconAperture,
+  IconBan,
+  IconBrandStrava,
+  IconCalendarEvent,
+  IconCalendarStats,
+  IconCamper,
+  IconCaravan,
+  IconCarCrash,
+  IconCheck,
+  IconCrown,
+  IconCurrencyDollar,
+  IconDeviceImacSearch,
+  IconDevicesHeart,
+  IconEdit,
+  IconFileSearch,
+  IconFilter,
+  IconHelmet,
+  IconList,
+  IconListTree,
+  IconMoodHappy,
+  IconNotes,
+  IconPhoneCall,
+  IconQuestionMark,
+  IconReservedLine,
+  IconRoad,
+  IconUpload,
+  IconUserPlus,
+  IconHome,
+  IconUsersPlus,
+  IconAdjustments,
+  IconChartBar,
+  IconCircleCheck,
+  IconDatabase,
+  IconFiles,
+  IconKey,
+  IconLicense,
+  IconLocation,
+  IconMail,
+  IconNotification,
+  IconReceipt,
+  IconReportMoney,
+  IconSearch,
+  IconTool,
+  IconTruck,
+  IconBuilding,
+  IconBike,
+  IconBus,
+  IconGauge,
+  IconRoute,
+  IconShield,
+  IconStar,
+  IconUserCircle,
+} from '@tabler/icons-react'
+
+type TablerIconComponent = (props: TablerIconsProps) => JSX.Element
+
+const ICONS = {
+  IconAperture,
+  IconAdjustments,
+  IconBan,
+  IconBell,
+  IconBike,
+  IconBrandStrava,
+  IconBuilding,
+  IconBus,
+  IconCalendarEvent,
+  IconCalendarStats,
+  IconCamper,
+  IconCar,
+  IconCaravan,
+  IconCarCrash,
+  IconCash,
+  IconChartBar,
+  IconCheck,
+  IconCircle,
+  IconCircleCheck,
+  IconCircleX,
+  IconClipboard,
+  IconCreditCard,
+  IconCrown,
+  IconCurrencyDollar,
+  IconDashboard,
+  IconDatabase,
+  IconDeviceImacSearch,
+  IconDevicesHeart,
+  IconDiscount2,
+  IconEdit,
+  IconFileSearch,
+  IconFileText,
+  IconFiles,
+  IconFilter,
+  IconGauge,
+  IconHelmet,
+  IconHelpCircle,
+  IconHistory,
+  IconHome,
+  IconId,
+  IconKey,
+  IconLayoutDashboard: IconDashboard,
+  IconLicense,
+  IconList,
+  IconListTree,
+  IconLocation,
+  IconLock,
+  IconLogout,
+  IconMail,
+  IconMap2,
+  IconMapPin,
+  IconMenu2,
+  IconMoodHappy,
+  IconNotes,
+  IconNotification,
+  IconPhoneCall,
+  IconQuestionMark,
+  IconReceipt,
+  IconReportMoney,
+  IconReservedLine,
+  IconRoad,
+  IconRoute,
+  IconSearch,
+  IconSettings,
+  IconShield,
+  IconShieldCheck,
+  IconStar,
+  IconSteeringWheel,
+  IconTool,
+  IconTruck,
+  IconUpload,
+  IconUser,
+  IconUserCheck,
+  IconUserCircle,
+  IconUserPlus,
+  IconUsers,
+  IconUsersGroup,
+  IconUsersPlus,
+  IconWallet,
+} satisfies Record<string, TablerIconComponent>
+
+type IconName = keyof typeof ICONS
+
+export const NAV_ICON_OPTIONS = [
+  { value: 'IconHome', label: 'Home', icon: 'IconHome' },
+  { value: 'IconDashboard', label: 'Dashboard', icon: 'IconDashboard' },
+  { value: 'IconMenu2', label: 'Navigation', icon: 'IconMenu2' },
+  { value: 'IconList', label: 'List', icon: 'IconList' },
+  { value: 'IconListTree', label: 'Hierarchy', icon: 'IconListTree' },
+  { value: 'IconUsers', label: 'Users', icon: 'IconUsers' },
+  { value: 'IconUser', label: 'User', icon: 'IconUser' },
+  { value: 'IconUsersGroup', label: 'Roles', icon: 'IconUsersGroup' },
+  { value: 'IconUserCheck', label: 'User access', icon: 'IconUserCheck' },
+  { value: 'IconShieldCheck', label: 'Permissions', icon: 'IconShieldCheck' },
+  { value: 'IconLock', label: 'Security', icon: 'IconLock' },
+  { value: 'IconSettings', label: 'Settings', icon: 'IconSettings' },
+  { value: 'IconTool', label: 'Tools', icon: 'IconTool' },
+  { value: 'IconCar', label: 'Vehicle', icon: 'IconCar' },
+  { value: 'IconSteeringWheel', label: 'Driver', icon: 'IconSteeringWheel' },
+  { value: 'IconRoad', label: 'Rides', icon: 'IconRoad' },
+  { value: 'IconRoute', label: 'Routes', icon: 'IconRoute' },
+  { value: 'IconMapPin', label: 'Location', icon: 'IconMapPin' },
+  { value: 'IconWallet', label: 'Wallet', icon: 'IconWallet' },
+  { value: 'IconCash', label: 'Earnings', icon: 'IconCash' },
+  { value: 'IconCreditCard', label: 'Payments', icon: 'IconCreditCard' },
+  { value: 'IconChartBar', label: 'Reports', icon: 'IconChartBar' },
+  { value: 'IconClipboard', label: 'Requests', icon: 'IconClipboard' },
+  { value: 'IconFileText', label: 'Documents', icon: 'IconFileText' },
+  { value: 'IconBell', label: 'Notifications', icon: 'IconBell' },
+  { value: 'IconHelpCircle', label: 'Support', icon: 'IconHelpCircle' },
+] as const satisfies ReadonlyArray<{
+  value: IconName
+  label: string
+  icon: IconName
+}>
+
+const NAV_GROUP_ICONS = {
+  Vhicles: 'IconCar',
+  Vehicles: 'IconCar',
+  Rides: 'IconRoad',
+  Master: 'IconSettings',
+  Settlements: 'IconCash',
+  Customers: 'IconUsers',
+  Users: 'IconUsers',
+  'User permission matrix': 'IconChartBar',
+  Roles: 'IconUsersGroup',
+  Permissions: 'IconLock',
+  Requests: 'IconClipboard',
+  Dashboard: 'IconDashboard',
+  'My Rides': 'IconSteeringWheel',
+  Earnings: 'IconWallet',
+  'Ride History': 'IconHistory',
+  Profile: 'IconUser',
+  Documents: 'IconFileText',
+  Support: 'IconHelpCircle',
+  Logout: 'IconLogout',
+  Drivers: 'IconSteeringWheel',
+  'Vehicle Management': 'IconCar',
+  'Vehicle Types': 'IconCar',
+  'Driver Documents': 'IconFileText',
+  'Service Areas': 'IconMap2',
+  Cities: 'IconMapPin',
+  'Promo Codes': 'IconDiscount2',
+  'Earnings Settings': 'IconWallet',
+  'Cancellation Reasons': 'IconCircleX',
+  'Support Topics': 'IconHelpCircle',
+  'Manage Navbar': 'IconMenu2',
+  'Assign Self Driver': 'IconUserCheck',
+  Navbar: 'IconMenu2',
+  Capabilities: 'IconShieldCheck',
+  KYC: 'IconId',
+  Notifications: 'IconBell',
+  Payments: 'IconCreditCard',
+  Wallet: 'IconWallet',
+  Home: 'IconHome',
+  'On duty': 'IconMapPin',
+  'View Summary': 'IconChartBar',
+  'Upcoming Rides': 'IconCalendarEvent',
+  'Completed Rides': 'IconCircleCheck',
+  'Cancelled Rides': 'IconBan',
+  'Daily Earnings': 'IconCash',
+  'Monthly Earnings': 'IconCalendarStats',
+  'Payment History': 'IconReceipt',
+  'All Rides': 'IconList',
+  'Filter by Date': 'IconFilter',
+  'View Profile': 'IconUserCircle',
+  'Edit Profile': 'IconEdit',
+  'Change Password': 'IconLock',
+  'Upload Documents': 'IconUpload',
+  'View Documents': 'IconFiles',
+  'Document Status': 'IconFileSearch',
+  'Contact Support': 'IconPhoneCall',
+  FAQs: 'IconQuestionMark',
+  'Confirm Logout': 'IconLogout',
+  'Earn more': 'IconChartBar',
+  'Work tools': 'IconTool',
+  'Demand & incentives': 'IconMapPin',
+  'Net income': 'IconCash',
+  'Earning advisor': 'IconSteeringWheel',
+  'Safety & SOS': 'IconShield',
+  'Vehicle health': 'IconCar',
+  'Credit & training': 'IconStar',
+} as const satisfies Record<string, IconName>
+
+function isIconName(value: string): value is IconName {
+  return value in ICONS
+}
+
+function iconLookupKey(name: string): string {
+  return name.startsWith('Icon') ? name : `Icon${name}`
+}
+
+export function resolveNavIconName(
+  icon?: string | null,
+  label?: string | null,
+): string {
+  if (icon && icon.trim()) {
+    return icon.trim()
+  }
+  if (label && label in NAV_GROUP_ICONS) {
+    return NAV_GROUP_ICONS[label as keyof typeof NAV_GROUP_ICONS]
+  }
+  return 'IconCircle'
+}
+
+export function getAppIcon(name: string | null | undefined): TablerIconComponent {
+  if (!name) {
+    return IconCircle
+  }
+  const key = iconLookupKey(name)
+  return isIconName(key) ? ICONS[key] : IconCircle
+}
+
+type AppIconProps = Omit<TablerIconsProps, 'stroke'> & {
+  name?: string | null
+  stroke?: number | string
+}
+
+export default function AppIcon({
+  name,
+  size = '1.3rem',
+  stroke,
+  ...props
+}: AppIconProps) {
+  const Icon = getAppIcon(name)
+  const strokeWidth = typeof stroke === 'number' ? stroke : 1.5
+  return <Icon size={size} stroke={strokeWidth} {...props} />
+}

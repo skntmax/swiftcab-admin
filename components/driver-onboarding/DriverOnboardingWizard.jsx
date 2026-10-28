@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getCookie } from 'cookies-next'
+import { getCookie, setCookie } from 'cookies-next'
 import {
   ArrowRight, Bike, Car, Check, ChevronLeft, FileText, IdCard,
   Landmark, Shield, Smartphone, Upload, UserRound, GraduationCap,
@@ -202,6 +202,7 @@ export default function DriverOnboardingWizard({
   const [trainingError, setTrainingError] = useState('')
   const [plan, setPlan] = useState('FLEX')
   const [authUser, setAuthUser] = useState(null)
+  const [accessToken, setAccessToken] = useState('')
   const [payout, setPayout] = useState({
     bank_account: '',
     bank_account_branch: '',
@@ -349,6 +350,14 @@ export default function DriverOnboardingWizard({
     localStorage.setItem(SESSION_KEY, id)
   }
 
+  function withAuth(body = {}) {
+    return {
+      ...body,
+      ...(sessionId ? { sessionId } : {}),
+      ...(accessToken ? { accessToken } : {}),
+    }
+  }
+
   async function startRegistration(skipService = false) {
     setBusy(true)
     try {
@@ -423,6 +432,8 @@ export default function DriverOnboardingWizard({
         errorMessage(typeof res?.data === 'string' ? res.data : 'Invalid or expired verification code.')
         return
       }
+      setAccessToken(data.token)
+      setCookie(SWC_KEYS.SWC_TOKEN, data.token)
       await persistAuthSession({ token: data.token, user: data.usersObj, refreshToken: data.refreshToken })
       setAuthUser(data.usersObj)
       if (data.sessionId) await persistSession(data.sessionId)
@@ -437,7 +448,7 @@ export default function DriverOnboardingWizard({
   async function handleSaveProfile() {
     setBusy(true)
     try {
-      const res = await saveProfile(profile)
+      const res = await saveProfile(withAuth(profile))
       const data = envelopeData(res)
       if (!data?.case) {
         errorMessage(typeof res?.data === 'string' ? res.data : 'Could not save personal details')
@@ -452,7 +463,7 @@ export default function DriverOnboardingWizard({
   async function handleAddVehicle() {
     setBusy(true)
     try {
-      const res = await addVehicle({
+      const res = await addVehicle(withAuth({
         service: service || undefined,
         vhicleTypeId: Number(vehicle.vhicleTypeId),
         registrationNumber: vehicle.registrationNumber,
@@ -463,7 +474,7 @@ export default function DriverOnboardingWizard({
         permitNumber: vehicle.permitNumber,
         insuranceNumber: vehicle.insuranceNumber,
         rc: vehicle.rc,
-      })
+      }))
       const data = envelopeData(res)
       if (!data?.case) {
         errorMessage(typeof res?.data === 'string' ? res.data : 'Could not register the vehicle')
@@ -490,10 +501,10 @@ export default function DriverOnboardingWizard({
     try {
       const url = await handleUpload(docKey, file)
       if (!url) return
-      const res = await uploadDoc({
+      const res = await uploadDoc(withAuth({
         documentType: docKey,
         fileUrl: url,
-      })
+      }))
       const data = envelopeData(res)
       if (data?.case) {
         applyCase(data.case)
@@ -515,10 +526,10 @@ export default function DriverOnboardingWizard({
         setProfile((prev) => ({ ...prev, profilePhotoUrl: url }))
         return
       }
-      const res = await saveVerification({
+      const res = await saveVerification(withAuth({
         selfieConsent: true,
         [field]: url,
-      })
+      }))
       const data = envelopeData(res)
       if (data?.case) applyCase(data.case)
     } finally {
@@ -550,11 +561,11 @@ export default function DriverOnboardingWizard({
     setBusy(true)
     setTrainingError('')
     try {
-      const res = await completeTraining({
+      const res = await completeTraining(withAuth({
         moduleId: mod.id,
         acknowledged: true,
         answers,
-      })
+      }))
       const data = envelopeData(res)
       if (!data?.quizPassed && !data?.case) {
         const message =
@@ -578,10 +589,10 @@ export default function DriverOnboardingWizard({
   async function handlePayout() {
     setBusy(true)
     try {
-      const res = await savePayout({
+      const res = await savePayout(withAuth({
         ...payout,
         earningPlan: plan,
-      })
+      }))
       const data = envelopeData(res)
       if (!data?.case) {
         errorMessage(typeof res?.data === 'string' ? res.data : 'Could not save payout details')
@@ -596,7 +607,7 @@ export default function DriverOnboardingWizard({
   async function handleSubmit() {
     setBusy(true)
     try {
-      const res = await submitCase({})
+      const res = await submitCase(withAuth({}))
       const data = envelopeData(res)
       if (!data?.case) {
         errorMessage(typeof res?.data === 'string' ? res.data : 'Complete every required step first')
@@ -612,7 +623,7 @@ export default function DriverOnboardingWizard({
   async function handleActivate() {
     setBusy(true)
     try {
-      const res = await activate({})
+      const res = await activate(withAuth({}))
       const data = envelopeData(res)
       if (!data?.activated) {
         errorMessage(typeof res?.data === 'string' ? res.data : 'Approval is required before going online')

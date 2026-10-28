@@ -21,9 +21,14 @@ type ApiEnvelope = {
 };
 
 function authConfig() {
+  const sessionId =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("swc_driver_onboarding_session")
+      : "";
   return {
     headers: {
       authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN) || ""}`,
+      ...(sessionId ? { "x-onboarding-session": sessionId } : {}),
     },
   };
 }

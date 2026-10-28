@@ -5,6 +5,22 @@ import { getCookie } from '@node_modules/cookies-next/lib';
 import { SWC_KEYS } from '@constants';
 import { encryptedBaseQuery } from './encryptedBaseQuery';
 
+function onboardingAuth(body = {}, extra = {}) {
+  const accessToken = body.accessToken
+  const rest = { ...body }
+  delete rest.accessToken
+  const sessionId = rest.sessionId || extra.sessionId
+  return {
+    url: extra.url,
+    method: extra.method,
+    headers: {
+      authorization: `Bearer ${accessToken || getCookie(SWC_KEYS.SWC_TOKEN) || ''}`,
+      ...(sessionId ? { 'x-onboarding-session': String(sessionId) } : {}),
+    },
+    ...(extra.noBody ? { params: sessionId ? { sessionId } : undefined } : { body: rest }),
+  }
+}
+
 // Define the base API
 const driversApi = createApi({
   reducerPath: 'driversApi',
@@ -267,83 +283,39 @@ const driversApi = createApi({
         }),
      }),
      getDriverOnboarding: builder.mutation({
-        query: () => ({
-           url: urls.driver_onboarding,
-           method: 'GET',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-        }),
+        query: (body) => onboardingAuth(body || {}, { url: urls.driver_onboarding, method: 'GET', noBody: true }),
         providesTags:['driver-onboarding']
      }),
      saveDriverOnboardingProfile: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_onboarding_profile,
-           method: 'PATCH',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body,
-        }),
+        query: (body) => onboardingAuth(body, { url: urls.driver_onboarding_profile, method: 'PATCH' }),
         invalidatesTags:['driver-onboarding']
      }),
      addDriverOnboardingVehicle: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_onboarding_vehicles,
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body,
-        }),
+        query: (body) => onboardingAuth(body, { url: urls.driver_onboarding_vehicles, method: 'POST' }),
         invalidatesTags:['driver-onboarding']
      }),
      uploadDriverOnboardingDocument: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_onboarding_documents,
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body,
-        }),
+        query: (body) => onboardingAuth(body, { url: urls.driver_onboarding_documents, method: 'POST' }),
         invalidatesTags:['driver-onboarding']
      }),
      saveDriverOnboardingVerification: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_onboarding_verification,
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body,
-        }),
+        query: (body) => onboardingAuth(body, { url: urls.driver_onboarding_verification, method: 'POST' }),
         invalidatesTags:['driver-onboarding']
      }),
      completeDriverTraining: builder.mutation({
-        query: ({ moduleId, ...body }) => ({
-           url: urls.driver_onboarding_training(moduleId),
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body,
-        }),
+        query: ({ moduleId, ...body }) => onboardingAuth(body, { url: urls.driver_onboarding_training(moduleId), method: 'POST' }),
         invalidatesTags:['driver-onboarding']
      }),
      saveDriverOnboardingPayout: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_onboarding_payout,
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body,
-        }),
+        query: (body) => onboardingAuth(body, { url: urls.driver_onboarding_payout, method: 'POST' }),
         invalidatesTags:['driver-onboarding']
      }),
      submitDriverOnboarding: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_onboarding_submit,
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body: body || {},
-        }),
+        query: (body) => onboardingAuth(body || {}, { url: urls.driver_onboarding_submit, method: 'POST' }),
         invalidatesTags:['driver-onboarding']
      }),
      activateDriver: builder.mutation({
-        query: (body) => ({
-           url: urls.driver_activation,
-           method: 'POST',
-           headers: { authorization: `Bearer ${getCookie(SWC_KEYS.SWC_TOKEN)}` },
-           body: body || {},
-        }),
+        query: (body) => onboardingAuth(body || {}, { url: urls.driver_activation, method: 'POST' }),
         invalidatesTags:['driver-onboarding','get-driver-details']
      }),
 
